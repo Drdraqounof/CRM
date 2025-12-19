@@ -1,0 +1,30 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Donor {
+  id           String    @id @default(cuid())
+  name         String
+  email        String    @unique
+  phone        String?
+  totalDonated Int?
+  status       String?
+  createdAt    DateTime  @default(now())
+  lastDonation DateTime?
+}
+
+model Campaign {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  goal        Int
+  raised      Int
+  startDate   DateTime
+  endDate     DateTime
+  status      String
+  description String?
+}
