@@ -289,8 +289,12 @@ export default function Home() {
         if (!res.ok) throw new Error('Failed to fetch donors');
         const data = await res.json();
         setDonors(data);
-      } catch (err) {
-        toast.error('Could not load donors from database');
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          toast.error(err.message);
+        } else {
+          toast.error('Could not load donors from database');
+        }
       }
     };
 
@@ -305,8 +309,12 @@ export default function Home() {
         if (!res.ok) throw new Error('Failed to fetch campaigns');
         const data = await res.json();
         setCampaigns(data);
-      } catch (err) {
-        toast.error('Could not load campaigns from database');
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          toast.error(err.message);
+        } else {
+          toast.error('Could not load campaigns from database');
+        }
       }
     };
 
@@ -735,8 +743,12 @@ export default function Home() {
                                 }
                                 toast.success('Donor deleted');
                                 await fetchDonors();
-                              } catch (err) {
-                                toast.error('Failed to delete donor');
+                              } catch (err: unknown) {
+                                if (err instanceof Error) {
+                                  toast.error(err.message);
+                                } else {
+                                  toast.error('Failed to delete donor');
+                                }
                               }
                             }
                           }}
@@ -858,8 +870,8 @@ export default function Home() {
                   if (err instanceof Response) {
                     const data = await err.json().catch(() => null);
                     toast.error(data?.error || 'Failed to add campaign');
-                  } else if (err && typeof err === 'object' && 'message' in err) {
-                    toast.error(err.message || 'Failed to add campaign');
+                  } else if (err instanceof Error) {
+                    toast.error(err.message);
                   } else {
                     toast.error('Failed to add campaign');
                   }
