@@ -1,6 +1,12 @@
 import React from 'react';
 
-export function Switch({ checked, onChange, ...props }) {
+
+type SwitchProps = Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onChange'> & {
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+};
+
+export function Switch({ checked, onChange, ...props }: SwitchProps) {
   return (
     <button
       type="button"
