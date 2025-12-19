@@ -789,13 +789,8 @@ export default function Home() {
                       if (err instanceof Response) {
                         const data = await err.json().catch(() => null);
                         toast.error(data?.error || 'Failed to add donor');
-                      } else if (
-                        err &&
-                        typeof err === 'object' &&
-                        'message' in err &&
-                        typeof (err as any).message === 'string'
-                      ) {
-                        toast.error((err as any).message);
+                      } else if (err instanceof Error) {
+                        toast.error(err.message);
                       } else {
                         toast.error('Failed to add donor');
                       }
