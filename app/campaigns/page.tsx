@@ -77,27 +77,42 @@ export default function CampaignsPage() {
         description: ''
       }
     );
-
-    const [modalError, setModalError] = useState<string | null>(null);
     const [submitting, setSubmitting] = useState(false);
+    const [modalError, setModalError] = useState<string | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
       setSubmitting(true);
       setModalError(null);
       try {
+        // Validate date format (YYYY-MM-DD) and reasonable year range
+        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+        if (!dateRegex.test(formData.startDate) || !dateRegex.test(formData.endDate)) {
+          setModalError('Dates must be in YYYY-MM-DD format.');
+          setSubmitting(false);
+          return;
+        }
+        const startYear = Number(formData.startDate.split('-')[0]);
+        const endYear = Number(formData.endDate.split('-')[0]);
+        if (startYear < 1900 || startYear > 2100 || endYear < 1900 || endYear > 2100) {
+          setModalError('Year must be between 1900 and 2100.');
+          setSubmitting(false);
+          return;
+        }
+        const payload = {
+          name: formData.name,
+          goal: formData.goal,
+          raised: formData.raised,
+          startDate: formData.startDate,
+          endDate: formData.endDate,
+          status: formData.status,
+          description: formData.description,
+        };
+        console.log('Submitting campaign payload:', payload);
         const res = await fetch('/api/campaigns', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: formData.name,
-            goal: formData.goal,
-            raised: formData.raised,
-            startDate: formData.startDate,
-            endDate: formData.endDate,
-            status: formData.status,
-            description: formData.description,
-          }),
+          body: JSON.stringify(payload),
         });
         const result = await res.json();
         if (!res.ok) {
@@ -177,41 +192,38 @@ export default function CampaignsPage() {
               <div>
                 <label className="block text-sm font-medium mb-1">Start Date</label>
                 <input
-                  type="text"
+                  type="date"
                   required
+                  min="1900-01-01"
+                  max="2100-12-31"
                   value={formData.startDate}
                   onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
                   className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="MM/DD/YYYY"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">End Date</label>
                 <input
-                  type="text"
+                  type="date"
                   required
+                  min="1900-01-01"
+                  max="2100-12-31"
                   value={formData.endDate}
                   onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
                   className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="MM/DD/YYYY"
                 />
               </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Status</label>
-              <select
-                value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value as Campaign['status'] })}
-                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            {modalError && (
+              <div className="text-red-600 text-sm">{modalError}</div>
+            )}
+            <div className="flex gap-2 pt-2">
+              <button
+                type="submit"
+                className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                disabled={submitting}
               >
-                <option value="planned">Planned</option>
-                <option value="active">Active</option>
-                <option value="completed">Completed</option>
-              </select>
-            </div>
-            <div className="flex gap-3 pt-4">
-              <button type="submit" className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                {campaign ? 'Save Changes' : 'Create Campaign'}
+                {submitting ? 'Saving...' : campaign ? 'Save Changes' : 'Create Campaign'}
               </button>
               <button type="button" onClick={onClose} className="flex-1 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors">
                 Cancel
@@ -288,6 +300,13 @@ export default function CampaignsPage() {
 
   return (
     <div className="space-y-8 p-8">
+      {showCampaignModal && (
+        <CampaignModal
+          isOpen={showCampaignModal}
+          onClose={() => setShowCampaignModal(false)}
+          campaign={editingCampaign}
+        />
+      )}
       <div className="flex justify-between items-start">
         <div>
           <h1 className="text-3xl font-bold mb-1">Campaigns</h1>

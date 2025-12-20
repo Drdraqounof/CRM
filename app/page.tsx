@@ -265,77 +265,72 @@ export default function BondaryCRM() {
     </div>
   );
 
-  const LoginPage = () => {
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-
-    // On sign in, navigate to dashboard
-    const handleSignIn = (e: React.FormEvent) => {
-      e.preventDefault();
-      setCurrentPage('dashboard');
-    };
-
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
-        <div className="max-w-md w-full">
-          <div className="text-center mb-8">
-            <div className="flex items-center justify-center space-x-2 mb-4">
-              <Database className="w-10 h-10 text-blue-600" />
-              <h1 className="text-3xl font-bold text-gray-900">Bondary</h1>
-            </div>
-            <p className="text-gray-600">Sign in to your account</p>
+  const LoginPage = () => (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
+      <div className="max-w-md w-full">
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center space-x-2 mb-4">
+            <Database className="w-10 h-10 text-blue-600" />
+            <h1 className="text-3xl font-bold text-gray-900">Bondary</h1>
           </div>
-          <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-2xl shadow-2xl p-8">
-            <div className="bg-white rounded-xl p-8">
-              <form onSubmit={handleSignIn} className="space-y-6">
-                <div>
-                  <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
-                    Username
-                  </label>
-                  <input
-                    id="username"
-                    type="text"
-                    value={username}
-                    onChange={e => setUsername(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                    placeholder="Enter your username"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                    Password
-                  </label>
-                  <input
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                    placeholder="Enter your password"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-blue-600 to-blue-800 text-white font-semibold py-3 px-6 rounded-lg hover:from-blue-700 hover:to-blue-900 transition-all duration-200 shadow-lg"
-                >
-                  Sign In
-                </button>
-              </form>
-              <div className="mt-6 text-center">
-                <a
-                  href="#"
-                  onClick={e => { e.preventDefault(); setCurrentPage('home'); }}
-                  className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
-                >
-                  Back to home
-                </a>
+          <p className="text-gray-600">Sign in to your account</p>
+        </div>
+
+        <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-2xl shadow-2xl p-8">
+          <div className="bg-white rounded-xl p-8">
+            <div className="space-y-6">
+              <div>
+                <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+                  Username
+                </label>
+                <input
+                  id="username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                  placeholder="Enter your username"
+                />
               </div>
+
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                  placeholder="Enter your password"
+                />
+              </div>
+
+              <button
+                onClick={handleLogin}
+                className="w-full bg-gradient-to-r from-blue-600 to-blue-800 text-white font-semibold py-3 px-6 rounded-lg hover:from-blue-700 hover:to-blue-900 transition-all duration-200 shadow-lg"
+              >
+                Sign In
+              </button>
+            </div>
+
+            <div className="mt-6 text-center">
+              <a
+                href="#"
+                onClick={e => { e.preventDefault(); setCurrentPage('home'); }}
+                className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
+              >
+                Back to home
+              </a>
             </div>
           </div>
         </div>
       </div>
-    );
-  };
+    </div>
+  );
 
   // About Page
   const AboutPage = () => {
