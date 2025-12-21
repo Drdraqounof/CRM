@@ -217,6 +217,29 @@ export default function CampaignsPage() {
             {modalError && (
               <div className="text-red-600 text-sm">{modalError}</div>
             )}
+            {formData.status === 'planned' && (
+              <button
+                type="button"
+                className="w-full bg-green-100 text-green-700 font-semibold py-2 px-4 rounded-lg hover:bg-green-200 transition-colors mb-2"
+                disabled={submitting}
+                onClick={async () => {
+                  try {
+                    const res = await fetch('/api/campaigns', {
+                      method: 'PATCH',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ id: formData.id, status: 'active' }),
+                    });
+                    if (!res.ok) throw new Error('Failed to activate campaign');
+                    setFormData({ ...formData, status: 'active' });
+                    await fetchCampaigns();
+                  } catch (err) {
+                    alert('Could not activate campaign.');
+                  }
+                }}
+              >
+                Make Active
+              </button>
+            )}
             <div className="flex gap-2 pt-2">
               <button
                 type="submit"
@@ -237,6 +260,24 @@ export default function CampaignsPage() {
 
   const CampaignCard = ({ campaign }: { campaign: Campaign }) => {
     const percentage = (campaign.raised / campaign.goal) * 100;
+    const [activating, setActivating] = useState(false);
+    const [showDetails, setShowDetails] = useState(false);
+    const handleActivate = async () => {
+      setActivating(true);
+      try {
+        const res = await fetch(`/api/campaigns`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: campaign.id, status: 'active' }),
+        });
+        if (!res.ok) throw new Error('Failed to activate campaign');
+        await fetchCampaigns();
+      } catch (err) {
+        alert('Could not activate campaign.');
+      } finally {
+        setActivating(false);
+      }
+    };
     return (
       <div className="bg-white p-6 rounded-lg border shadow-sm">
         <div className="flex justify-between items-start mb-4">
@@ -260,36 +301,76 @@ export default function CampaignsPage() {
             <button onClick={() => handleDelete(campaign.id)} className="p-2 hover:bg-red-50 rounded-lg transition-colors">
               <Trash2 className="h-4 w-4 text-red-600" />
             </button>
-          </div>
-        </div>
-        <div className="space-y-3">
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <Calendar className="h-4 w-4" />
-            <span>{campaign.startDate} - {campaign.endDate}</span>
-          </div>
-          <div>
-            <div className="flex justify-between text-sm mb-2">
-              <span className="text-gray-600">
-                ${campaign.raised.toLocaleString()} raised of ${campaign.goal.toLocaleString()} goal
-              </span>
-              <span className="font-semibold">{Math.round(percentage)}%</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-              <div
-                style={{ width: `${Math.min(percentage, 100)}%` }}
-                className={`h-3 rounded-full transition-all duration-500 ${
-                  campaign.status === 'completed' ? 'bg-blue-600' : 'bg-green-600'
-                }`}
-              />
-            </div>
-          </div>
-          <div className="pt-2 flex justify-between items-center text-sm">
-            <span className="text-gray-600">${(campaign.goal - campaign.raised).toLocaleString()} remaining</span>
-            {campaign.status === 'active' && (
-              <button className="text-blue-600 hover:text-blue-700 font-medium">View Details →</button>
+            {campaign.status === 'planned' && (
+              <button
+                onClick={handleActivate}
+                className="p-2 bg-green-100 text-green-700 rounded-lg font-semibold hover:bg-green-200 transition-colors"
+                disabled={activating}
+                title="Activate Campaign"
+              >
+                {activating ? 'Activating...' : 'Make Active'}
+              </button>
             )}
           </div>
         </div>
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <Calendar className="h-4 w-4" />
+                <span>{campaign.startDate} - {campaign.endDate}</span>
+              </div>
+              <div>
+                <div className="flex justify-between text-sm mb-2">
+                  <span className="text-gray-600">
+                    ${campaign.raised.toLocaleString()} raised of ${campaign.goal.toLocaleString()} goal
+                  </span>
+                  <span className="font-semibold">{Math.round(percentage)}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                  <div
+                    style={{ width: `${Math.min(percentage, 100)}%` }}
+                    className={`h-3 rounded-full transition-all duration-500 ${
+                      campaign.status === 'completed' ? 'bg-blue-600' : 'bg-green-600'
+                    }`}
+                  />
+                </div>
+              </div>
+              <div className="pt-2 flex justify-between items-center text-sm">
+                <span className="text-gray-600">${(campaign.goal - campaign.raised).toLocaleString()} remaining</span>
+                {campaign.status === 'active' && (
+                  <button
+                    className="text-blue-600 hover:text-blue-700 font-medium"
+                    onClick={() => setShowDetails(true)}
+                  >
+                    View Details →
+                  </button>
+                )}
+              </div>
+            </div>
+            {showDetails && (
+              <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={() => setShowDetails(false)}>
+                <div className="bg-white rounded-lg p-6 max-w-sm w-full shadow-lg" onClick={e => e.stopPropagation()}>
+                  <h3 className="text-xl font-bold mb-4">Campaign Details</h3>
+                  <div className="mb-2">
+                    <span className="font-semibold">Description:</span>
+                    <div className="text-gray-700 mt-1">{campaign.description}</div>
+                  </div>
+                  <div className="mb-2">
+                    <span className="font-semibold">Start Date:</span>
+                    <span className="ml-2 text-gray-700">{campaign.startDate}</span>
+                  </div>
+                  <div className="mb-4">
+                    <span className="font-semibold">End Date:</span>
+                    <span className="ml-2 text-gray-700">{campaign.endDate}</span>
+                  </div>
+                  <button
+                    className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
+                    onClick={() => setShowDetails(false)}
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            )}
       </div>
     );
   };
@@ -364,6 +445,35 @@ export default function CampaignsPage() {
               <Legend />
               <Bar dataKey="raised" fill="#8884d8" />
               <Bar dataKey="goal" fill="#82ca9d" />
+            </BarChart>
+          )}
+          {chartType === 'pie' && (
+            <PieChart>
+              <Pie
+                data={campaigns.filter(c => c.status === 'active' || c.status === 'completed')}
+                dataKey="raised"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={100}
+                label
+              >
+                {campaigns.filter(c => c.status === 'active' || c.status === 'completed').map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#8884d8' : '#82ca9d'} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          )}
+          {chartType === 'stacked' && (
+            <BarChart data={campaigns.filter(c => c.status === 'active' || c.status === 'completed')}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="raised" stackId="a" fill="#8884d8" />
+              <Bar dataKey="goal" stackId="a" fill="#82ca9d" />
             </BarChart>
           )}
         </ResponsiveContainer>

@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from 'react';
 import { Database, Users, Calendar, BarChart3 } from 'lucide-react';
-import * as THREE from 'three';
+
 
 export default function BondaryCRM() {
   const [currentPage, setCurrentPage] = useState('home');
@@ -11,141 +11,20 @@ export default function BondaryCRM() {
 
   useEffect(() => {
     if (currentPage !== 'home' || !canvasRef.current) return;
-
     const canvas = canvasRef.current;
-    // Defensive: fallback to window if clientWidth/Height are not available
-    const width = canvas.clientWidth || window.innerWidth;
-    const height = canvas.clientHeight || window.innerHeight;
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-
-    renderer.setSize(width, height);
-    renderer.setClearColor(0x000000, 0);
-
-    // Create gradient background
-    const gradientCanvas = document.createElement('canvas');
-    gradientCanvas.width = 1024;
-    gradientCanvas.height = 1024;
-    const ctx = gradientCanvas.getContext('2d');
-    if (ctx) {
-      const gradient = ctx.createLinearGradient(0, 0, 1024, 1024);
-      gradient.addColorStop(0, '#1e3a8a');
-      gradient.addColorStop(0.5, '#3b82f6');
-      gradient.addColorStop(1, '#1f2937');
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, 1024, 1024);
-      const bgTexture = new THREE.CanvasTexture(gradientCanvas);
-      scene.background = bgTexture;
-    }
-
-    const particlesGeometry = new THREE.BufferGeometry();
-    const particlesCount = 1500;
-    const posArray = new Float32Array(particlesCount * 3);
-    for(let i = 0; i < particlesCount * 3; i += 3) {
-      posArray[i] = (Math.random() - 0.5) * 100;
-      posArray[i + 1] = (Math.random() - 0.5) * 100;
-      posArray[i + 2] = (Math.random() - 0.5) * 100;
-    }
-    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-
-    const particlesMaterial = new THREE.PointsMaterial({
-      size: 0.05,
-      color: 0xffffff,
-      transparent: true,
-      opacity: 0.4
-    });
-    const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
-    scene.add(particlesMesh);
-
-    const gridHelper = new THREE.GridHelper(50, 50, 0x3b82f6, 0x1e3a8a);
-    gridHelper.position.y = -15;
-    if (Array.isArray((gridHelper.material))) {
-      (gridHelper.material as THREE.Material[]).forEach(mat => { mat.transparent = true; mat.opacity = 0.2; });
-    } else {
-      (gridHelper.material as THREE.Material).transparent = true;
-      (gridHelper.material as THREE.Material).opacity = 0.2;
-    }
-    scene.add(gridHelper);
-
-    const sphereGeometry = new THREE.SphereGeometry(3, 32, 32);
-    const sphereMaterial = new THREE.MeshPhongMaterial({
-      color: 0xffffff,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.15
-    });
-    const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-    sphere.position.set(-12, 5, -25);
-    scene.add(sphere);
-
-    const torusGeometry = new THREE.TorusGeometry(4, 0.8, 16, 100);
-    const torusMaterial = new THREE.MeshPhongMaterial({
-      color: 0x3b82f6,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.2
-    });
-    const torus = new THREE.Mesh(torusGeometry, torusMaterial);
-    torus.position.set(12, -3, -30);
-    scene.add(torus);
-
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-    scene.add(ambientLight);
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.set(10, 10, 10);
-    scene.add(directionalLight);
-
-    camera.position.z = 30;
-
+    const gl = canvas.getContext('webgl');
+    if (!gl) return;
+    // Simple WebGL clear color and animation
     let animationId: number;
-    let mouseX = 0;
-    let mouseY = 0;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX = (e.clientX / window.innerWidth) * 2 - 1;
-      mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+    const render = () => {
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      gl.clearColor(0.12, 0.23, 0.54, 1.0); // blue-ish
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      animationId = requestAnimationFrame(render);
     };
-    window.addEventListener('mousemove', handleMouseMove);
-
-    const animate = () => {
-      animationId = requestAnimationFrame(animate);
-      particlesMesh.rotation.y += 0.0005;
-      sphere.rotation.x += 0.005;
-      sphere.rotation.y += 0.005;
-      torus.rotation.x += 0.003;
-      torus.rotation.y += 0.007;
-      camera.position.x += (mouseX * 2 - camera.position.x) * 0.02;
-      camera.position.y += (mouseY * 2 - camera.position.y) * 0.02;
-      camera.lookAt(scene.position);
-      renderer.render(scene, camera);
-    };
-    animate();
-
-    const handleResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    };
-    window.addEventListener('resize', handleResize);
-
+    render();
     return () => {
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener('mousemove', handleMouseMove);
       cancelAnimationFrame(animationId);
-      renderer.dispose();
-      particlesGeometry.dispose();
-      particlesMaterial.dispose();
-      sphereGeometry.dispose();
-      sphereMaterial.dispose();
-      torusGeometry.dispose();
-      torusMaterial.dispose();
-      gridHelper.geometry.dispose();
-      if (Array.isArray(gridHelper.material)) {
-        gridHelper.material.forEach(mat => mat.dispose());
-      } else {
-        gridHelper.material.dispose();
-      }
     };
   }, [currentPage]);
 

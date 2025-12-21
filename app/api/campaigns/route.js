@@ -1,3 +1,28 @@
+export async function PATCH(req) {
+  try {
+    const body = await req.json();
+    const { id, ...updateFields } = body;
+    if (!id) {
+      return NextResponse.json({ error: 'Missing campaign id' }, { status: 400 });
+    }
+    // Only allow updating known fields
+    const allowedFields = ['name', 'goal', 'raised', 'startDate', 'endDate', 'status', 'description'];
+    const data = Object.fromEntries(
+      Object.entries(updateFields).filter(([key]) => allowedFields.includes(key))
+    );
+    // Convert dates if present
+    if (data.startDate) data.startDate = new Date(data.startDate);
+    if (data.endDate) data.endDate = new Date(data.endDate);
+    const updated = await prisma.campaign.update({
+      where: { id },
+      data,
+    });
+    return NextResponse.json(updated, { status: 200 });
+  } catch (error) {
+    console.error('PATCH /api/campaigns error:', error);
+    return NextResponse.json({ error: error?.message || 'Failed to update campaign' }, { status: 500 });
+  }
+}
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 

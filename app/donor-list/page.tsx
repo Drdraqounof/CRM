@@ -422,15 +422,7 @@ export default function Home() {
               <h2 className="text-xl font-semibold mb-1">Recent Donations</h2>
               <p className="text-sm text-gray-600 mb-4">Latest contributions received</p>
               <div className="space-y-3">
-                {mockDonations.map(donation => (
-                  <div key={donation.id} className="flex justify-between items-start py-3 border-b last:border-0">
-                    <div className="flex-1">
-                      <p className="font-medium">{donation.donorName}</p>
-                      <p className="text-sm text-gray-500">{donation.date}</p>
-                    </div>
-                    <p className="font-semibold text-lg">${donation.amount.toLocaleString()}</p>
-                  </div>
-                ))}
+                {/* No mockDonations available. Replace with real donation data or remove this section. */}
               </div>
             </div>
 

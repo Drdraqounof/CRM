@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import * as THREE from 'three';
+// Removed three.js, using plain WebGL for background
 import { Database, Lock, User, ArrowRight, Shield, Eye, EyeOff } from 'lucide-react';
 
 export default function LoginPage() {
@@ -21,155 +21,80 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!canvasRef.current) return;
-
-    const canvas = canvasRef.current;
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-    
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setClearColor(0x000000, 0);
-
-    // Professional gradient background
-    const gradientCanvas = document.createElement('canvas');
-    gradientCanvas.width = 1024;
-    gradientCanvas.height = 1024;
-    const ctx = gradientCanvas.getContext('2d');
-    if (ctx) {
-      const gradient = ctx.createLinearGradient(0, 0, 1024, 1024);
-      gradient.addColorStop(0, '#0f172a');
-      gradient.addColorStop(0.5, '#1e3a8a');
-      gradient.addColorStop(1, '#1e293b');
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, 1024, 1024);
-    }
-    
-    const bgTexture = new THREE.CanvasTexture(gradientCanvas);
-    scene.background = bgTexture;
-
-    // Subtle particle system
-    const particlesGeometry = new THREE.BufferGeometry();
-    const particlesCount = 1200;
-    const posArray = new Float32Array(particlesCount * 3);
-    
-    for(let i = 0; i < particlesCount * 3; i += 3) {
-      posArray[i] = (Math.random() - 0.5) * 100;
-      posArray[i + 1] = (Math.random() - 0.5) * 100;
-      posArray[i + 2] = (Math.random() - 0.5) * 100;
-    }
-    
-    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-    
-    const particlesMaterial = new THREE.PointsMaterial({
-      size: 0.04,
-      color: 0x3b82f6,
-      transparent: true,
-      opacity: 0.5
-    });
-    
-    const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
-    scene.add(particlesMesh);
-
-    // Professional grid
-    const gridHelper = new THREE.GridHelper(60, 60, 0x3b82f6, 0x1e3a8a);
-    gridHelper.position.y = -20;
-    gridHelper.material.transparent = true;
-    gridHelper.material.opacity = 0.15;
-    scene.add(gridHelper);
-
-    // Clean geometric shapes
-    const ringGeometry = new THREE.TorusGeometry(8, 0.5, 16, 100);
-    const ringMaterial = new THREE.MeshPhongMaterial({
-      color: 0x3b82f6,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.2
-    });
-    const ring = new THREE.Mesh(ringGeometry, ringMaterial);
-    ring.position.set(-15, 5, -40);
-    ring.rotation.x = Math.PI / 4;
-    scene.add(ring);
-
-    const sphereGeometry = new THREE.SphereGeometry(5, 32, 32);
-    const sphereMaterial = new THREE.MeshPhongMaterial({
-      color: 0x60a5fa,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.15
-    });
-    const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-    sphere.position.set(15, -5, -35);
-    scene.add(sphere);
-
-    // Professional lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
-    scene.add(ambientLight);
-    
-    const directionalLight = new THREE.DirectionalLight(0x3b82f6, 0.8);
-    directionalLight.position.set(10, 10, 10);
-    scene.add(directionalLight);
-
-    const pointLight = new THREE.PointLight(0x60a5fa, 0.5);
-    pointLight.position.set(-10, -10, 10);
-    scene.add(pointLight);
-
-    camera.position.z = 30;
-
+    const canvas = canvasRef.current as HTMLCanvasElement;
+    const gl = canvas.getContext('webgl');
+    if (!gl) return;
     let animationId: number;
-    let mouseX = 0;
-    let mouseY = 0;
 
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX = (e.clientX / window.innerWidth) * 2 - 1;
-      mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
-    };
+    // Gradient background using 2 triangles
+    // Vertex shader
+    const vertCode = `
+      attribute vec2 a_position;
+      varying vec2 v_uv;
+      void main() {
+        v_uv = (a_position + 1.0) * 0.5;
+        gl_Position = vec4(a_position, 0, 1);
+      }
+    `;
+    // Fragment shader
+    const fragCode = `
+      precision mediump float;
+      varying vec2 v_uv;
+      void main() {
+        vec3 color1 = vec3(0.06, 0.09, 0.16); // #0f172a
+        vec3 color2 = vec3(0.12, 0.23, 0.54); // #1e3a8a
+        vec3 color3 = vec3(0.11, 0.16, 0.23); // #1e293b
+        float t = v_uv.y;
+        vec3 color = mix(color1, color2, t);
+        color = mix(color, color3, smoothstep(0.5, 1.0, t));
+        gl_FragColor = vec4(color, 1.0);
+      }
+    `;
+    function createShader(gl: WebGLRenderingContext, type: number, source: string) {
+      const shader = gl.createShader(type)!;
+      gl.shaderSource(shader, source);
+      gl.compileShader(shader);
+      return shader;
+    }
+    const vertShader = createShader(gl, gl.VERTEX_SHADER, vertCode);
+    const fragShader = createShader(gl, gl.FRAGMENT_SHADER, fragCode);
+    const program = gl.createProgram()!;
+    gl.attachShader(program, vertShader);
+    gl.attachShader(program, fragShader);
+    gl.linkProgram(program);
+    gl.useProgram(program);
+    // 2 triangles covering the screen
+    const vertices = new Float32Array([
+      -1, -1, 1, -1, -1, 1,
+      -1, 1, 1, -1, 1, 1
+    ]);
+    const buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+    const posLoc = gl.getAttribLocation(program, 'a_position');
+    gl.enableVertexAttribArray(posLoc);
+    gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
 
-    window.addEventListener('mousemove', handleMouseMove);
-
-    const animate = () => {
-      animationId = requestAnimationFrame(animate);
-
-      // Subtle animations
-      particlesMesh.rotation.y += 0.0003;
-      particlesMesh.rotation.x += 0.0002;
-      
-      ring.rotation.y += 0.004;
-      ring.rotation.z += 0.002;
-      
-      sphere.rotation.x += 0.003;
-      sphere.rotation.y += 0.005;
-
-      // Minimal camera movement
-      camera.position.x += (mouseX * 1.5 - camera.position.x) * 0.02;
-      camera.position.y += (mouseY * 1.5 - camera.position.y) * 0.02;
-      camera.lookAt(scene.position);
-
-      renderer.render(scene, camera);
-    };
-
-    animate();
-
-    const handleResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    };
-
+    function render() {
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.drawArrays(gl.TRIANGLES, 0, 6);
+      animationId = requestAnimationFrame(render);
+    }
+    render();
+    function handleResize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
     window.addEventListener('resize', handleResize);
-
+    handleResize();
     return () => {
       window.removeEventListener('resize', handleResize);
-      window.removeEventListener('mousemove', handleMouseMove);
       cancelAnimationFrame(animationId);
-      renderer.dispose();
-      particlesGeometry.dispose();
-      particlesMaterial.dispose();
-      ringGeometry.dispose();
-      ringMaterial.dispose();
-      sphereGeometry.dispose();
-      sphereMaterial.dispose();
-      gridHelper.geometry.dispose();
-      gridHelper.material.dispose();
+      gl.deleteBuffer(buffer);
+      gl.deleteProgram(program);
+      gl.deleteShader(vertShader);
+      gl.deleteShader(fragShader);
     };
   }, []);
 
