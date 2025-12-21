@@ -179,14 +179,13 @@ export default function BondaryCRM() {
               >
                 About Us
               </a>
-              <a
-                href="#"
-                onClick={e => { e.preventDefault(); setCurrentPage('login'); }}
+              <button
+                onClick={() => window.location.href = '/login'}
                 className="flex items-center space-x-2 bg-white text-blue-600 px-6 py-2 rounded-lg font-semibold hover:bg-gray-50 transition-all duration-200 shadow-md"
               >
                 <span>Login</span>
                 <Database className="w-5 h-5" />
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -252,13 +251,12 @@ export default function BondaryCRM() {
           </div>
           
           <div className="mt-8 text-center">
-            <a
-              href="#"
-              onClick={e => { e.preventDefault(); setCurrentPage('login'); }}
+            <button
+              onClick={() => window.location.href = '/login'}
               className="bg-gradient-to-r from-blue-600 to-blue-800 text-white font-semibold py-3 px-8 rounded-lg hover:from-blue-700 hover:to-blue-900 transition-all duration-200 shadow-lg"
             >
               Get Started Today
-            </a>
+            </button>
           </div>
         </div>
       </div>
@@ -559,13 +557,6 @@ export default function BondaryCRM() {
     return <Dashboard />;
   };
 
-  // Render current page
-  return (
-    <>
-      {currentPage === 'home' && <HomePage />}
-      {currentPage === 'login' && <LoginPage />}
-      {currentPage === 'about' && <AboutPage />}
-      {currentPage === 'dashboard' && <DashboardPage />}
-    </>
-  );
+  // Render only the HomePage, navigation handled by window.location.href
+  return <HomePage />;
 }

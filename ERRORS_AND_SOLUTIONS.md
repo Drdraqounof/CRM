@@ -63,7 +63,22 @@ This file documents the major errors encountered while building the CRM app (Nex
 
 ---
 
-## 6. General Debugging Steps
+## 6. Dashboard Not Showing Active Campaigns
+**Error:**
+- Dashboard did not display any active campaigns, even though some were expected.
+
+**Root Causes:**
+- Campaigns in the database did not match the filter: status was not exactly 'active' (case-sensitive), or start/end dates did not include today.
+- Unclear what data existed in the database, making debugging difficult.
+
+**Solution:**
+- Updated dashboard to display all campaigns with their status and date fields for debugging.
+- Allowed visual inspection of campaign data to identify mismatches.
+- After confirming/correcting data, revert to filtering only active campaigns.
+
+---
+
+## 7. General Debugging Steps
 - Always check error logs in both frontend and backend.
 - Use detailed logging in API routes for debugging.
 - Validate all input fields and handle unique constraint errors.

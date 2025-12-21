@@ -267,13 +267,7 @@ type View = 'dashboard' | 'campaigns' | 'donors';
 // Mock Data
 // Removed duplicate mockDonors definition; using imported mockDonors
 
-const mockDonations: Donation[] = [
-  { id: '1', donorName: 'Sarah Johnson', amount: 500, date: '11/14/2024' },
-  { id: '2', donorName: 'Michael Chen', amount: 1000, date: '10/19/2024' },
-  { id: '3', donorName: 'Jennifer Williams', amount: 2000, date: '11/29/2024' },
-  { id: '4', donorName: 'Emily Rodriguez', amount: 250, date: '11/30/2024' },
-  { id: '5', donorName: 'Sarah Johnson', amount: 1000, date: '8/14/2024' },
-];
+// Removed local mockDonations definition; use imported data or API only.
 
 // Removed duplicate mockCampaigns definition; using imported mockCampaigns
 

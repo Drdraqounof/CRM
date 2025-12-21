@@ -1,5 +1,5 @@
 
-'use client';
+
 
 import { 
   Users, 
@@ -10,60 +10,54 @@ import {
   Target
 } from 'lucide-react';
 
+
 import Link from 'next/link';
+import { prisma } from '../../lib/prisma';
 
-// Types
-interface Donor {
-  id: string;
-  name: string;
-  email: string;
-  totalDonated: number;
+function getMonthStart() {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), 1);
 }
 
-interface Donation {
-  id: string;
-  donorName: string;
-  amount: number;
-  date: string;
-}
+export default async function Home() {
 
-interface Campaign {
-  id: string;
-  name: string;
-  goal: number;
-  raised: number;
-}
+  // Fetch donors
+  const donors: any[] = await prisma.donor.findMany({
+    orderBy: { createdAt: 'desc' },
+  });
 
-// Mock Data
-const mockDonors: Donor[] = [
-  { id: '1', name: 'Sarah Johnson', email: 'sarah.johnson@email.com', totalDonated: 15000 },
-  { id: '2', name: 'Jennifer Williams', email: 'jwilliams@email.com', totalDonated: 12000 },
-  { id: '3', name: 'Michael Chen', email: 'mchen@email.com', totalDonated: 8500 },
-  { id: '4', name: 'David Thompson', email: 'dthompson@email.com', totalDonated: 5000 },
-  { id: '5', name: 'Robert Martinez', email: 'rmartinez@email.com', totalDonated: 3500 },
-  { id: '6', name: 'Emily Rodriguez', email: 'erodriguez@email.com', totalDonated: 250 },
-];
+  // Fetch all campaigns
+  const campaigns: any[] = await prisma.campaign.findMany({
+    orderBy: { startDate: 'desc' },
+  });
 
-const mockDonations: Donation[] = [
-  { id: '1', donorName: 'Sarah Johnson', amount: 500, date: '11/14/2024' },
-  { id: '2', donorName: 'Michael Chen', amount: 1000, date: '10/19/2024' },
-  { id: '3', donorName: 'Jennifer Williams', amount: 2000, date: '11/29/2024' },
-  { id: '4', donorName: 'Emily Rodriguez', amount: 250, date: '11/30/2024' },
-  { id: '5', donorName: 'Sarah Johnson', amount: 1000, date: '8/14/2024' },
-];
+  // Nonprofit CRM rules
+  const ONE_YEAR = 1000 * 60 * 60 * 24 * 365;
+  const now = Date.now();
 
-const mockCampaigns: Campaign[] = [
-  { id: '1', name: 'Holiday Campaign 2024', goal: 50000, raised: 35750 },
-  { id: '2', name: 'Education Fund', goal: 100000, raised: 67500 },
-];
+  let totalDonors = 0;
+  let activeDonors = 0;
+  let lapsedDonors = 0;
+  let majorDonors = 0;
 
-export default function Home() {
-  const totalDonors = 6;
-  const activeDonors = 4;
-  const newDonors = 1;
-  const lapsedDonors = 1;
-  const raisedThisMonth = 0;
-  const donationsThisMonth = 0;
+  donors.forEach((donor: any) => {
+    if (!donor.lastDonation) return; // Only count donors who have donated
+    totalDonors++;
+    const lastDonationTime = new Date(donor.lastDonation).getTime();
+    const isActive = now - lastDonationTime < ONE_YEAR;
+    const isMajor = (donor.totalDonated || 0) >= 5000;
+    if (isActive) {
+      activeDonors++;
+      if (isMajor) majorDonors++;
+    } else {
+      lapsedDonors++;
+    }
+  });
+
+  // Top donors by totalDonated
+  const topDonors = donors
+    .sort((a: any, b: any) => (b.totalDonated || 0) - (a.totalDonated || 0))
+    .slice(0, 5);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -85,25 +79,9 @@ export default function Home() {
       {/* Main content */}
       <main className="container mx-auto px-4 py-8">
         <div className="space-y-8">
-          {/* Page Title */}
-          <div>
-            <h1 className="text-3xl font-bold mb-1">Dashboard</h1>
-            <p className="text-gray-600">Overview of your fundraising activities</p>
-          </div>
-          
           {/* Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-white p-6 rounded-lg border shadow-sm">
-              <div className="flex items-start justify-between mb-3">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <DollarSign className="h-5 w-5 text-blue-600" />
-                </div>
-              </div>
-              <p className="text-sm text-gray-600 mb-1">Raised This Month</p>
-              <p className="text-2xl font-bold mb-1">${raisedThisMonth.toLocaleString()}</p>
-              <p className="text-xs text-gray-500">{donationsThisMonth} donations</p>
-            </div>
-            
+            {/* Total Donors */}
             <div className="bg-white p-6 rounded-lg border shadow-sm">
               <div className="flex items-start justify-between mb-3">
                 <div className="p-2 bg-purple-100 rounded-lg">
@@ -112,48 +90,52 @@ export default function Home() {
               </div>
               <p className="text-sm text-gray-600 mb-1">Total Donors</p>
               <p className="text-2xl font-bold mb-1">{totalDonors}</p>
-              <p className="text-xs text-gray-500">{activeDonors} active</p>
             </div>
-            
+            {/* Active Donors */}
             <div className="bg-white p-6 rounded-lg border shadow-sm">
               <div className="flex items-start justify-between mb-3">
                 <div className="p-2 bg-green-100 rounded-lg">
-                  <UserPlus className="h-5 w-5 text-green-600" />
+                  <TrendingUp className="h-5 w-5 text-green-600" />
                 </div>
               </div>
-              <p className="text-sm text-gray-600 mb-1">New Donors</p>
-              <p className="text-2xl font-bold mb-1">{newDonors}</p>
-              <p className="text-xs text-gray-500">This month</p>
+              <p className="text-sm text-gray-600 mb-1">Active</p>
+              <p className="text-2xl font-bold mb-1">{activeDonors}</p>
             </div>
-            
+            {/* Major Donors */}
+            <div className="bg-white p-6 rounded-lg border shadow-sm">
+              <div className="flex items-start justify-between mb-3">
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <DollarSign className="h-5 w-5 text-blue-600" />
+                </div>
+              </div>
+              <p className="text-sm text-gray-600 mb-1">Major Donors</p>
+              <p className="text-2xl font-bold mb-1">{majorDonors}</p>
+            </div>
+            {/* Lapsed Donors */}
             <div className="bg-white p-6 rounded-lg border shadow-sm">
               <div className="flex items-start justify-between mb-3">
                 <div className="p-2 bg-orange-100 rounded-lg">
                   <UserX className="h-5 w-5 text-orange-600" />
                 </div>
               </div>
-              <p className="text-sm text-gray-600 mb-1">Lapsed Donors</p>
+              <p className="text-sm text-gray-600 mb-1">Lapsed</p>
               <p className="text-2xl font-bold mb-1">{lapsedDonors}</p>
-              <p className="text-xs text-gray-500">Need follow-up</p>
             </div>
           </div>
 
-          {/* Active Campaigns Section */}
+          {/* All Campaigns Section (debug) */}
           <div>
             <div className="flex items-center gap-2 mb-4">
               <Target className="h-5 w-5 text-gray-700" />
-              <h2 className="text-xl font-semibold">Active Campaigns</h2>
+              <h2 className="text-xl font-semibold">All Campaigns (Debug)</h2>
             </div>
-            <p className="text-sm text-gray-600 mb-4">Track progress toward your fundraising goals</p>
-            
+            <p className="text-sm text-gray-600 mb-4">Showing all campaigns for debugging. Check status and date fields below.</p>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {mockCampaigns.map(campaign => {
+              {campaigns.map(campaign => {
                 const percentage = (campaign.raised / campaign.goal) * 100;
-                
                 return (
                   <div key={campaign.id} className="bg-white p-6 rounded-lg border shadow-sm">
                     <h3 className="font-semibold mb-4">{campaign.name}</h3>
-                    
                     <div className="mb-2">
                       <div className="flex justify-between text-sm mb-1">
                         <span className="text-gray-600">
@@ -168,44 +150,31 @@ export default function Home() {
                         />
                       </div>
                     </div>
+                    <div className="mt-2 text-xs text-gray-500">
+                      <div>Status: <span className="font-mono">{campaign.status}</span></div>
+                      <div>Start: <span className="font-mono">{campaign.startDate?.toLocaleDateString?.() || String(campaign.startDate)}</span></div>
+                      <div>End: <span className="font-mono">{campaign.endDate?.toLocaleDateString?.() || String(campaign.endDate)}</span></div>
+                    </div>
                   </div>
                 );
               })}
             </div>
           </div>
 
-          {/* Recent Activity */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white p-6 rounded-lg border shadow-sm">
-              <h2 className="text-xl font-semibold mb-1">Recent Donations</h2>
-              <p className="text-sm text-gray-600 mb-4">Latest contributions received</p>
-              <div className="space-y-3">
-                {mockDonations.map(donation => (
-                  <div key={donation.id} className="flex justify-between items-start py-3 border-b last:border-0">
-                    <div className="flex-1">
-                      <p className="font-medium">{donation.donorName}</p>
-                      <p className="text-sm text-gray-500">{donation.date}</p>
-                    </div>
-                    <p className="font-semibold text-lg">${donation.amount.toLocaleString()}</p>
+          {/* Top Donors Section */}
+          <div className="bg-white p-6 rounded-lg border shadow-sm mt-8">
+            <h2 className="text-xl font-semibold mb-1">Top Donors</h2>
+            <p className="text-sm text-gray-600 mb-4">By total giving</p>
+            <div className="space-y-3">
+              {topDonors.map(donor => (
+                <div key={donor.id} className="flex justify-between items-start py-3 border-b last:border-0">
+                  <div className="flex-1">
+                    <p className="font-medium">{donor.name}</p>
+                    <p className="text-sm text-gray-500">{donor.email}</p>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="bg-white p-6 rounded-lg border shadow-sm">
-              <h2 className="text-xl font-semibold mb-1">Top Donors</h2>
-              <p className="text-sm text-gray-600 mb-4">By total giving</p>
-              <div className="space-y-3">
-                {mockDonors.slice(0, 5).map(donor => (
-                  <div key={donor.id} className="flex justify-between items-start py-3 border-b last:border-0">
-                    <div className="flex-1">
-                      <p className="font-medium">{donor.name}</p>
-                      <p className="text-sm text-gray-500">{donor.email}</p>
-                    </div>
-                    <p className="font-semibold text-lg">${donor.totalDonated.toLocaleString()}</p>
-                  </div>
-                ))}
-              </div>
+                  <p className="font-semibold text-lg">${(donor.totalDonated || 0).toLocaleString()}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -215,7 +184,7 @@ export default function Home() {
       <footer className="border-t bg-white py-6 mt-12">
         <div className="container mx-auto px-4 text-center text-sm text-gray-600">
           <p className="mb-1">Donor Management System © 2025</p>
-          <p>All data is currently mock data. Connect to a database for persistence.</p>
+          <p>Data is live from your database.</p>
         </div>
       </footer>
     </div>
