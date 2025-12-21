@@ -111,7 +111,7 @@ export default function LoginPage() {
         email,
         password,
       });
-      if (result && result.ok) {
+      if (result && !result.error) {
         router.push('/dashboard');
       } else {
         setError(result?.error || 'Login failed');
