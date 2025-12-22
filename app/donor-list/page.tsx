@@ -580,7 +580,7 @@ export default function Home() {
       <div className="space-y-6">
         {/* Donor Description Overlay */}
         {showDescription.open && showDescription.donor && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full relative">
               <button className="absolute top-2 right-2 text-gray-400 hover:text-gray-600" onClick={() => setShowDescription({ open: false })}>
                 <X className="h-5 w-5" />
