@@ -28,7 +28,7 @@ export default function LoginPage() {
     setError(null);
     setLoading(true);
     try {
-      // Use next-auth signIn for credentials
+      // Use next-auth signIn for credentials (no register flag for login)
       const result = await signIn('credentials', {
         redirect: false,
         email,
@@ -161,8 +161,19 @@ export default function LoginPage() {
                       </button>
                     </div>
                   </>
-                ) : email ? (
+                ) : (
                   <>
+                    {/* Email Field */}
+                    <label htmlFor="login-email" className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+                    <input
+                      id="login-email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="block w-full pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white text-gray-900 mb-4"
+                      placeholder="Enter your email address"
+                      autoComplete="email"
+                    />
                     {/* Password Field */}
                     <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">Password</label>
                     <div className="relative">
@@ -221,17 +232,6 @@ export default function LoginPage() {
                         Register
                       </button>
                     </div>
-                  </>
-                ) : (
-                  <>
-                    <button
-                      type="button"
-                      className="w-full bg-white border-2 border-blue-400 text-blue-700 font-medium py-3 px-6 rounded-lg hover:bg-blue-50 transition-all duration-200 flex items-center justify-center space-x-2 mb-4"
-                      onClick={() => setEmail('user@example.com')}
-                    >
-                      <User className="w-5 h-5" />
-                      <span>Sign in with Email</span>
-                    </button>
                   </>
                 )}
               </div>
