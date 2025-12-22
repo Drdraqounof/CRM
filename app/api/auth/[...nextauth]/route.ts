@@ -35,14 +35,14 @@ const handler = NextAuth({
               password: hashed,
             },
           });
-          return { id: newUser.id, name: newUser.name, email: newUser.email };
+          return newUser;
         }
         // Login flow
         const user = await prisma.user.findUnique({ where: { email: credentials.email } });
         if (!user || !user.password) throw new Error('No account found for this email. Please register.');
         const isValid = await compare(credentials.password, user.password);
         if (!isValid) throw new Error('Password Incorrect');
-        return { id: user.id, name: user.name, email: user.email };
+        return user;
       }
     })
   ],
