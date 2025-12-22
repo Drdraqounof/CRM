@@ -12,7 +12,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 
 // Types
 interface Campaign {
-  id: string;
+  id: number;
   name: string;
   goal: number;
   raised: number;
@@ -20,6 +20,21 @@ interface Campaign {
   endDate: string;
   status: 'active' | 'completed' | 'planned';
   description: string;
+}
+
+// Type guard to ensure only valid campaigns are used in charts
+function isValidCampaign(c: any): c is Campaign {
+  return (
+    typeof c === 'object' &&
+    typeof c.id === 'number' &&
+    typeof c.name === 'string' &&
+    typeof c.goal === 'number' &&
+    typeof c.raised === 'number' &&
+    typeof c.startDate === 'string' &&
+    typeof c.endDate === 'string' &&
+    typeof c.status === 'string' &&
+    typeof c.description === 'string'
+  );
 }
 
 // Remove local mock campaigns. Use API instead.
@@ -58,7 +73,7 @@ export default function CampaignsPage() {
     setShowCampaignModal(true);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: number) => {
     if (confirm('Are you sure you want to delete this campaign?')) {
       setCampaigns(campaigns.filter(c => c.id !== id));
     }
@@ -67,7 +82,7 @@ export default function CampaignsPage() {
   const CampaignModal = ({ isOpen, onClose, campaign }: { isOpen: boolean; onClose: () => void; campaign?: Campaign | null }) => {
     const [formData, setFormData] = useState<Campaign>(
       campaign || {
-        id: '',
+        id: 0,
         name: '',
         goal: 0,
         raised: 0,
@@ -437,7 +452,7 @@ export default function CampaignsPage() {
         </div>
         <ResponsiveContainer width="100%" height={300}>
           {chartType === 'bar' && (
-            <BarChart data={campaigns.filter(c => c.status === 'active' || c.status === 'completed')}>
+            <BarChart data={Array.isArray(campaigns) ? campaigns.filter(isValidCampaign).filter(c => c.status === 'active' || c.status === 'completed') : []}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis />
@@ -450,7 +465,7 @@ export default function CampaignsPage() {
           {chartType === 'pie' && (
             <PieChart>
               <Pie
-                data={campaigns.filter(c => c.status === 'active' || c.status === 'completed')}
+                data={Array.isArray(campaigns) ? campaigns.filter(isValidCampaign).filter(c => c.status === 'active' || c.status === 'completed') : []}
                 dataKey="raised"
                 nameKey="name"
                 cx="50%"
@@ -458,7 +473,7 @@ export default function CampaignsPage() {
                 outerRadius={100}
                 label
               >
-                {campaigns.filter(c => c.status === 'active' || c.status === 'completed').map((entry, index) => (
+                {(Array.isArray(campaigns) ? campaigns.filter(isValidCampaign).filter(c => c.status === 'active' || c.status === 'completed') : []).map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#8884d8' : '#82ca9d'} />
                 ))}
               </Pie>
@@ -466,7 +481,7 @@ export default function CampaignsPage() {
             </PieChart>
           )}
           {chartType === 'stacked' && (
-            <BarChart data={campaigns.filter(c => c.status === 'active' || c.status === 'completed')}>
+            <BarChart data={Array.isArray(campaigns) ? campaigns.filter(isValidCampaign).filter(c => c.status === 'active' || c.status === 'completed') : []}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis />

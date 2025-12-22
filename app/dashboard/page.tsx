@@ -127,9 +127,9 @@ export default async function Home() {
           <div>
             <div className="flex items-center gap-2 mb-4">
               <Target className="h-5 w-5 text-gray-700" />
-              <h2 className="text-xl font-semibold">All Campaigns (Debug)</h2>
+              <h2 className="text-xl font-semibold">All Campaigns </h2>
             </div>
-            <p className="text-sm text-gray-600 mb-4">Showing all campaigns for debugging. Check status and date fields below.</p>
+            <p className="text-sm text-gray-600 mb-4">Showing all campaigns. Check status and date fields below.</p>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {campaigns.map(campaign => {
                 const percentage = (campaign.raised / campaign.goal) * 100;

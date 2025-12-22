@@ -18,6 +18,7 @@ async function main() {
         totalDonated: donor.totalDonated,
         lastDonation: donor.lastDonation ? new Date(donor.lastDonation) : undefined,
         status: donor.status,
+        description: donor.description,
       },
     });
   }

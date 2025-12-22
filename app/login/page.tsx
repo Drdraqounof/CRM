@@ -19,84 +19,7 @@ export default function LoginPage() {
   const [registerLoading, setRegisterLoading] = useState(false);
   const canvasRef = useRef(null);
 
-  useEffect(() => {
-    if (!canvasRef.current) return;
-    const canvas = canvasRef.current as HTMLCanvasElement;
-    const gl = canvas.getContext('webgl');
-    if (!gl) return;
-    let animationId: number;
-
-    // Gradient background using 2 triangles
-    // Vertex shader
-    const vertCode = `
-      attribute vec2 a_position;
-      varying vec2 v_uv;
-      void main() {
-        v_uv = (a_position + 1.0) * 0.5;
-        gl_Position = vec4(a_position, 0, 1);
-      }
-    `;
-    // Fragment shader
-    const fragCode = `
-      precision mediump float;
-      varying vec2 v_uv;
-      void main() {
-        vec3 color1 = vec3(0.06, 0.09, 0.16); // #0f172a
-        vec3 color2 = vec3(0.12, 0.23, 0.54); // #1e3a8a
-        vec3 color3 = vec3(0.11, 0.16, 0.23); // #1e293b
-        float t = v_uv.y;
-        vec3 color = mix(color1, color2, t);
-        color = mix(color, color3, smoothstep(0.5, 1.0, t));
-        gl_FragColor = vec4(color, 1.0);
-      }
-    `;
-    function createShader(gl: WebGLRenderingContext, type: number, source: string) {
-      const shader = gl.createShader(type)!;
-      gl.shaderSource(shader, source);
-      gl.compileShader(shader);
-      return shader;
-    }
-    const vertShader = createShader(gl, gl.VERTEX_SHADER, vertCode);
-    const fragShader = createShader(gl, gl.FRAGMENT_SHADER, fragCode);
-    const program = gl.createProgram()!;
-    gl.attachShader(program, vertShader);
-    gl.attachShader(program, fragShader);
-    gl.linkProgram(program);
-    gl.useProgram(program);
-    // 2 triangles covering the screen
-    const vertices = new Float32Array([
-      -1, -1, 1, -1, -1, 1,
-      -1, 1, 1, -1, 1, 1
-    ]);
-    const buffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-    const posLoc = gl.getAttribLocation(program, 'a_position');
-    gl.enableVertexAttribArray(posLoc);
-    gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
-
-    function render() {
-      gl.viewport(0, 0, canvas.width, canvas.height);
-      gl.clear(gl.COLOR_BUFFER_BIT);
-      gl.drawArrays(gl.TRIANGLES, 0, 6);
-      animationId = requestAnimationFrame(render);
-    }
-    render();
-    function handleResize() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', handleResize);
-    handleResize();
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      cancelAnimationFrame(animationId);
-      gl.deleteBuffer(buffer);
-      gl.deleteProgram(program);
-      gl.deleteShader(vertShader);
-      gl.deleteShader(fragShader);
-    };
-  }, []);
+  // WebGL background removed
 
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -200,13 +123,26 @@ export default function LoginPage() {
                       onClick={async () => {
                         setRegisterError(null);
                         setRegisterLoading(true);
-                        // TODO: Implement registration API call
-                        setTimeout(() => {
+                        try {
+                          // Use next-auth signIn with custom header to register
+                          const result = await signIn('credentials', {
+                            redirect: false,
+                            email: registerEmail,
+                            password: registerPassword,
+                            register: 'true'
+                          });
+                          if (result && !result.error) {
+                            setShowRegister(false);
+                            setEmail(registerEmail);
+                            setPassword(registerPassword);
+                          } else {
+                            setRegisterError(result?.error || 'Registration failed');
+                          }
+                        } catch (e) {
+                          setRegisterError('Registration error');
+                        } finally {
                           setRegisterLoading(false);
-                          setShowRegister(false);
-                          setEmail(registerEmail);
-                          setPassword(registerPassword);
-                        }, 1200);
+                        }
                       }}
                     >
                       {registerLoading ? 'Registering...' : 'Register'}
