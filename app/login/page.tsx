@@ -135,6 +135,7 @@ export default function LoginPage() {
                             redirect: false,
                             email: registerEmail,
                             password: registerPassword,
+                            name: registerName,
                             register: 'true'
                           });
                           if (result && !result.error) {

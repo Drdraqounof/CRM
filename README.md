@@ -37,6 +37,43 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 ---
 
+# CRM Project Prototype
+
+This is a prototype for a Customer Relationship Management (CRM) web application, built with Next.js, TypeScript, and Prisma. It demonstrates core CRM features such as donor management, campaign tracking, authentication, and data visualization. The project is intended for learning, prototyping, and as a foundation for a full-featured CRM.
+
+## What is this project?
+This project is a working demo of a CRM system for nonprofits or organizations that manage donors and fundraising campaigns. It allows you to:
+- Track donors and their donations
+- Manage fundraising campaigns
+- Log in securely
+- View dashboards and reports
+- Add, edit, and view details for donors and campaigns
+
+## Pages Explained (Layman Terms)
+
+- **/login**: The login page. Lets users sign in with Google or credentials to access the CRM.
+- **/dashboard**: The main dashboard. Shows an overview of fundraising, top donors, and active campaigns in a visual, easy-to-read format.
+- **/donor-list**: The donor management page. Lets you view, search, filter, and manage all donors. You can add new donors, see their details, and view their descriptions in an overlay.
+- **/campaigns**: The campaign management page. Lets you view, add, and manage fundraising campaigns, including their goals, progress, and status.
+- **/post-login-question/personal**: A page for collecting additional personal information from users after login (e.g., onboarding step).
+- **/post-login-question/organization**: A page for collecting organization details after login (e.g., onboarding step).
+- **/about**: A simple about page describing the project or organization.
+- **/wireframe**: A page for wireframes and design documentation.
+
+## Technical Notes
+- **Framework**: Built with Next.js 16 (App Router), TypeScript, and Tailwind CSS for rapid UI development.
+- **Database**: Uses Prisma ORM with a PostgreSQL backend (Neon or local). All data models are defined in `prisma/schema.prisma`.
+- **Authentication**: Uses NextAuth.js for secure login with Google OAuth and credentials.
+- **API Routes**: All data operations (CRUD) are handled via Next.js API routes in the `app/api` directory.
+- **Client/Server Components**: Data fetching and business logic are handled in Server Components; UI and interactivity are handled in Client Components.
+- **Error Handling**: Common errors and solutions are documented in [ERRORS_AND_SOLUTIONS.md](./ERRORS_AND_SOLUTIONS.md).
+- **Mock Data**: The app uses mock data for donors and campaigns by default. Connect to a real database for persistence.
+- **Overlay/Modal**: Clicking "View" on a donor in the donor list opens an overlay with the donor's description.
+
+---
+
+For setup instructions, see below. For technical troubleshooting, see [ERRORS_AND_SOLUTIONS.md](./ERRORS_AND_SOLUTIONS.md).
+
 ## Server/Client Component Architecture (App Router)
 
 This project uses the Next.js App Router. Data fetching (e.g., with Prisma) is handled in Server Components, while client-only logic (such as dynamic imports with `ssr: false`) is placed in separate Client Components. This separation is required to avoid build/runtime errors and to follow Next.js best practices.

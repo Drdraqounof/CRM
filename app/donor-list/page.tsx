@@ -2,7 +2,7 @@
 'use client';
 
 
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Users, DollarSign, TrendingUp, UserPlus, UserX, Target, Plus, Calendar, Edit, Trash2, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { mockDonors as initialMockDonors, mockCampaigns as importedMockCampaigns } from '../../lib/mock-data';
 
@@ -218,20 +218,10 @@ export function DonationForm({ donorId, onBack, onSave }: DonationFormProps) {
   );
 }
 
-import { 
-  Users, 
-  DollarSign, 
-  TrendingUp,
-  UserPlus,
-  UserX,
-  Target,
-  Plus,
-  Calendar,
-  Edit,
-  Trash2
-} from 'lucide-react';
+
 
 import Link from 'next/link';
+
 
 // Types
 interface Donor {
@@ -242,6 +232,7 @@ interface Donor {
   totalDonated: number;
   lastDonation: string;
   status: 'active' | 'lapsed' | 'major';
+  description?: string;
 }
 
 interface Donation {
@@ -272,6 +263,7 @@ type View = 'dashboard' | 'campaigns' | 'donors';
 // Removed duplicate mockCampaigns definition; using imported mockCampaigns
 
 export default function Home() {
+  const [showDescription, setShowDescription] = useState<{ open: boolean; donor?: Donor }>({ open: false });
   const [currentView, setCurrentView] = useState<View>('donors');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'lapsed' | 'major'>('all');
@@ -586,6 +578,22 @@ export default function Home() {
 
     return (
       <div className="space-y-6">
+        {/* Donor Description Overlay */}
+        {showDescription.open && showDescription.donor && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+            <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full relative">
+              <button className="absolute top-2 right-2 text-gray-400 hover:text-gray-600" onClick={() => setShowDescription({ open: false })}>
+                <X className="h-5 w-5" />
+              </button>
+              <h2 className="text-xl font-bold mb-2">{showDescription.donor.name}'s Description</h2>
+              <p className="text-gray-700 whitespace-pre-line">
+                {typeof showDescription.donor.description === 'string' && showDescription.donor.description.trim()
+                  ? showDescription.donor.description
+                  : 'No description provided.'}
+              </p>
+            </div>
+          </div>
+        )}
         <div className="flex justify-between items-start">
           <div>
             <h1 className="text-3xl font-bold mb-1">Donors</h1>
@@ -709,7 +717,14 @@ export default function Home() {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm flex gap-2">
-                        <button className="text-blue-600 hover:text-blue-900 font-medium">
+                        <button
+                          className="text-blue-600 hover:text-blue-900 font-medium"
+                          onClick={() => {
+                            // Find the latest donor object with description
+                            const found = donors.find(d => d.id === donor.id) || donor;
+                            setShowDescription({ open: true, donor: found });
+                          }}
+                        >
                           View
                         </button>
                         <button

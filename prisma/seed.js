@@ -39,6 +39,21 @@ async function main() {
       },
     });
   }
+
+  // Seed a test user for login
+  const bcrypt = require('bcryptjs');
+  const testEmail = 'test@email.com';
+  const testPassword = 'test1234';
+  const hashed = await bcrypt.hash(testPassword, 10);
+  await prisma.user.upsert({
+    where: { email: testEmail },
+    update: { password: hashed },
+    create: {
+      email: testEmail,
+      name: 'Test User',
+      password: hashed,
+    },
+  });
 }
 
 main()
