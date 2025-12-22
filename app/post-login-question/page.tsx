@@ -11,11 +11,11 @@ export default function PostLoginQuestionPage() {
     if (!userType) return;
     // Store userType in localStorage/session for now
     window.localStorage.setItem("userType", userType);
-    // Redirect to dashboard or org setup
+    // Redirect to next questions page
     if (userType === "organization") {
-      router.push("/org-setup");
+      router.push("/post-login-question/organization");
     } else {
-      router.push("/dashboard");
+      router.push("/post-login-question/personal");
     }
   };
 

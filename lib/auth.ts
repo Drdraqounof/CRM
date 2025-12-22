@@ -1,9 +1,10 @@
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/app/api/auth/[...nextauth]';
+import { authOptions } from '@/app/api/auth/[...nextauth]/authOptions';
 import { NextResponse } from 'next/server';
 
 // Middleware/guard for API routes
-export async function requireAuth(req) {
+import type { NextRequest } from 'next/server';
+export async function requireAuth(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -12,8 +13,8 @@ export async function requireAuth(req) {
 }
 
 // HOC for server components/pages
-export function withAuth(handler) {
-  return async (req, ...args) => {
+export function withAuth(handler: (...args: any[]) => any) {
+  return async (req: NextRequest, ...args: any[]) => {
     const session = await getServerSession(authOptions);
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

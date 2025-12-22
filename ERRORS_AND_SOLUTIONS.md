@@ -87,9 +87,23 @@ This file documents the major errors encountered while building the CRM app (Nex
 
 ---
 
+## 8. Next.js App Router: Server/Client Component Error
+**Error:**
+- `ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+- `<Home> is an async Client Component. Only Server Components can be async at the moment. This error is often caused by accidentally adding 'use client' to a module that was originally written for the server.`
+
+**Solution:**
+- In the App Router, data fetching (e.g., with Prisma) must be done in a Server Component (no `'use client'` at the top).
+- Client-only logic (like dynamic imports with `ssr: false`) must be in a separate Client Component (with `'use client'`).
+- Created a wrapper Client Component (e.g., `DashboardPageClientWrapper.tsx`) to handle dynamic import and rendering.
+- The Server Component fetches data and passes it as props to the Client Component.
+- This separation resolves both the dynamic import and async Client Component errors.
+
+---
+
 ## Status
 All major errors resolved. Campaigns and donors now sync with Neon DB, errors are surfaced in the frontend, and build issues are fixed.
 
 ---
 
-*Last updated: December 18, 2025*
+*Last updated: December 22, 2025*

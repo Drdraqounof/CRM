@@ -34,3 +34,11 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+---
+
+## Server/Client Component Architecture (App Router)
+
+This project uses the Next.js App Router. Data fetching (e.g., with Prisma) is handled in Server Components, while client-only logic (such as dynamic imports with `ssr: false`) is placed in separate Client Components. This separation is required to avoid build/runtime errors and to follow Next.js best practices.
+
+For details on common errors and solutions related to this architecture, see [ERRORS_AND_SOLUTIONS.md](./ERRORS_AND_SOLUTIONS.md).

@@ -35,7 +35,13 @@ export default function LoginPage() {
         password,
       });
       if (result && !result.error) {
-        router.push('/dashboard');
+        // Check if userType is set (simulate new user detection)
+        const userType = window.localStorage.getItem('userType');
+        if (!userType) {
+          router.push('/post-login-question');
+        } else {
+          router.push('/dashboard');
+        }
       } else {
         setError(result?.error || 'Login failed');
       }
@@ -132,9 +138,8 @@ export default function LoginPage() {
                             register: 'true'
                           });
                           if (result && !result.error) {
-                            setShowRegister(false);
-                            setEmail(registerEmail);
-                            setPassword(registerPassword);
+                            // Redirect new user to post-login question page
+                            router.push('/post-login-question');
                           } else {
                             setRegisterError(result?.error || 'Registration failed');
                           }
