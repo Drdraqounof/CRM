@@ -451,34 +451,56 @@ export default function CampaignsPage() {
           </div>
         </div>
         <ResponsiveContainer width="100%" height={300}>
-          {chartType === 'bar' && (
-            <BarChart data={Array.isArray(campaigns) ? campaigns.filter(isValidCampaign).filter(c => c.status === 'active' || c.status === 'completed') : []}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="raised" fill="#8884d8" />
-              <Bar dataKey="goal" fill="#82ca9d" />
-            </BarChart>
-          )}
+          {chartType === 'bar' && (() => {
+            const chartData = Array.isArray(campaigns) ? campaigns.filter(isValidCampaign).filter(c => c.status === 'active' || c.status === 'completed') : [];
+            console.log('BarChart data:', chartData);
+            return (
+              <BarChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="raised" fill="#8884d8" />
+                <Bar dataKey="goal" fill="#82ca9d" />
+              </BarChart>
+            );
+          })()}
           {chartType === 'pie' && (
-            <PieChart>
-              <Pie
-                data={Array.isArray(campaigns) ? campaigns.filter(isValidCampaign).filter(c => c.status === 'active' || c.status === 'completed') : []}
-                dataKey="raised"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                outerRadius={100}
-                label
-              >
-                {(Array.isArray(campaigns) ? campaigns.filter(isValidCampaign).filter(c => c.status === 'active' || c.status === 'completed') : []).map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#8884d8' : '#82ca9d'} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
+            (() => {
+              // Map Campaigns to plain objects for recharts compatibility
+              const pieData = Array.isArray(campaigns)
+                ? campaigns.filter(isValidCampaign).filter((c): c is Campaign => c.status === 'active' || c.status === 'completed')
+                  .map(c => ({
+                    name: c.name,
+                    raised: c.raised,
+                    goal: c.goal,
+                    id: c.id,
+                    startDate: c.startDate,
+                    endDate: c.endDate,
+                    status: c.status,
+                    description: c.description
+                  }))
+                : [];
+              return (
+                <PieChart>
+                  <Pie
+                    data={pieData}
+                    dataKey="raised"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={100}
+                    label
+                  >
+                    {pieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#8884d8' : '#82ca9d'} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              );
+            })()
           )}
           {chartType === 'stacked' && (
             <BarChart data={Array.isArray(campaigns) ? campaigns.filter(isValidCampaign).filter(c => c.status === 'active' || c.status === 'completed') : []}>
