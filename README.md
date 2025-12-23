@@ -39,6 +39,42 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 # CRM Project Prototype
 
+## Libraries & Tools Used
+
+This project uses several open-source libraries and tools to provide a modern, full-featured CRM experience:
+
+- **Recharts** ([recharts.org](https://recharts.org/))
+	- Used for data visualization in the Campaigns dashboard ([app/campaigns/page.tsx](app/campaigns/page.tsx)).
+	- Provides interactive bar, pie, and stacked charts to visualize fundraising progress and campaign data.
+
+- **Prisma ORM** ([prisma.io](https://www.prisma.io/))
+	- Used for type-safe database access and migrations.
+	- Schema defined in [prisma/schema.prisma](prisma/schema.prisma).
+	- Data models for users, donors, and campaigns.
+
+- **NextAuth.js** ([next-auth.js.org](https://next-auth.js.org/))
+	- Handles authentication (Google OAuth and credentials login).
+	- Configured in [app/api/auth/[...nextauth]/route.ts](app/api/auth/[...nextauth]/route.ts).
+
+- **Tailwind CSS** ([tailwindcss.com](https://tailwindcss.com/))
+	- Utility-first CSS framework for rapid UI development.
+	- See [app/globals.css](app/globals.css) and component classNames.
+
+- **Lucide React** ([lucide.dev](https://lucide.dev/))
+	- Icon library for modern, consistent UI icons.
+	- Used throughout the UI (e.g., dashboard, campaign actions).
+
+- **bcryptjs**
+	- Used for password hashing in authentication logic.
+
+- **Framer Motion & GSAP**
+	- Used for UI animations and transitions.
+
+- **Three.js**
+	- Used for 3D/visual effects (see public/styles/shaders-on-scroll.css for related styles).
+
+For a full list of dependencies, see [package.json](package.json).
+
 This is a prototype for a Customer Relationship Management (CRM) web application, built with Next.js, TypeScript, and Prisma. It demonstrates core CRM features such as donor management, campaign tracking, authentication, and data visualization. The project is intended for learning, prototyping, and as a foundation for a full-featured CRM.
 
 ## What is this project?
