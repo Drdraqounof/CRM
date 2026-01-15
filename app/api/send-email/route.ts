@@ -1,21 +1,29 @@
 import { NextResponse } from "next/server";
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 
 export async function POST(request: Request) {
   try {
     const { to, subject, content, donorName } = await request.json();
 
-    const apiKey = process.env.RESEND_API_KEY;
+    const gmailUser = process.env.GMAIL_USER;
+    const gmailPassword = process.env.GMAIL_APP_PASSWORD;
     
-    if (!apiKey) {
-      console.error("RESEND_API_KEY not configured");
+    if (!gmailUser || !gmailPassword) {
+      console.error("Gmail credentials not configured");
       return NextResponse.json(
-        { success: false, error: "Email service not configured. Add RESEND_API_KEY to .env.local" },
+        { success: false, error: "Email service not configured. Add GMAIL_USER and GMAIL_APP_PASSWORD to .env.local" },
         { status: 500 }
       );
     }
 
-    const resend = new Resend(apiKey);
+    // Create Gmail transporter
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: gmailUser,
+        pass: gmailPassword,
+      },
+    });
 
     // Format the email content as HTML
     const htmlContent = `
@@ -42,22 +50,17 @@ ${content}
       </html>
     `;
 
-    const { data, error } = await resend.emails.send({
-      from: "Bondary CRM <onboarding@resend.dev>", // Use your verified domain in production
-      to: [to],
+    // Send email
+    const info = await transporter.sendMail({
+      from: `"Bondary CRM" <${gmailUser}>`,
+      to: to,
       subject: subject,
       html: htmlContent,
     });
 
-    if (error) {
-      console.error("Resend error:", error);
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 400 }
-      );
-    }
+    console.log("Email sent:", info.messageId);
 
-    return NextResponse.json({ success: true, messageId: data?.id });
+    return NextResponse.json({ success: true, messageId: info.messageId });
   } catch (error) {
     console.error("Send email error:", error);
     return NextResponse.json(
