@@ -202,8 +202,7 @@ const HomePage = ({
           <div className="text-center mt-12">
             <Button
               onClick={() => router.push("/features")}
-              variant="outline"
-              className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-3 rounded-xl text-lg transition-all duration-300"
+              className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-3 rounded-xl text-lg transition-all duration-300 bg-transparent"
             >
               Explore All Features
               <ArrowRight className="w-5 h-5 ml-2" />
@@ -388,8 +387,7 @@ const HomePage = ({
             </Button>
             <Button
               onClick={() => router.push("/features")}
-              variant="outline"
-              className="border-2 border-white text-white hover:bg-white/10 text-lg px-10 py-4 rounded-xl font-semibold"
+              className="border-2 border-white text-white hover:bg-white/10 text-lg px-10 py-4 rounded-xl font-semibold bg-transparent"
             >
               Learn More
             </Button>

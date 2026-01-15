@@ -207,8 +207,7 @@ export default function FeaturesPage() {
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
               <Button 
-                variant="outline" 
-                className="bg-white/10 border-white/30 text-white hover:bg-white/20 text-lg px-8 py-3"
+                className="bg-white/10 border border-white/30 text-white hover:bg-white/20 text-lg px-8 py-3"
               >
                 View Demo
               </Button>
