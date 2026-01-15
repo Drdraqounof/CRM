@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Users, DollarSign, TrendingUp, UserPlus, UserX, Target } from 'lucide-react';
+import { Users, DollarSign, TrendingUp, UserPlus, UserX, Target, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
 export default function DashboardPageClient({ donors, campaigns, topDonors, totalDonors, activeDonors, lapsedDonors, majorDonors }: any) {
@@ -18,6 +18,10 @@ export default function DashboardPageClient({ donors, campaigns, topDonors, tota
             <Link href="/dashboard" className="px-4 py-2 rounded-lg transition-colors bg-blue-600 text-white">Dashboard</Link>
             <Link href="/donor-list" className="px-4 py-2 rounded-lg transition-colors hover:bg-gray-100">Donors</Link>
             <Link href="/campaigns" className="px-4 py-2 rounded-lg transition-colors hover:bg-gray-100">Campaigns</Link>
+            <Link href="/ai-writer" className="px-4 py-2 rounded-lg transition-colors hover:bg-gray-100 flex items-center gap-1">
+              <Sparkles className="w-4 h-4" />
+              AI Writer
+            </Link>
           </nav>
         </div>
       </header>

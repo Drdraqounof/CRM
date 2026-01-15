@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Database, Users, Calendar, BarChart3, ChevronRight, Check, ArrowRight } from "lucide-react"
+import { Database, Users, Calendar, BarChart3, ChevronRight, Check, ArrowRight, Shield, Zap, MessageSquare, Target, Star, Quote, Play, CheckCircle } from "lucide-react"
 import { Button } from "./ui/button"
 import { Card } from "./ui/card"
 import ChatWidget from "./components/ChatWidget"
@@ -151,28 +151,305 @@ const HomePage = ({
                 </div>
               </Card>
             </div>
-            {/* Footer */}
-            <div className="mt-20 text-center">
-              <Button
-                onClick={() => router.push("/login")}
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-lg px-12 py-4 shadow-xl shadow-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/40 transition-all duration-300 transform hover:scale-105 rounded-xl"
-              >
-                Get Started Today
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
-              <div className="flex flex-col md:flex-row justify-between items-center mt-16 pt-12 border-t border-slate-200/50">
-                <div className="flex items-center space-x-3 mb-4 md:mb-0">
-                  <div className="bg-gradient-to-br from-blue-600 to-indigo-600 p-2 rounded-xl shadow-lg shadow-blue-500/20">
-                    <Database className="w-6 h-6 text-white" />
-                  </div>
-                  <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Bondary</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Features Preview Section */}
+      <div className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <div className="inline-block bg-indigo-100 text-indigo-700 px-4 py-2 rounded-full text-sm font-semibold mb-4">
+              Powerful Features
+            </div>
+            <h3 className="text-4xl font-bold text-slate-900 mb-4">
+              Everything You Need to Succeed
+            </h3>
+            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+              Our comprehensive suite of tools helps you manage relationships, track campaigns, and grow your organization.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <Card className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-100 hover:shadow-xl transition-all duration-300 group">
+              <div className="bg-blue-600 p-3 rounded-xl inline-block mb-4 group-hover:scale-110 transition-transform">
+                <Users className="w-6 h-6 text-white" />
+              </div>
+              <h4 className="text-xl font-bold text-slate-900 mb-2">Donor Management</h4>
+              <p className="text-slate-600">Track all your donors, their history, and engagement in one place.</p>
+            </Card>
+            <Card className="p-6 bg-gradient-to-br from-purple-50 to-pink-50 border-purple-100 hover:shadow-xl transition-all duration-300 group">
+              <div className="bg-purple-600 p-3 rounded-xl inline-block mb-4 group-hover:scale-110 transition-transform">
+                <Target className="w-6 h-6 text-white" />
+              </div>
+              <h4 className="text-xl font-bold text-slate-900 mb-2">Campaign Tracking</h4>
+              <p className="text-slate-600">Create and monitor fundraising campaigns with visual progress.</p>
+            </Card>
+            <Card className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 border-green-100 hover:shadow-xl transition-all duration-300 group">
+              <div className="bg-green-600 p-3 rounded-xl inline-block mb-4 group-hover:scale-110 transition-transform">
+                <MessageSquare className="w-6 h-6 text-white" />
+              </div>
+              <h4 className="text-xl font-bold text-slate-900 mb-2">AI Assistant</h4>
+              <p className="text-slate-600">Get instant help and insights with our built-in AI chat.</p>
+            </Card>
+            <Card className="p-6 bg-gradient-to-br from-orange-50 to-amber-50 border-orange-100 hover:shadow-xl transition-all duration-300 group">
+              <div className="bg-orange-600 p-3 rounded-xl inline-block mb-4 group-hover:scale-110 transition-transform">
+                <BarChart3 className="w-6 h-6 text-white" />
+              </div>
+              <h4 className="text-xl font-bold text-slate-900 mb-2">Analytics</h4>
+              <p className="text-slate-600">Beautiful dashboards and reports to track your success.</p>
+            </Card>
+          </div>
+          <div className="text-center mt-12">
+            <Button
+              onClick={() => router.push("/features")}
+              variant="outline"
+              className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-3 rounded-xl text-lg transition-all duration-300"
+            >
+              Explore All Features
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* How It Works Section */}
+      <div className="py-24 bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <div className="inline-block bg-blue-500/20 text-blue-300 px-4 py-2 rounded-full text-sm font-semibold mb-4">
+              Simple Process
+            </div>
+            <h3 className="text-4xl font-bold mb-4">
+              Get Started in Minutes
+            </h3>
+            <p className="text-xl text-blue-200 max-w-2xl mx-auto">
+              Setting up Bondary CRM is quick and easy. Follow these simple steps to transform your workflow.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center p-8 relative">
+              <div className="bg-blue-500 w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6 shadow-lg shadow-blue-500/50">
+                1
+              </div>
+              <h4 className="text-2xl font-bold mb-4">Create Account</h4>
+              <p className="text-blue-200">Sign up with Google or email in seconds. No credit card required.</p>
+              <div className="hidden md:block absolute top-12 right-0 w-1/2 h-0.5 bg-gradient-to-r from-blue-500 to-transparent" />
+            </div>
+            <div className="text-center p-8 relative">
+              <div className="bg-indigo-500 w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6 shadow-lg shadow-indigo-500/50">
+                2
+              </div>
+              <h4 className="text-2xl font-bold mb-4">Import Data</h4>
+              <p className="text-blue-200">Easily import your existing contacts and campaigns from any platform.</p>
+              <div className="hidden md:block absolute top-12 right-0 w-1/2 h-0.5 bg-gradient-to-r from-indigo-500 to-transparent" />
+            </div>
+            <div className="text-center p-8">
+              <div className="bg-purple-500 w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6 shadow-lg shadow-purple-500/50">
+                3
+              </div>
+              <h4 className="text-2xl font-bold mb-4">Start Growing</h4>
+              <p className="text-blue-200">Launch campaigns, track donors, and watch your organization thrive.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Testimonials Section */}
+      <div className="py-24 bg-slate-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <div className="inline-block bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-semibold mb-4">
+              Trusted by Many
+            </div>
+            <h3 className="text-4xl font-bold text-slate-900 mb-4">
+              What Our Users Say
+            </h3>
+            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+              Join thousands of organizations already using Bondary CRM to grow.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <Card className="p-8 bg-white shadow-lg hover:shadow-xl transition-all duration-300">
+              <div className="flex items-center gap-1 mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                ))}
+              </div>
+              <Quote className="w-8 h-8 text-blue-200 mb-4" />
+              <p className="text-slate-700 mb-6 leading-relaxed">
+                "Bondary CRM transformed how we manage our donors. The dashboard gives us instant insights we never had before."
+              </p>
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold">
+                  SJ
                 </div>
-                <p className="text-sm text-slate-500">© 2026 Bondary CRM. All rights reserved.</p>
+                <div>
+                  <p className="font-semibold text-slate-900">Sarah Johnson</p>
+                  <p className="text-sm text-slate-500">Executive Director, Hope Foundation</p>
+                </div>
+              </div>
+            </Card>
+            <Card className="p-8 bg-white shadow-lg hover:shadow-xl transition-all duration-300">
+              <div className="flex items-center gap-1 mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                ))}
+              </div>
+              <Quote className="w-8 h-8 text-blue-200 mb-4" />
+              <p className="text-slate-700 mb-6 leading-relaxed">
+                "The AI assistant is a game-changer. It's like having an extra team member who knows everything about our data."
+              </p>
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold">
+                  MC
+                </div>
+                <div>
+                  <p className="font-semibold text-slate-900">Michael Chen</p>
+                  <p className="text-sm text-slate-500">Development Manager, United Way</p>
+                </div>
+              </div>
+            </Card>
+            <Card className="p-8 bg-white shadow-lg hover:shadow-xl transition-all duration-300">
+              <div className="flex items-center gap-1 mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                ))}
+              </div>
+              <Quote className="w-8 h-8 text-blue-200 mb-4" />
+              <p className="text-slate-700 mb-6 leading-relaxed">
+                "Campaign tracking has never been easier. We hit our fundraising goals for the first time in years!"
+              </p>
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center text-white font-bold">
+                  ER
+                </div>
+                <div>
+                  <p className="font-semibold text-slate-900">Emily Rodriguez</p>
+                  <p className="text-sm text-slate-500">Fundraising Lead, Green Earth</p>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </div>
+      </div>
+
+      {/* Trust Badges Section */}
+      <div className="py-16 bg-white border-y border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap justify-center items-center gap-12">
+            <div className="flex items-center gap-3 text-slate-600">
+              <Shield className="w-8 h-8 text-green-600" />
+              <div>
+                <p className="font-semibold text-slate-900">SOC 2 Compliant</p>
+                <p className="text-sm">Enterprise Security</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 text-slate-600">
+              <Zap className="w-8 h-8 text-yellow-600" />
+              <div>
+                <p className="font-semibold text-slate-900">99.9% Uptime</p>
+                <p className="text-sm">Always Available</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 text-slate-600">
+              <Users className="w-8 h-8 text-blue-600" />
+              <div>
+                <p className="font-semibold text-slate-900">10,000+ Users</p>
+                <p className="text-sm">Growing Community</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 text-slate-600">
+              <CheckCircle className="w-8 h-8 text-indigo-600" />
+              <div>
+                <p className="font-semibold text-slate-900">GDPR Ready</p>
+                <p className="text-sm">Privacy First</p>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Final CTA Section */}
+      <div className="py-24 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h3 className="text-4xl md:text-5xl font-bold text-white mb-6">
+            Ready to Transform Your CRM?
+          </h3>
+          <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
+            Join thousands of organizations using Bondary CRM to build stronger relationships and achieve their goals.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Button
+              onClick={() => router.push("/login")}
+              className="bg-white text-blue-600 hover:bg-blue-50 text-lg px-10 py-4 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 rounded-xl font-semibold"
+            >
+              Start Free Trial
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+            <Button
+              onClick={() => router.push("/features")}
+              variant="outline"
+              className="border-2 border-white text-white hover:bg-white/10 text-lg px-10 py-4 rounded-xl font-semibold"
+            >
+              Learn More
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <footer className="bg-slate-900 text-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+            <div>
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="bg-gradient-to-br from-blue-600 to-indigo-600 p-2 rounded-xl">
+                  <Database className="w-6 h-6 text-white" />
+                </div>
+                <span className="text-2xl font-bold">Bondary</span>
+              </div>
+              <p className="text-slate-400 leading-relaxed">
+                The intelligent CRM platform for modern organizations. Transform your customer relationships today.
+              </p>
+            </div>
+            <div>
+              <h4 className="font-semibold text-lg mb-4">Product</h4>
+              <ul className="space-y-3 text-slate-400">
+                <li><button onClick={() => router.push("/features")} className="hover:text-white transition-colors">Features</button></li>
+                <li><button onClick={() => router.push("/build")} className="hover:text-white transition-colors">How It's Built</button></li>
+                <li><button className="hover:text-white transition-colors">Pricing</button></li>
+                <li><button className="hover:text-white transition-colors">Integrations</button></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold text-lg mb-4">Company</h4>
+              <ul className="space-y-3 text-slate-400">
+                <li><button onClick={() => router.push("/about")} className="hover:text-white transition-colors">About Us</button></li>
+                <li><button className="hover:text-white transition-colors">Careers</button></li>
+                <li><button className="hover:text-white transition-colors">Blog</button></li>
+                <li><button className="hover:text-white transition-colors">Contact</button></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold text-lg mb-4">Legal</h4>
+              <ul className="space-y-3 text-slate-400">
+                <li><button className="hover:text-white transition-colors">Privacy Policy</button></li>
+                <li><button className="hover:text-white transition-colors">Terms of Service</button></li>
+                <li><button className="hover:text-white transition-colors">Security</button></li>
+                <li><button className="hover:text-white transition-colors">GDPR</button></li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center">
+            <p className="text-slate-500 text-sm">© 2026 Bondary CRM. All rights reserved.</p>
+            <div className="flex items-center gap-6 mt-4 md:mt-0">
+              <button className="text-slate-400 hover:text-white transition-colors">Twitter</button>
+              <button className="text-slate-400 hover:text-white transition-colors">LinkedIn</button>
+              <button className="text-slate-400 hover:text-white transition-colors">GitHub</button>
+            </div>
+          </div>
+        </div>
+      </footer>
 
       {/* Chat Widget */}
       <ChatWidget />

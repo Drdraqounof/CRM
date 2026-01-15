@@ -65,6 +65,12 @@ export default function LoginPage() {
             </div>
             <div className="flex items-center space-x-6">
               <button
+                onClick={() => router.push("/")}
+                className="text-slate-700 hover:text-white hover:bg-gradient-to-r hover:from-blue-600 hover:to-indigo-600 font-medium transition-all duration-300 px-4 py-2 rounded-lg"
+              >
+                Home
+              </button>
+              <button
                 onClick={() => router.push("/features")}
                 className="text-slate-700 hover:text-white hover:bg-gradient-to-r hover:from-blue-600 hover:to-indigo-600 font-medium transition-all duration-300 px-4 py-2 rounded-lg"
               >
