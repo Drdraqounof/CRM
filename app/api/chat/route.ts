@@ -34,9 +34,11 @@ RULES YOU MUST FOLLOW:
 7. Be helpful, professional, and concise
 8. Do not discuss competitors or make comparisons to other CRM systems
 
-RESPONSE STYLE:
+RESPONSE STYLE (VERY IMPORTANT):
 - Keep responses concise and helpful
-- Use bullet points for lists
+- NEVER use markdown formatting - no asterisks (*), no bold (**), no headers (#), no underscores (_)
+- Write in plain text only
+- For lists, just use dashes (-) at the start of lines
 - Be friendly and professional
 - End with asking if there's anything else you can help with regarding Bondary CRM`
 
@@ -121,7 +123,7 @@ export async function POST(request: NextRequest) {
         'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
           { role: 'user', content: message }

@@ -1,8 +1,7 @@
 "use client";
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-// Removed three.js, using plain WebGL for background
 import { Database, Lock, User, ArrowRight, Shield, Eye, EyeOff } from 'lucide-react';
 
 export default function LoginPage() {
@@ -17,9 +16,6 @@ export default function LoginPage() {
   const [registerPassword, setRegisterPassword] = useState('');
   const [registerError, setRegisterError] = useState<string | null>(null);
   const [registerLoading, setRegisterLoading] = useState(false);
-  const canvasRef = useRef(null);
-
-  // WebGL background removed
 
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -55,11 +51,49 @@ export default function LoginPage() {
   // Place this at the end of the component function
   return (
     <div className="min-h-screen relative overflow-hidden">
-      <canvas
-        ref={canvasRef}
-        className="fixed inset-0 w-full h-full"
-        style={{ width: '100%', height: '100%' }}
-      />
+      {/* Navigation */}
+      <nav className="bg-white/90 backdrop-blur-xl shadow-lg border-b border-slate-200/50 sticky top-0 z-50 relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center space-x-2 cursor-pointer" onClick={() => router.push("/")}>
+              <div className="bg-gradient-to-br from-blue-600 to-indigo-600 p-2 rounded-lg">
+                <Database className="w-6 h-6 text-white" />
+              </div>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                Bondary
+              </h1>
+            </div>
+            <div className="flex items-center space-x-6">
+              <button
+                onClick={() => router.push("/features")}
+                className="text-slate-700 hover:text-white hover:bg-gradient-to-r hover:from-blue-600 hover:to-indigo-600 font-medium transition-all duration-300 px-4 py-2 rounded-lg"
+              >
+                Features
+              </button>
+              <button
+                onClick={() => router.push("/build")}
+                className="text-slate-700 hover:text-white hover:bg-gradient-to-r hover:from-blue-600 hover:to-indigo-600 font-medium transition-all duration-300 px-4 py-2 rounded-lg"
+              >
+                Build
+              </button>
+              <button
+                onClick={() => router.push("/about")}
+                className="text-slate-700 hover:text-white hover:bg-gradient-to-r hover:from-blue-600 hover:to-indigo-600 font-medium transition-all duration-300 px-4 py-2 rounded-lg"
+              >
+                About Us
+              </button>
+              <button
+                onClick={() => router.push("/login")}
+                className="text-slate-700 hover:text-white hover:bg-gradient-to-r hover:from-blue-600 hover:to-indigo-600 font-medium transition-all duration-300 px-4 py-2 rounded-lg"
+              >
+                Login
+              </button>
+            </div>
+          </div>
+        </div>
+      </nav>
+      {/* Gradient background */}
+      <div className="fixed inset-0 bg-gradient-to-br from-blue-900 via-indigo-900 to-slate-900 -z-10" />
       <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
           {/* Header */}

@@ -70,9 +70,6 @@ This project uses several open-source libraries and tools to provide a modern, f
 - **Framer Motion & GSAP**
 	- Used for UI animations and transitions.
 
-- **Three.js**
-	- Used for 3D/visual effects (see public/styles/shaders-on-scroll.css for related styles).
-
 For a full list of dependencies, see [package.json](package.json).
 
 This is a prototype for a Customer Relationship Management (CRM) web application, built with Next.js, TypeScript, and Prisma. It demonstrates core CRM features such as donor management, campaign tracking, authentication, and data visualization. The project is intended for learning, prototyping, and as a foundation for a full-featured CRM.
