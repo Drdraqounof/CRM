@@ -1,18 +1,27 @@
-# Bondary CRM
+# DonorConnect CRM
 
-A modern Customer Relationship Management platform for nonprofits and organizations, built with Next.js, TypeScript, and Prisma.
+A modern donor relationship management platform for nonprofits and fundraising organizations, built with Next.js, TypeScript, and Prisma. This project was created as part of a school assignment to demonstrate full-stack development skills with AI integration.
 
 ![Next.js](https://img.shields.io/badge/Next.js-16.0-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
 ![Prisma](https://img.shields.io/badge/Prisma-5.22-teal)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.0-38bdf8)
+![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4o--mini-412991)
 
-## Features
+## 🎯 Project Overview
+
+DonorConnect solves a real problem: **non-profit organizations struggle to manage donor relationships effectively**. Many organizations rely on scattered spreadsheets, generic mass emails, and manual tracking—leading to poor donor retention and missed fundraising opportunities.
+
+**Our Solution:** A centralized CRM platform with AI-powered communication tools that help fundraising teams build stronger, more personalized donor relationships.
+
+## ✨ Features
 
 - **📊 Interactive Dashboard** - Real-time overview of fundraising progress, top donors, and campaign metrics
-- **👥 Donor Management** - Track donors, donations, and engagement history
+- **👥 Donor Management** - Track donors, donations, and engagement history with a PostgreSQL database
 - **📈 Campaign Tracking** - Create and monitor fundraising campaigns with visual progress charts
-- **🤖 AI Chat Assistant** - Built-in AI helper powered by OpenAI for quick insights
+- **✍️ AI Writing Assistant** - Generate personalized donor emails (thank-you, appeals, follow-ups) using OpenAI GPT-4o-mini
+- **📧 Email Integration** - Send AI-generated emails directly via Gmail SMTP
+- **🤖 AI Chat Assistant** - Built-in AI helper for quick insights and questions
 - **🔐 Secure Authentication** - Google OAuth and email/password login via NextAuth.js
 - **📱 Responsive Design** - Works seamlessly on desktop and mobile
 
@@ -49,6 +58,8 @@ NEXTAUTH_URL="http://localhost:3000"
 GOOGLE_CLIENT_ID="your-google-client-id"
 GOOGLE_CLIENT_SECRET="your-google-client-secret"
 OPENAI_API_KEY="your-openai-api-key"
+GMAIL_USER="your-gmail-address"
+GMAIL_APP_PASSWORD="your-gmail-app-password"
 ```
 
 4. Set up the database:
@@ -68,14 +79,15 @@ Open [http://localhost:3000](http://localhost:3000) to view the app.
 
 ```
 app/
-├── api/            # API routes (auth, donors, campaigns, chat)
+├── api/            # API routes (auth, donors, campaigns, chat, ai-writer, send-email)
 ├── dashboard/      # Main dashboard page
 ├── donor-list/     # Donor management
 ├── campaigns/      # Campaign tracking
+├── ai-writer/      # AI Writing Assistant for donor communications
 ├── login/          # Authentication
 ├── features/       # Features showcase
-├── build/          # Build process documentation
-├── about/          # About page
+├── build/          # Why DonorConnect + AI Policy
+├── about/          # About page with reflection
 └── ui/             # Reusable UI components
 lib/
 ├── prisma.ts       # Database client
@@ -91,12 +103,14 @@ prisma/
 |----------|------------|
 | Framework | Next.js 16 (App Router) |
 | Language | TypeScript |
-| Database | PostgreSQL + Prisma ORM |
+| Database | Neon PostgreSQL + Prisma ORM |
 | Auth | NextAuth.js (Google OAuth + Credentials) |
 | Styling | Tailwind CSS |
 | Charts | Recharts |
 | Icons | Lucide React |
 | AI | OpenAI GPT-4o-mini |
+| Email | Nodemailer + Gmail SMTP |
+| Deployment | Vercel |
 
 ## Pages
 
@@ -107,9 +121,10 @@ prisma/
 | `/dashboard` | Main dashboard with metrics and charts |
 | `/donor-list` | View and manage donors |
 | `/campaigns` | Track fundraising campaigns |
+| `/ai-writer` | AI Writing Assistant for donor emails |
 | `/features` | Platform features showcase |
-| `/build` | How this CRM was built |
-| `/about` | About Bondary CRM |
+| `/build` | Why DonorConnect + AI Policy |
+| `/about` | About page with project reflection |
 
 ## API Routes
 
@@ -117,6 +132,13 @@ prisma/
 - `GET/POST /api/donors` - Donor CRUD operations
 - `GET/POST /api/campaigns` - Campaign CRUD operations
 - `POST /api/chat` - AI chat assistant
+- `POST /api/ai-writer` - AI email content generation
+- `POST /api/send-email` - Send emails via Gmail SMTP
+
+## 📚 Documentation
+
+- [REFLECTION.md](./REFLECTION.md) - Project reflection, challenges, and learnings
+- [ERRORS_AND_SOLUTIONS.md](./ERRORS_AND_SOLUTIONS.md) - Common issues and solutions
 
 ## Troubleshooting
 
@@ -132,7 +154,7 @@ See [ERRORS_AND_SOLUTIONS.md](./ERRORS_AND_SOLUTIONS.md) for common issues and s
 
 ## License
 
-This project is for learning and prototyping purposes.
+This project was created for educational purposes as part of a school assignment.
 
 ---
 
