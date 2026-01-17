@@ -1,29 +1,44 @@
-# DonorConnect CRM
+# DonorConnect (Bondary CRM)
 
-A modern donor relationship management platform for nonprofits and fundraising organizations, built with Next.js, TypeScript, and Prisma. This project was created as part of a school assignment to demonstrate full-stack development skills with AI integration.
+## What Is This?
+
+**DonorConnect is a web app that helps nonprofits keep track of their donors and fundraising campaigns.** 
+
+Think of it like a digital address book combined with a fundraising tracker. Instead of using messy spreadsheets or sticky notes to remember who donated, how much they gave, and when to follow up—this app does it all in one place.
+
+### The Problem We're Solving
+
+Nonprofits often struggle with:
+- **Scattered information** - Donor details spread across emails, spreadsheets, and paper files
+- **Generic communication** - Sending the same boring "thank you" to everyone instead of personal messages
+- **No visibility** - Not knowing which campaigns are working or which donors might stop giving
+- **Wasted time** - Hours spent manually tracking donations instead of building relationships
+
+### Our Solution
+
+DonorConnect gives you:
+- A **central database** for all your donors and their giving history
+- An **AI Writing Assistant** that helps write personalized thank-you letters and fundraising appeals
+- **Visual dashboards** showing how your campaigns are performing
+- **Email integration** to send messages directly from the app
+
+---
 
 ![Next.js](https://img.shields.io/badge/Next.js-16.0-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
 ![Prisma](https://img.shields.io/badge/Prisma-5.22-teal)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.0-38bdf8)
-![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4o--mini-412991)
 
-## 🎯 Project Overview
+## Features
 
-DonorConnect solves a real problem: **non-profit organizations struggle to manage donor relationships effectively**. Many organizations rely on scattered spreadsheets, generic mass emails, and manual tracking—leading to poor donor retention and missed fundraising opportunities.
-
-**Our Solution:** A centralized CRM platform with AI-powered communication tools that help fundraising teams build stronger, more personalized donor relationships.
-
-## ✨ Features
-
-- **📊 Interactive Dashboard** - Real-time overview of fundraising progress, top donors, and campaign metrics
-- **👥 Donor Management** - Track donors, donations, and engagement history with a PostgreSQL database
-- **📈 Campaign Tracking** - Create and monitor fundraising campaigns with visual progress charts
-- **✍️ AI Writing Assistant** - Generate personalized donor emails (thank-you, appeals, follow-ups) using OpenAI GPT-4o-mini
-- **📧 Email Integration** - Send AI-generated emails directly via Gmail SMTP
-- **🤖 AI Chat Assistant** - Built-in AI helper for quick insights and questions
-- **🔐 Secure Authentication** - Google OAuth and email/password login via NextAuth.js
-- **📱 Responsive Design** - Works seamlessly on desktop and mobile
+- **📊 Interactive Dashboard** - See your fundraising progress, top donors, and campaign stats at a glance
+- **👥 Donor Management** - Store donor info, track donations, and see engagement history
+- **📈 Campaign Tracking** - Create fundraising campaigns and watch progress with visual charts
+- **✍️ AI Writing Assistant** - Use AI to write personalized donor emails (thank-you notes, appeals, follow-ups)
+- **📧 Email Integration** - Send emails directly to donors without leaving the app
+- **🤖 AI Chat Helper** - Ask questions and get quick insights powered by OpenAI
+- **🔐 Secure Login** - Sign in with Google or email/password
+- **📱 Mobile Friendly** - Works on phones, tablets, and computers
 
 ## Getting Started
 
@@ -58,8 +73,6 @@ NEXTAUTH_URL="http://localhost:3000"
 GOOGLE_CLIENT_ID="your-google-client-id"
 GOOGLE_CLIENT_SECRET="your-google-client-secret"
 OPENAI_API_KEY="your-openai-api-key"
-GMAIL_USER="your-gmail-address"
-GMAIL_APP_PASSWORD="your-gmail-app-password"
 ```
 
 4. Set up the database:
@@ -79,15 +92,14 @@ Open [http://localhost:3000](http://localhost:3000) to view the app.
 
 ```
 app/
-├── api/            # API routes (auth, donors, campaigns, chat, ai-writer, send-email)
+├── api/            # API routes (auth, donors, campaigns, chat)
 ├── dashboard/      # Main dashboard page
 ├── donor-list/     # Donor management
 ├── campaigns/      # Campaign tracking
-├── ai-writer/      # AI Writing Assistant for donor communications
 ├── login/          # Authentication
 ├── features/       # Features showcase
-├── build/          # Why DonorConnect + AI Policy
-├── about/          # About page with reflection
+├── build/          # Build process documentation
+├── about/          # About page
 └── ui/             # Reusable UI components
 lib/
 ├── prisma.ts       # Database client
@@ -97,65 +109,52 @@ prisma/
 └── seed.js         # Seed data
 ```
 
-## Tech Stack
+## Tech Stack (For Developers)
 
-| Category | Technology |
-|----------|------------|
-| Framework | Next.js 16 (App Router) |
-| Language | TypeScript |
-| Database | Neon PostgreSQL + Prisma ORM |
-| Auth | NextAuth.js (Google OAuth + Credentials) |
-| Styling | Tailwind CSS |
-| Charts | Recharts |
-| Icons | Lucide React |
-| AI | OpenAI GPT-4o-mini |
-| Email | Nodemailer + Gmail SMTP |
-| Deployment | Vercel |
+| Category | Technology | What It Does |
+|----------|------------|--------------|
+| Framework | Next.js 16 (App Router) | The foundation that makes the website work |
+| Language | TypeScript | JavaScript with extra safety checks |
+| Database | Neon PostgreSQL + Prisma ORM | Stores all donor and campaign data in the cloud |
+| Auth | NextAuth.js | Handles secure login (Google + email/password) |
+| Styling | Tailwind CSS | Makes everything look nice |
+| Charts | Recharts | Creates the visual graphs and charts |
+| Icons | Lucide React | Provides all the icons you see |
+| AI | OpenAI GPT-4o-mini | Powers the AI writing assistant and chat |
+| Email | Nodemailer + Gmail | Sends emails directly to donors |
+| Hosting | Vercel | Where the live website runs |
 
-## Pages
+## Pages (What You Can Do)
 
-| Route | Description |
-|-------|-------------|
-| `/` | Landing page with features overview |
+| Page | What It's For |
+|------|---------------|
+| `/` | Home page - explains what DonorConnect is |
 | `/login` | Sign in with Google or email/password |
-| `/dashboard` | Main dashboard with metrics and charts |
-| `/donor-list` | View and manage donors |
-| `/campaigns` | Track fundraising campaigns |
-| `/ai-writer` | AI Writing Assistant for donor emails |
-| `/features` | Platform features showcase |
-| `/build` | Why DonorConnect + AI Policy |
-| `/about` | About page with project reflection |
+| `/dashboard` | Your main control center with stats and charts |
+| `/donor-list` | View, add, and manage all your donors |
+| `/campaigns` | Create and track fundraising campaigns |
+| `/ai-writer` | Use AI to write donor emails |
+| `/features` | See all the features DonorConnect offers |
+| `/build` | Learn how this app was built (for nerds 🤓) |
+| `/about` | About the team and project |
 
-## API Routes
+## API Routes (Technical Endpoints)
 
-- `POST /api/auth/[...nextauth]` - Authentication endpoints
-- `GET/POST /api/donors` - Donor CRUD operations
-- `GET/POST /api/campaigns` - Campaign CRUD operations
-- `POST /api/chat` - AI chat assistant
-- `POST /api/ai-writer` - AI email content generation
-- `POST /api/send-email` - Send emails via Gmail SMTP
+These are the behind-the-scenes connections that make the app work:
 
-## 📚 Documentation
-
-- [REFLECTION.md](./REFLECTION.md) - Project reflection, challenges, and learnings
-- [ERRORS_AND_SOLUTIONS.md](./ERRORS_AND_SOLUTIONS.md) - Common issues and solutions
+- `POST /api/auth/[...nextauth]` - Handles login/logout
+- `GET/POST /api/donors` - Get or add donor information
+- `GET/POST /api/campaigns` - Get or add campaign information
+- `POST /api/chat` - Send messages to the AI chat assistant
+- `POST /api/ai-writer` - Generate AI-written email content
+- `POST /api/send-email` - Send emails via Gmail
 
 ## Troubleshooting
 
-See [ERRORS_AND_SOLUTIONS.md](./ERRORS_AND_SOLUTIONS.md) for common issues and solutions.
+Having issues? Check [ERRORS_AND_SOLUTIONS.md](./ERRORS_AND_SOLUTIONS.md) for common problems and fixes.
 
-## Contributing
+## About This Project
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+This was built as a school project to demonstrate full-stack web development with AI integration. It uses real technologies that professional developers use every day.
 
-## License
-
-This project was created for educational purposes as part of a school assignment.
-
----
-
-Built with ❤️ using Next.js and GitHub Copilot
+**Built with ❤️ using Next.js and GitHub Copilot**
