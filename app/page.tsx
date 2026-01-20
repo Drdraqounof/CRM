@@ -202,10 +202,10 @@ const HomePage = ({
           <div className="text-center mt-12">
             <Button
               onClick={() => router.push("/features")}
-              className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-3 rounded-xl text-lg transition-all duration-300 bg-transparent"
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-lg px-10 py-4 shadow-xl shadow-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/40 transition-all duration-300 transform hover:scale-105 rounded-xl text-white font-semibold"
             >
               Explore All Features
-              <ArrowRight className="w-5 h-5 ml-2" />
+              <ArrowRight className="w-5 h-5 ml-2 animate-bounce-x" />
             </Button>
           </div>
         </div>
@@ -380,10 +380,10 @@ const HomePage = ({
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Button
               onClick={() => router.push("/login")}
-              className="bg-white text-blue-600 hover:bg-blue-50 text-lg px-10 py-4 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 rounded-xl font-semibold"
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-lg px-10 py-4 shadow-xl shadow-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/40 transition-all duration-300 transform hover:scale-105 rounded-xl text-white font-semibold"
             >
               Start Free Trial
-              <ArrowRight className="w-5 h-5 ml-2" />
+              <ArrowRight className="w-5 h-5 ml-2 animate-bounce-x" />
             </Button>
             <Button
               onClick={() => router.push("/features")}
