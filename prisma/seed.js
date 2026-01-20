@@ -42,6 +42,7 @@ async function main() {
 
   // Seed a test user for login
   const bcrypt = require('bcryptjs');
+  // Test user
   const testEmail = 'test@email.com';
   const testPassword = 'test1234';
   const hashed = await bcrypt.hash(testPassword, 10);
@@ -52,6 +53,20 @@ async function main() {
       email: testEmail,
       name: 'Test User',
       password: hashed,
+    },
+  });
+
+  // Admin user
+  const adminEmail = 'rob@launchapdphilly.org';
+  const adminPassword = 'lpuser1';
+  const adminHashed = await bcrypt.hash(adminPassword, 10);
+  await prisma.user.upsert({
+    where: { email: adminEmail },
+    update: { password: adminHashed },
+    create: {
+      email: adminEmail,
+      name: 'Admin User',
+      password: adminHashed,
     },
   });
 }
