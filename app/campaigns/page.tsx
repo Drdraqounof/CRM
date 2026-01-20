@@ -6,8 +6,22 @@ import {
   Calendar,
   Edit,
   Trash2,
-  X
+  X,
+  Sparkles,
+  DollarSign,
+  Settings,
+  LogOut
 } from 'lucide-react';
+import Link from 'next/link';
+import { signOut } from 'next-auth/react';
+
+const bgColors = [
+  { name: 'Gray', value: 'bg-gray-50' },
+  { name: 'Blue', value: 'bg-blue-50' },
+  { name: 'Green', value: 'bg-green-50' },
+  { name: 'Purple', value: 'bg-purple-50' },
+  { name: 'Rose', value: 'bg-rose-50' },
+];
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 // Types
@@ -43,6 +57,29 @@ export default function CampaignsPage() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showSettings, setShowSettings] = useState(false);
+  const [bgColor, setBgColor] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('crm-bg-color') || 'bg-gray-50';
+    }
+    return 'bg-gray-50';
+  });
+
+  function handleSetBgColor(color: string) {
+    setBgColor(color);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('crm-bg-color', color);
+    }
+    setShowSettings(false);
+  }
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('crm-bg-color');
+      if (stored && stored !== bgColor) setBgColor(stored);
+    }
+    // eslint-disable-next-line
+  }, []);
 
   // Fetch campaigns from API
   const fetchCampaigns = async () => {
@@ -395,7 +432,59 @@ export default function CampaignsPage() {
   const plannedCampaigns = campaigns.filter(c => c.status === 'planned');
 
   return (
-    <div className="space-y-8 p-8">
+    <div className={`min-h-screen ${bgColor}`}>
+      <header className="w-full border-b bg-white shadow-sm">
+        <div className="container mx-auto px-4 flex h-16 items-center justify-between">
+          <div className="flex items-center gap-2">
+            <DollarSign className="h-6 w-6 text-blue-600" />
+            <h2 className="font-semibold text-lg">Donor Management System</h2>
+          </div>
+          <nav className="flex items-center gap-2">
+            <Link href="/dashboard" className="px-4 py-2 rounded-lg transition-colors hover:bg-gray-100">Dashboard</Link>
+            <Link href="/donor-list" className="px-4 py-2 rounded-lg transition-colors hover:bg-gray-100">Donors</Link>
+            <Link href="/campaigns" className="px-4 py-2 rounded-lg transition-colors bg-blue-600 text-white">Campaigns</Link>
+            <Link href="/ai-writer" className="px-4 py-2 rounded-lg transition-colors hover:bg-gray-100 flex items-center gap-1">
+              <Sparkles className="w-4 h-4" />
+              AI Writer
+            </Link>
+            <div className="relative">
+              <button
+                onClick={() => setShowSettings(!showSettings)}
+                className="px-4 py-2 rounded-lg transition-colors hover:bg-gray-100 flex items-center gap-1"
+              >
+                <Settings className="w-4 h-4" />
+                Settings
+              </button>
+              {showSettings && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border py-2 z-50">
+                  <div className="px-3 py-2 text-sm font-medium text-gray-700 border-b">Background Color</div>
+                  {bgColors.map((color) => (
+                    <button
+                      key={color.value}
+                      onClick={() => handleSetBgColor(color.value)}
+                      className={`w-full px-3 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2 ${bgColor === color.value ? 'text-blue-600 font-medium' : 'text-gray-700'}`}
+                    >
+                      <div className={`w-4 h-4 rounded ${color.value} border`}></div>
+                      {color.name}
+                    </button>
+                  ))}
+                  <div className="border-t mt-2 pt-2">
+                    <button
+                      onClick={() => signOut({ callbackUrl: '/login' })}
+                      className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Sign Out
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      <main className="container mx-auto px-4 py-8">
       {showCampaignModal && (
         <CampaignModal
           isOpen={showCampaignModal}
@@ -403,24 +492,13 @@ export default function CampaignsPage() {
           campaign={editingCampaign}
         />
       )}
+      <div className="space-y-8">
       <div className="flex justify-between items-start">
         <div>
           <h1 className="text-3xl font-bold mb-1">Campaigns</h1>
           <p className="text-gray-600">Manage your fundraising campaigns</p>
         </div>
         <div className="flex gap-2 items-center">
-          <button
-            onClick={() => window.location.href = '/dashboard'}
-            className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors"
-          >
-            Dashboard
-          </button>
-          <button
-            onClick={() => window.location.href = '/donor-list'}
-            className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors"
-          >
-            Donor List
-          </button>
           <button
             onClick={() => {
               setEditingCampaign(null);
@@ -556,6 +634,8 @@ export default function CampaignsPage() {
           </div>
         </div>
       )}
+      </div>
+      </main>
     </div>
   );
 }
