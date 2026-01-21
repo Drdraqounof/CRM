@@ -39,14 +39,19 @@ export default function PersonalQuestionsPage() {
           </div>
           <div>
             <label className="block text-lg font-medium mb-2">What do you think a CRM is used for?</label>
-            <input
-              type="text"
+            <select
               value={crmPurpose}
               onChange={e => setCrmPurpose(e.target.value)}
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="E.g. managing contacts, tracking donations"
               required
-            />
+            >
+              <option value="" disabled>Select an option</option>
+              <option value="managing-contacts">Managing contacts</option>
+              <option value="tracking-donations">Tracking donations</option>
+              <option value="donor-communication">Donor communication</option>
+              <option value="fundraising-campaigns">Fundraising campaigns</option>
+              <option value="all-of-the-above">All of the above</option>
+            </select>
           </div>
           <div>
             <label className="block text-lg font-medium mb-2">Your Interests</label>
