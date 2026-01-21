@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
 import {
   Database,
   Mail,
@@ -16,6 +17,8 @@ import {
   Loader2,
   ChevronDown,
   User,
+  Settings,
+  LogOut,
 } from "lucide-react";
 
 type TemplateType = "thank-you" | "appeal" | "follow-up" | "event";
@@ -52,6 +55,7 @@ export default function AIWriterPage() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [showDonorDropdown, setShowDonorDropdown] = useState(false);
   const [showCampaignDropdown, setShowCampaignDropdown] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   // Fetch donors and campaigns
   useEffect(() => {
@@ -223,6 +227,26 @@ export default function AIWriterPage() {
               >
                 Campaigns
               </button>
+              <div className="relative">
+                <button
+                  onClick={() => setShowSettings(!showSettings)}
+                  className="text-slate-700 hover:text-white hover:bg-gradient-to-r hover:from-blue-600 hover:to-indigo-600 font-medium transition-all duration-300 px-4 py-2 rounded-lg flex items-center gap-1"
+                >
+                  <Settings className="w-4 h-4" />
+                  Settings
+                </button>
+                {showSettings && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border py-2 z-50">
+                    <button
+                      onClick={() => signOut({ callbackUrl: '/login' })}
+                      className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Sign Out
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
