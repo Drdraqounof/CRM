@@ -14,14 +14,6 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { signOut } from 'next-auth/react';
-
-const bgColors = [
-  { name: 'Gray', value: 'bg-gray-50' },
-  { name: 'Blue', value: 'bg-blue-50' },
-  { name: 'Green', value: 'bg-green-50' },
-  { name: 'Purple', value: 'bg-purple-50' },
-  { name: 'Rose', value: 'bg-rose-50' },
-];
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 // Types
@@ -58,28 +50,6 @@ export default function CampaignsPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showSettings, setShowSettings] = useState(false);
-  const [bgColor, setBgColor] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('crm-bg-color') || 'bg-gray-50';
-    }
-    return 'bg-gray-50';
-  });
-
-  function handleSetBgColor(color: string) {
-    setBgColor(color);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('crm-bg-color', color);
-    }
-    setShowSettings(false);
-  }
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('crm-bg-color');
-      if (stored && stored !== bgColor) setBgColor(stored);
-    }
-    // eslint-disable-next-line
-  }, []);
 
   // Fetch campaigns from API
   const fetchCampaigns = async () => {
@@ -432,7 +402,7 @@ export default function CampaignsPage() {
   const plannedCampaigns = campaigns.filter(c => c.status === 'planned');
 
   return (
-    <div className={`min-h-screen ${bgColor}`}>
+    <div className="min-h-screen bg-gray-50">
       <header className="w-full border-b bg-white shadow-sm">
         <div className="container mx-auto px-4 flex h-16 items-center justify-between">
           <div className="flex items-center gap-2">
@@ -457,26 +427,13 @@ export default function CampaignsPage() {
               </button>
               {showSettings && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border py-2 z-50">
-                  <div className="px-3 py-2 text-sm font-medium text-gray-700 border-b">Background Color</div>
-                  {bgColors.map((color) => (
-                    <button
-                      key={color.value}
-                      onClick={() => handleSetBgColor(color.value)}
-                      className={`w-full px-3 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2 ${bgColor === color.value ? 'text-blue-600 font-medium' : 'text-gray-700'}`}
-                    >
-                      <div className={`w-4 h-4 rounded ${color.value} border`}></div>
-                      {color.name}
-                    </button>
-                  ))}
-                  <div className="border-t mt-2 pt-2">
-                    <button
-                      onClick={() => signOut({ callbackUrl: '/login' })}
-                      className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      Sign Out
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => signOut({ callbackUrl: '/login' })}
+                    className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Sign Out
+                  </button>
                 </div>
               )}
             </div>
