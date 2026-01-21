@@ -778,39 +778,37 @@ export default function Home() {
         </div>
 
         {showAddDonor && (
-          <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-              <h2 className="text-xl font-bold mb-4">Add Donor</h2>
-                <div className="max-w-md mx-auto bg-white rounded-xl shadow-lg p-8 mt-8 mb-8 border border-blue-100">
-                  <h2 className="text-2xl font-bold text-blue-700 mb-6 text-center">Add New Donor</h2>
-                  <form onSubmit={async e => {
-                    e.preventDefault();
-                    try {
-                      const res = await fetch('/api/donors', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(newDonor),
-                      });
-                      const result = await res.json();
-                      if (!res.ok) {
-                        toast.error(result.error || 'Failed to add donor');
-                        return;
-                      }
-                      await fetchDonors();
-                      setShowAddDonor(false);
-                      setNewDonor({ name: '', email: '', phone: '', totalDonated: 0, lastDonation: '', status: 'active' });
-                    } catch (err) {
-                      // Try to show backend error message if available
-                      if (err instanceof Response) {
-                        const data = await err.json().catch(() => null);
-                        toast.error(data?.error || 'Failed to add donor');
-                      } else if (err instanceof Error) {
-                        toast.error(err.message);
-                      } else {
-                        toast.error('Failed to add donor');
-                      }
-                    }
-                  }} className="space-y-5">
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md border border-blue-100">
+              <h2 className="text-2xl font-bold text-blue-700 mb-6 text-center">Add New Donor</h2>
+              <form onSubmit={async e => {
+                e.preventDefault();
+                try {
+                  const res = await fetch('/api/donors', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newDonor),
+                  });
+                  const result = await res.json();
+                  if (!res.ok) {
+                    toast.error(result.error || 'Failed to add donor');
+                    return;
+                  }
+                  await fetchDonors();
+                  setShowAddDonor(false);
+                  setNewDonor({ name: '', email: '', phone: '', totalDonated: 0, lastDonation: '', status: 'active' });
+                } catch (err) {
+                  // Try to show backend error message if available
+                  if (err instanceof Response) {
+                    const data = await err.json().catch(() => null);
+                    toast.error(data?.error || 'Failed to add donor');
+                  } else if (err instanceof Error) {
+                    toast.error(err.message);
+                  } else {
+                    toast.error('Failed to add donor');
+                  }
+                }
+              }} className="space-y-5">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
                       <input placeholder="Name" value={newDonor.name} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewDonor({ ...newDonor, name: e.target.value })} required className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" />
@@ -839,17 +837,16 @@ export default function Home() {
                         <option value="lapsed">Lapsed</option>
                       </select>
                     </div>
-                    <div className="flex gap-2 mt-6">
-                      <button type="submit" className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-700 transition">Add</button>
-                      <button type="button" onClick={() => setShowAddDonor(false)} className="flex-1 border border-gray-300 py-2 px-4 rounded-lg bg-white text-gray-700 font-semibold hover:bg-gray-50 transition">Cancel</button>
-                    </div>
-                  </form>
+                <div className="flex gap-2 mt-6">
+                  <button type="submit" className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-700 transition">Add</button>
+                  <button type="button" onClick={() => setShowAddDonor(false)} className="flex-1 border border-gray-300 py-2 px-4 rounded-lg bg-white text-gray-700 font-semibold hover:bg-gray-50 transition">Cancel</button>
                 </div>
+              </form>
             </div>
           </div>
         )}
         {showAddCampaign && (
-          <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
               <h2 className="text-xl font-bold mb-4">Add Campaign</h2>
               <form onSubmit={async e => {
@@ -930,7 +927,7 @@ export default function Home() {
               {showSettings && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border py-2 z-50">
                   <button
-                    onClick={() => signOut({ callbackUrl: '/login' })}
+                    onClick={() => signOut({ callbackUrl: '/' })}
                     className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
                   >
                     <LogOut className="w-4 h-4" />
