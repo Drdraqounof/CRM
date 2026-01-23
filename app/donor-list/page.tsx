@@ -2,10 +2,11 @@
 'use client';
 
 
-import { ArrowLeft, Users, DollarSign, TrendingUp, UserPlus, UserX, Target, Plus, Calendar, Edit, Trash2, X, Sparkles, Settings, LogOut } from 'lucide-react';
-import { signOut } from 'next-auth/react';
+import { ArrowLeft, Users, DollarSign, TrendingUp, UserPlus, UserX, Target, Plus, Calendar, Edit, Trash2, X, Sparkles, Settings, LogOut, Shield, User, Tag } from 'lucide-react';
+import { signOut, useSession } from 'next-auth/react';
 import { useState, useEffect } from 'react';
 import { mockDonors as initialMockDonors, mockCampaigns as importedMockCampaigns } from '../../lib/mock-data';
+import Sidebar from '../components/Sidebar';
 
 // Ensure correct typing for campaigns
 const initialMockCampaigns: Campaign[] = importedMockCampaigns.map(c => ({
@@ -264,12 +265,12 @@ type View = 'dashboard' | 'campaigns' | 'donors';
 // Removed duplicate mockCampaigns definition; using imported mockCampaigns
 
 export default function Home() {
+  const { data: session } = useSession();
   const [showDescription, setShowDescription] = useState<{ open: boolean; donor?: Donor }>({ open: false });
   const [currentView, setCurrentView] = useState<View>('donors');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'lapsed' | 'major'>('all');
   const [donors, setDonors] = useState<Donor[]>([]);
-  const [showSettings, setShowSettings] = useState(false);
     // Fetch donors from API
     const fetchDonors = async () => {
       try {
@@ -902,54 +903,23 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="w-full border-b bg-white shadow-sm">
-        <div className="container mx-auto px-4 flex h-16 items-center justify-between">
-          <div className="flex items-center gap-2">
-            <DollarSign className="h-6 w-6 text-blue-600" />
-            <h2 className="font-semibold text-lg">Donor Management System</h2>
+      <Sidebar />
+      
+      <div className="ml-64 transition-all duration-300">
+        <main className="p-8">
+          <div className="mb-8">
+            <h1 className="text-2xl font-bold text-gray-900">Donors</h1>
+            <p className="text-gray-600">Manage your donor database</p>
           </div>
-          <nav className="flex items-center gap-2">
-            <Link href="/dashboard" className="px-4 py-2 rounded-lg transition-colors hover:bg-gray-100">Dashboard</Link>
-            <Link href="/donor-list" className="px-4 py-2 rounded-lg transition-colors bg-blue-600 text-white">Donors</Link>
-            <Link href="/campaigns" className="px-4 py-2 rounded-lg transition-colors hover:bg-gray-100">Campaigns</Link>
-            <Link href="/ai-writer" className="px-4 py-2 rounded-lg transition-colors hover:bg-gray-100 flex items-center gap-1">
-              <Sparkles className="w-4 h-4" />
-              AI Writer
-            </Link>
-            <div className="relative">
-              <button
-                onClick={() => setShowSettings(!showSettings)}
-                className="px-4 py-2 rounded-lg transition-colors hover:bg-gray-100 flex items-center gap-1"
-              >
-                <Settings className="w-4 h-4" />
-                Settings
-              </button>
-              {showSettings && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border py-2 z-50">
-                  <button
-                    onClick={() => signOut({ callbackUrl: '/' })}
-                    className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    Sign Out
-                  </button>
-                </div>
-              )}
-            </div>
-          </nav>
-        </div>
-      </header>
+          {renderContent()}
+        </main>
 
-      <main className="container mx-auto px-4 py-8">
-        {renderContent()}
-      </main>
-
-      <footer className="border-t bg-white py-6 mt-12">
-        <div className="container mx-auto px-4 text-center text-sm text-gray-600">
-          <p className="mb-1">Donor Management System © 2025</p>
-          <p>All data is currently mock data. Connect to a database for persistence.</p>
-        </div>
-      </footer>
+        <footer className="border-t bg-white py-6">
+          <div className="px-8 text-center text-sm text-gray-600">
+            <p className="mb-1">Bondary CRM © 2025</p>
+          </div>
+        </footer>
+      </div>
     </div>
   );
 }

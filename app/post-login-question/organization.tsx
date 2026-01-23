@@ -6,12 +6,31 @@ export default function OrganizationQuestionsPage() {
   const router = useRouter();
   const [orgName, setOrgName] = useState("");
   const [orgRole, setOrgRole] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Store answers in localStorage/session for now
+    setIsSubmitting(true);
+    
+    // Store answers in localStorage
     window.localStorage.setItem("organizationName", orgName);
     window.localStorage.setItem("organizationRole", orgRole);
+    
+    // Save to database
+    try {
+      await fetch("/api/survey", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userType: "organization",
+          orgName,
+          orgRole,
+        }),
+      });
+    } catch (error) {
+      console.error("Failed to save survey response:", error);
+    }
+    
     router.push("/dashboard");
   };
 
@@ -44,9 +63,10 @@ export default function OrganizationQuestionsPage() {
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+            disabled={isSubmitting}
+            className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50"
           >
-            Continue
+            {isSubmitting ? "Saving..." : "Continue"}
           </button>
         </form>
       </div>

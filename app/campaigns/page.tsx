@@ -10,11 +10,17 @@ import {
   Sparkles,
   DollarSign,
   Settings,
-  LogOut
+  LogOut,
+  Shield,
+  CheckCircle,
+  AlertCircle,
+  User,
+  Tag
 } from 'lucide-react';
 import Link from 'next/link';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import Sidebar from '../components/Sidebar';
 
 // Types
 interface Campaign {
@@ -45,11 +51,34 @@ function isValidCampaign(c: any): c is Campaign {
 
 // Remove local mock campaigns. Use API instead.
 
+// Toast notification type
+interface Toast {
+  id: number;
+  message: string;
+  type: 'success' | 'error';
+}
+
 export default function CampaignsPage() {
+  const { data: session } = useSession();
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showSettings, setShowSettings] = useState(false);
+  const [toasts, setToasts] = useState<Toast[]>([]);
+
+  // Show toast notification
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    const id = Date.now();
+    setToasts(prev => [...prev, { id, message, type }]);
+    // Auto-remove after 4 seconds
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 4000);
+  };
+
+  // Remove toast manually
+  const removeToast = (id: number) => {
+    setToasts(prev => prev.filter(t => t.id !== id));
+  };
 
   // Fetch campaigns from API
   const fetchCampaigns = async () => {
@@ -80,13 +109,27 @@ export default function CampaignsPage() {
     setShowCampaignModal(true);
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     if (confirm('Are you sure you want to delete this campaign?')) {
-      setCampaigns(campaigns.filter(c => c.id !== id));
+      try {
+        const res = await fetch('/api/campaigns', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id }),
+        });
+        if (!res.ok) {
+          showToast('Failed to delete campaign', 'error');
+          return;
+        }
+        setCampaigns(campaigns.filter(c => c.id !== id));
+        showToast('Campaign deleted successfully', 'success');
+      } catch (err) {
+        showToast('Failed to delete campaign', 'error');
+      }
     }
   };
 
-  const CampaignModal = ({ isOpen, onClose, campaign }: { isOpen: boolean; onClose: () => void; campaign?: Campaign | null }) => {
+  const CampaignModal = ({ isOpen, onClose, campaign, onSuccess }: { isOpen: boolean; onClose: () => void; campaign?: Campaign | null; onSuccess: (message: string) => void }) => {
     const [formData, setFormData] = useState<Campaign>(
       campaign || {
         id: 0,
@@ -101,6 +144,36 @@ export default function CampaignsPage() {
     );
     const [submitting, setSubmitting] = useState(false);
     const [modalError, setModalError] = useState<string | null>(null);
+
+    // Update formData when campaign prop changes (for edit mode)
+    useEffect(() => {
+      if (campaign) {
+        // Format dates to YYYY-MM-DD if they contain time or are in different format
+        const formatDate = (dateStr: string) => {
+          if (!dateStr) return '';
+          const date = new Date(dateStr);
+          if (isNaN(date.getTime())) return dateStr;
+          return date.toISOString().split('T')[0];
+        };
+        
+        setFormData({
+          ...campaign,
+          startDate: formatDate(campaign.startDate),
+          endDate: formatDate(campaign.endDate),
+        });
+      } else {
+        setFormData({
+          id: 0,
+          name: '',
+          goal: 0,
+          raised: 0,
+          startDate: '',
+          endDate: '',
+          status: 'planned',
+          description: ''
+        });
+      }
+    }, [campaign]);
 
     const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
@@ -131,22 +204,26 @@ export default function CampaignsPage() {
           description: formData.description,
         };
         console.log('Submitting campaign payload:', payload);
+        
+        // Use PATCH for editing existing campaigns, POST for new ones
+        const isEditing = campaign && campaign.id;
         const res = await fetch('/api/campaigns', {
-          method: 'POST',
+          method: isEditing ? 'PATCH' : 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
+          body: JSON.stringify(isEditing ? { id: campaign.id, ...payload } : payload),
         });
         const result = await res.json();
         if (!res.ok) {
-          setModalError(result.error || 'Failed to add campaign');
+          setModalError(result.error || (isEditing ? 'Failed to update campaign' : 'Failed to add campaign'));
           setSubmitting(false);
           return;
         }
         await fetchCampaigns();
+        onSuccess(isEditing ? 'Campaign updated successfully' : 'Campaign created successfully');
         onClose();
         setEditingCampaign(null);
       } catch (err: any) {
-        setModalError(err.message || 'Failed to add campaign');
+        setModalError(err.message || 'Failed to save campaign');
       } finally {
         setSubmitting(false);
       }
@@ -403,50 +480,48 @@ export default function CampaignsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="w-full border-b bg-white shadow-sm">
-        <div className="container mx-auto px-4 flex h-16 items-center justify-between">
-          <div className="flex items-center gap-2">
-            <DollarSign className="h-6 w-6 text-blue-600" />
-            <h2 className="font-semibold text-lg">Donor Management System</h2>
-          </div>
-          <nav className="flex items-center gap-2">
-            <Link href="/dashboard" className="px-4 py-2 rounded-lg transition-colors hover:bg-gray-100">Dashboard</Link>
-            <Link href="/donor-list" className="px-4 py-2 rounded-lg transition-colors hover:bg-gray-100">Donors</Link>
-            <Link href="/campaigns" className="px-4 py-2 rounded-lg transition-colors bg-blue-600 text-white">Campaigns</Link>
-            <Link href="/ai-writer" className="px-4 py-2 rounded-lg transition-colors hover:bg-gray-100 flex items-center gap-1">
-              <Sparkles className="w-4 h-4" />
-              AI Writer
-            </Link>
-            <div className="relative">
-              <button
-                onClick={() => setShowSettings(!showSettings)}
-                className="px-4 py-2 rounded-lg transition-colors hover:bg-gray-100 flex items-center gap-1"
+      <Sidebar />
+      
+      <div className="ml-64 transition-all duration-300">
+        <main className="p-8">
+          {/* Toast Notifications */}
+          <div className="fixed top-4 right-4 z-50 space-y-2">
+            {toasts.map((toast) => (
+              <div
+                key={toast.id}
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg animate-in slide-in-from-right duration-300 ${
+                  toast.type === 'success' 
+                    ? 'bg-green-50 border border-green-200 text-green-800' 
+                    : 'bg-red-50 border border-red-200 text-red-800'
+                }`}
               >
-                <Settings className="w-4 h-4" />
-                Settings
-              </button>
-              {showSettings && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border py-2 z-50">
-                  <button
-                    onClick={() => signOut({ callbackUrl: '/' })}
-                    className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    Sign Out
-                  </button>
-                </div>
-              )}
-            </div>
-          </nav>
-        </div>
-      </header>
+                {toast.type === 'success' ? (
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                ) : (
+                  <AlertCircle className="w-5 h-5 text-red-600" />
+                )}
+                <span className="font-medium">{toast.message}</span>
+                <button
+                  onClick={() => removeToast(toast.id)}
+                  className="ml-2 hover:opacity-70"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
 
-      <main className="container mx-auto px-4 py-8">
+          <div className="mb-8">
+            <h1 className="text-2xl font-bold text-gray-900">Campaigns</h1>
+            <p className="text-gray-600">Manage your fundraising campaigns</p>
+          </div>
+
       {showCampaignModal && (
         <CampaignModal
           isOpen={showCampaignModal}
           onClose={() => setShowCampaignModal(false)}
           campaign={editingCampaign}
+          onSuccess={(message) => showToast(message, 'success')}
         />
       )}
       <div className="space-y-8">
@@ -591,8 +666,9 @@ export default function CampaignsPage() {
           </div>
         </div>
       )}
+        </div>
+        </main>
       </div>
-      </main>
     </div>
   );
 }

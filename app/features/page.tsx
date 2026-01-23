@@ -7,8 +7,6 @@ import {
   Users, 
   Target, 
   MessageSquare, 
-  BarChart3, 
-  Bell, 
   Shield, 
   Zap,
   CheckCircle,
@@ -26,42 +24,32 @@ export default function FeaturesPage() {
       description: "Get a real-time overview of your entire CRM at a glance. Track key metrics, recent activities, and performance indicators all in one place.",
       icon: LayoutDashboard,
       color: "from-blue-500 to-cyan-500",
-      highlights: ["Real-time analytics", "Customizable widgets", "Quick actions"]
+      highlights: ["Real-time analytics", "Customizable widgets", "Quick actions"],
+      demoLink: "/demo/dashboard"
     },
     {
       title: "Donor Management",
       description: "Organize and manage all your donor relationships efficiently. Store contact details, track donation history, and segment your donor base.",
       icon: Users,
       color: "from-purple-500 to-pink-500",
-      highlights: ["Contact profiles", "Donation tracking", "Smart segmentation"]
+      highlights: ["Contact profiles", "Donation tracking", "Smart segmentation"],
+      demoLink: "/demo/donors"
     },
     {
       title: "Campaign Tracking",
       description: "Create, manage, and monitor fundraising campaigns from start to finish. Set goals, track progress, and measure success.",
       icon: Target,
       color: "from-orange-500 to-red-500",
-      highlights: ["Goal setting", "Progress tracking", "Performance reports"]
+      highlights: ["Goal setting", "Progress tracking", "Performance reports"],
+      demoLink: "/demo/campaigns"
     },
     {
       title: "AI Chat Assistant",
       description: "Get instant help with our built-in AI assistant. Ask questions about your data, get suggestions, and automate routine tasks.",
       icon: MessageSquare,
       color: "from-green-500 to-emerald-500",
-      highlights: ["24/7 availability", "Smart suggestions", "Task automation"]
-    },
-    {
-      title: "Analytics & Reports",
-      description: "Deep dive into your data with powerful analytics. Generate custom reports, visualize trends, and make data-driven decisions.",
-      icon: BarChart3,
-      color: "from-indigo-500 to-violet-500",
-      highlights: ["Custom reports", "Data visualization", "Export options"]
-    },
-    {
-      title: "Smart Notifications",
-      description: "Stay on top of important activities with intelligent notifications. Get alerts for donations, milestones, and follow-up reminders.",
-      icon: Bell,
-      color: "from-amber-500 to-orange-500",
-      highlights: ["Real-time alerts", "Custom triggers", "Email notifications"]
+      highlights: ["24/7 availability", "Smart suggestions", "Task automation"],
+      demoLink: "/demo/ai-chat"
     },
   ]
 
@@ -153,7 +141,7 @@ export default function FeaturesPage() {
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 mb-3">{feature.title}</h3>
                 <p className="text-slate-600 mb-4 leading-relaxed">{feature.description}</p>
-                <ul className="space-y-2">
+                <ul className="space-y-2 mb-4">
                   {feature.highlights.map((highlight, idx) => (
                     <li key={idx} className="flex items-center gap-2 text-sm text-slate-500">
                       <CheckCircle className="w-4 h-4 text-green-500" />
@@ -161,6 +149,13 @@ export default function FeaturesPage() {
                     </li>
                   ))}
                 </ul>
+                <Button 
+                  onClick={() => router.push(feature.demoLink)}
+                  className="w-full mt-auto bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-indigo-600 group-hover:text-white group-hover:border-transparent transition-all"
+                >
+                  Try Demo
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
               </Card>
             )
           })}
@@ -207,6 +202,7 @@ export default function FeaturesPage() {
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
               <Button 
+                onClick={() => router.push("/demo")}
                 className="bg-white/10 border border-white/30 text-white hover:bg-white/20 text-lg px-8 py-3"
               >
                 View Demo

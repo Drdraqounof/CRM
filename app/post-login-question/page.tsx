@@ -6,11 +6,24 @@ export default function PostLoginQuestionPage() {
   const router = useRouter();
   const [userType, setUserType] = useState<string>("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!userType) return;
-    // Store userType in localStorage/session for now
+    
+    // Store userType in localStorage and save to database
     window.localStorage.setItem("userType", userType);
+    
+    // Save initial response to database
+    try {
+      await fetch("/api/survey", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userType }),
+      });
+    } catch (error) {
+      console.error("Failed to save survey response:", error);
+    }
+    
     // Redirect to next questions page
     if (userType === "organization") {
       router.push("/post-login-question/organization");

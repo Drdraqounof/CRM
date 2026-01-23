@@ -1,9 +1,27 @@
 model User {
-  id       String  @id @default(cuid())
-  name     String?
-  email    String @unique
-  password String
+  id              String           @id @default(cuid())
+  name            String?
+  email           String           @unique
+  password        String
+  isAdmin         Boolean          @default(false)
+  surveyResponses SurveyResponse[]
 }
+
+model SurveyResponse {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userType       String?  // personal or organization
+  usedCRM        String?
+  crmPurpose     String?
+  interests      String?
+  crmComfort     String?
+  orgName        String?
+  orgRole        String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -34,4 +52,17 @@ model Campaign {
   endDate     DateTime
   status      String
   description String?
+}
+
+model SurveyQuestion {
+  id          String   @id @default(cuid())
+  question    String
+  type        String   // text, select, multiselect, radio, checkbox, scale
+  options     String?  // JSON string for select/radio/checkbox options
+  required    Boolean  @default(false)
+  order       Int      @default(0)
+  category    String?  // e.g., "onboarding", "feedback", "demographics"
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

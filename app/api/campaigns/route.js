@@ -93,3 +93,20 @@ export async function GET() {
     return NextResponse.json({ error: 'Failed to fetch campaigns' }, { status: 500 });
   }
 }
+
+export async function DELETE(req) {
+  try {
+    const body = await req.json();
+    const { id } = body;
+    if (!id) {
+      return NextResponse.json({ error: 'Missing campaign id' }, { status: 400 });
+    }
+    await prisma.campaign.delete({
+      where: { id },
+    });
+    return NextResponse.json({ success: true }, { status: 200 });
+  } catch (error) {
+    console.error('DELETE /api/campaigns error:', error);
+    return NextResponse.json({ error: error?.message || 'Failed to delete campaign' }, { status: 500 });
+  }
+}

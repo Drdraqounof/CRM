@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import {
   Database,
   Mail,
@@ -16,10 +16,8 @@ import {
   Megaphone,
   Loader2,
   ChevronDown,
-  User,
-  Settings,
-  LogOut,
 } from "lucide-react";
+import Sidebar from "../components/Sidebar";
 
 type TemplateType = "thank-you" | "appeal" | "follow-up" | "event";
 
@@ -42,6 +40,7 @@ interface Campaign {
 
 export default function AIWriterPage() {
   const router = useRouter();
+  const { data: session } = useSession();
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateType>("thank-you");
   const [selectedDonor, setSelectedDonor] = useState<Donor | null>(null);
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
@@ -55,7 +54,6 @@ export default function AIWriterPage() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [showDonorDropdown, setShowDonorDropdown] = useState(false);
   const [showCampaignDropdown, setShowCampaignDropdown] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
 
   // Fetch donors and campaigns
   useEffect(() => {
@@ -193,79 +191,17 @@ export default function AIWriterPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      {/* Navigation */}
-      <nav className="bg-white/90 backdrop-blur-xl shadow-lg border-b border-slate-200/50 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div
-              className="flex items-center space-x-2 cursor-pointer"
-              onClick={() => router.push("/")}
-            >
-              <div className="bg-gradient-to-br from-blue-600 to-indigo-600 p-2 rounded-lg">
-                <Database className="w-6 h-6 text-white" />
-              </div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                Bondary
-              </h1>
+      <Sidebar />
+      
+      <div className="ml-64 transition-all duration-300">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-purple-100 text-purple-700 px-4 py-2 rounded-full text-sm font-semibold mb-4">
+              <Sparkles className="w-4 h-4" />
+              AI-Powered
             </div>
-            <div className="flex items-center space-x-6">
-              <button
-                onClick={() => router.push("/dashboard")}
-                className="text-slate-700 hover:text-white hover:bg-gradient-to-r hover:from-blue-600 hover:to-indigo-600 font-medium transition-all duration-300 px-4 py-2 rounded-lg"
-              >
-                Dashboard
-              </button>
-              <button
-                onClick={() => router.push("/donor-list")}
-                className="text-slate-700 hover:text-white hover:bg-gradient-to-r hover:from-blue-600 hover:to-indigo-600 font-medium transition-all duration-300 px-4 py-2 rounded-lg"
-              >
-                Donors
-              </button>
-              <button
-                onClick={() => router.push("/campaigns")}
-                className="text-slate-700 hover:text-white hover:bg-gradient-to-r hover:from-blue-600 hover:to-indigo-600 font-medium transition-all duration-300 px-4 py-2 rounded-lg"
-              >
-                Campaigns
-              </button>
-              <button
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium px-4 py-2 rounded-lg flex items-center gap-1"
-              >
-                <Sparkles className="w-4 h-4" />
-                AI Writer
-              </button>
-              <div className="relative">
-                <button
-                  onClick={() => setShowSettings(!showSettings)}
-                  className="text-slate-700 hover:text-white hover:bg-gradient-to-r hover:from-blue-600 hover:to-indigo-600 font-medium transition-all duration-300 px-4 py-2 rounded-lg flex items-center gap-1"
-                >
-                  <Settings className="w-4 h-4" />
-                  Settings
-                </button>
-                {showSettings && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border py-2 z-50">
-                    <button
-                      onClick={() => signOut({ callbackUrl: '/' })}
-                      className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      Sign Out
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </nav>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-purple-100 text-purple-700 px-4 py-2 rounded-full text-sm font-semibold mb-4">
-            <Sparkles className="w-4 h-4" />
-            AI-Powered
-          </div>
-          <h1 className="text-4xl font-bold text-slate-900 mb-4">
+            <h1 className="text-4xl font-bold text-slate-900 mb-4">
             AI Writing Assistant
           </h1>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">
@@ -546,6 +482,7 @@ export default function AIWriterPage() {
               </div>
             )}
           </div>
+        </div>
         </div>
       </div>
     </div>
