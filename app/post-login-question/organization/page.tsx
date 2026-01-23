@@ -2,11 +2,11 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export default function PersonalQuestionsPage() {
+export default function OrganizationQuestionsPage() {
   const router = useRouter();
+  const [orgName, setOrgName] = useState("");
+  const [orgRole, setOrgRole] = useState("");
   const [usedCRM, setUsedCRM] = useState("");
-  const [crmPurpose, setCrmPurpose] = useState("");
-  const [interests, setInterests] = useState("");
   const [crmComfort, setCrmComfort] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -15,9 +15,9 @@ export default function PersonalQuestionsPage() {
     setIsSubmitting(true);
     
     // Store answers in localStorage
+    window.localStorage.setItem("organizationName", orgName);
+    window.localStorage.setItem("organizationRole", orgRole);
     window.localStorage.setItem("usedCRM", usedCRM);
-    window.localStorage.setItem("crmPurpose", crmPurpose);
-    window.localStorage.setItem("personalInterests", interests);
     window.localStorage.setItem("crmComfort", crmComfort);
     
     // Save to database
@@ -26,10 +26,10 @@ export default function PersonalQuestionsPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userType: "personal",
+          userType: "organization",
+          orgName,
+          orgRole,
           usedCRM,
-          crmPurpose,
-          interests,
           crmComfort,
         }),
       });
@@ -43,8 +43,30 @@ export default function PersonalQuestionsPage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4">
       <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
-        <h1 className="text-2xl font-bold mb-4 text-center">Personal Use Questions</h1>
+        <h1 className="text-2xl font-bold mb-4 text-center">Organization Questions</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="block text-lg font-medium mb-2">Organization Name</label>
+            <input
+              type="text"
+              value={orgName}
+              onChange={e => setOrgName(e.target.value)}
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter organization name"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-lg font-medium mb-2">Your Role</label>
+            <input
+              type="text"
+              value={orgRole}
+              onChange={e => setOrgRole(e.target.value)}
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="E.g. admin, staff, volunteer"
+              required
+            />
+          </div>
           <div>
             <label className="block text-lg font-medium mb-2">Have you used a CRM before?</label>
             <select
@@ -57,33 +79,6 @@ export default function PersonalQuestionsPage() {
               <option value="yes">Yes</option>
               <option value="no">No</option>
             </select>
-          </div>
-          <div>
-            <label className="block text-lg font-medium mb-2">What do you think a CRM is used for?</label>
-            <select
-              value={crmPurpose}
-              onChange={e => setCrmPurpose(e.target.value)}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            >
-              <option value="" disabled>Select an option</option>
-              <option value="donor-management">Managing contacts/donors</option>
-              <option value="tracking-donations">Tracking donations</option>
-              <option value="communication">Donor communication</option>
-              <option value="fundraising">Fundraising campaigns</option>
-              <option value="organizing-contacts">Organizing contacts</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-lg font-medium mb-2">Your Interests</label>
-            <input
-              type="text"
-              value={interests}
-              onChange={e => setInterests(e.target.value)}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="E.g. fundraising, volunteering"
-              required
-            />
           </div>
           <div>
             <label className="block text-lg font-medium mb-2">How comfortable are you with using new software tools?</label>

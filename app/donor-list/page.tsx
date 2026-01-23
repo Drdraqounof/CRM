@@ -5,13 +5,14 @@
 import { ArrowLeft, Users, DollarSign, TrendingUp, UserPlus, UserX, Target, Plus, Calendar, Edit, Trash2, X, Sparkles, Settings, LogOut, Shield, User, Tag } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { mockDonors as initialMockDonors, mockCampaigns as importedMockCampaigns } from '../../lib/mock-data';
 import Sidebar from '../components/Sidebar';
 
 // Ensure correct typing for campaigns
 const initialMockCampaigns: Campaign[] = importedMockCampaigns.map(c => ({
   ...c,
-  status: c.status as 'active' | 'completed' | 'planned',
+  status: c.status as 'active' | 'completed' | 'planned' | 'postponed',
 }));
 import { toast } from 'sonner';
 
@@ -235,6 +236,7 @@ interface Donor {
   lastDonation: string;
   status: 'active' | 'lapsed' | 'major';
   description?: string;
+  createdAt?: string;
 }
 
 interface Donation {
@@ -251,7 +253,7 @@ interface Campaign {
   raised: number;
   startDate: string;
   endDate: string;
-  status: 'active' | 'completed' | 'planned';
+  status: 'active' | 'completed' | 'planned' | 'postponed';
   description: string;
 }
 
@@ -266,6 +268,8 @@ type View = 'dashboard' | 'campaigns' | 'donors';
 
 export default function Home() {
   const { data: session } = useSession();
+  const searchParams = useSearchParams();
+  const groupId = searchParams.get('group');
   const [showDescription, setShowDescription] = useState<{ open: boolean; donor?: Donor }>({ open: false });
   const [currentView, setCurrentView] = useState<View>('donors');
   const [searchTerm, setSearchTerm] = useState('');
@@ -312,7 +316,7 @@ export default function Home() {
     }, []);
   const [showAddDonor, setShowAddDonor] = useState(false);
   const [showAddCampaign, setShowAddCampaign] = useState(false);
-  const [newDonor, setNewDonor] = useState({ name: '', email: '', phone: '', totalDonated: 0, lastDonation: '', status: 'active' });
+  const [newDonor, setNewDonor] = useState({ name: '', email: '', phone: '', totalDonated: '' as string | number, lastDonation: '', status: 'active' });
   const [newCampaign, setNewCampaign] = useState<Omit<Campaign, 'id'>>({ name: '', goal: 0, raised: 0, startDate: '', endDate: '', status: 'planned', description: '' });
 
   const totalDonors = 6;
@@ -458,6 +462,7 @@ export default function Home() {
                   <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                     campaign.status === 'active' ? 'bg-green-100 text-green-700' :
                     campaign.status === 'completed' ? 'bg-blue-100 text-blue-700' :
+                    campaign.status === 'postponed' ? 'bg-orange-100 text-orange-700' :
                     'bg-gray-100 text-gray-700'
                   }`}>
                     {campaign.status.charAt(0).toUpperCase() + campaign.status.slice(1)}
@@ -572,11 +577,64 @@ export default function Home() {
     }
 
     // Donors view
+    // Group filtering functions
+    const getGroupFilter = (groupId: string | null) => {
+      if (!groupId) return () => true;
+      
+      const now = new Date();
+      const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 6, now.getDate());
+      const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      const startOfYear = new Date(now.getFullYear(), 0, 1);
+
+      switch (groupId) {
+        case '1': // Major Donors
+          return (d: Donor) => (d.totalDonated || 0) >= 10000;
+        case '2': // Active Monthly Givers
+          return (d: Donor) => {
+            const lastDonation = d.lastDonation ? new Date(d.lastDonation) : null;
+            return lastDonation && lastDonation >= thirtyDaysAgo && d.status === 'active';
+          };
+        case '3': // Lapsed Donors
+          return (d: Donor) => {
+            const lastDonation = d.lastDonation ? new Date(d.lastDonation) : null;
+            return lastDonation && lastDonation < sixMonthsAgo && d.status === 'lapsed';
+          };
+        case '4': // First-Time Donors
+          return (d: Donor) => {
+            const createdAt = d.createdAt ? new Date(d.createdAt) : null;
+            return createdAt && createdAt >= startOfYear;
+          };
+        case '5': // Event Attendees
+          return (d: Donor) =>
+            d.description?.toLowerCase().includes('event') ||
+            d.description?.toLowerCase().includes('gala') ||
+            d.description?.toLowerCase().includes('attendee') ||
+            false;
+        default:
+          return () => true;
+      }
+    };
+
+    const getGroupName = (groupId: string | null) => {
+      switch (groupId) {
+        case '1': return 'Major Donors';
+        case '2': return 'Active Monthly Givers';
+        case '3': return 'Lapsed Donors';
+        case '4': return 'First-Time Donors';
+        case '5': return 'Event Attendees';
+        default: return null;
+      }
+    };
+
+    const groupFilter = getGroupFilter(groupId);
+    const groupName = getGroupName(groupId);
+
     const filteredDonors = donors.filter(donor => {
       const matchesSearch = donor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            donor.email.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesFilter = filterStatus === 'all' || donor.status === filterStatus;
-      return matchesSearch && matchesFilter;
+      const matchesGroup = groupFilter(donor);
+      return matchesSearch && matchesFilter && matchesGroup;
     });
 
     return (
@@ -599,8 +657,28 @@ export default function Home() {
         )}
         <div className="flex justify-between items-start">
           <div>
-            <h1 className="text-3xl font-bold mb-1">Donors</h1>
-            <p className="text-gray-600">Manage your donor relationships</p>
+            {groupName ? (
+              <>
+                <div className="flex items-center gap-2 mb-2">
+                  <a href="/donor-list" className="text-blue-600 hover:underline text-sm flex items-center gap-1">
+                    <ArrowLeft className="h-4 w-4" />
+                    All Donors
+                  </a>
+                  <span className="text-gray-400">/</span>
+                  <span className="text-sm text-gray-600">Group</span>
+                </div>
+                <h1 className="text-3xl font-bold mb-1 flex items-center gap-3">
+                  <Tag className="h-7 w-7 text-blue-600" />
+                  {groupName}
+                </h1>
+                <p className="text-gray-600">Viewing {filteredDonors.length} donors in this group</p>
+              </>
+            ) : (
+              <>
+                <h1 className="text-3xl font-bold mb-1">Donors</h1>
+                <p className="text-gray-600">Manage your donor relationships</p>
+              </>
+            )}
           </div>
           <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2 transition-colors" onClick={() => setShowAddDonor(true)}>
             <Plus className="h-4 w-4" />
@@ -788,7 +866,10 @@ export default function Home() {
                   const res = await fetch('/api/donors', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(newDonor),
+                    body: JSON.stringify({
+                      ...newDonor,
+                      totalDonated: newDonor.totalDonated === '' ? 0 : Number(newDonor.totalDonated)
+                    }),
                   });
                   const result = await res.json();
                   if (!res.ok) {
@@ -797,7 +878,7 @@ export default function Home() {
                   }
                   await fetchDonors();
                   setShowAddDonor(false);
-                  setNewDonor({ name: '', email: '', phone: '', totalDonated: 0, lastDonation: '', status: 'active' });
+                  setNewDonor({ name: '', email: '', phone: '', totalDonated: '', lastDonation: '', status: 'active' });
                 } catch (err) {
                   // Try to show backend error message if available
                   if (err instanceof Response) {
@@ -824,11 +905,20 @@ export default function Home() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Total Donated</label>
-                      <input placeholder="Total Donated" type="number" value={newDonor.totalDonated} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewDonor({ ...newDonor, totalDonated: Number(e.target.value) })} required className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" />
+                      <input placeholder="0" type="number" value={newDonor.totalDonated} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewDonor({ ...newDonor, totalDonated: e.target.value === '' ? '' : Number(e.target.value) })} required className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Last Donation</label>
-                      <input type="date" value={newDonor.lastDonation} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewDonor({ ...newDonor, lastDonation: e.target.value })} required className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" />
+                      <input 
+                        type="date" 
+                        value={newDonor.lastDonation} 
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewDonor({ ...newDonor, lastDonation: e.target.value })} 
+                        min={`${new Date().getFullYear()}-01-01`}
+                        max={new Date().toISOString().split('T')[0]}
+                        required 
+                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" 
+                      />
+                      <p className="text-xs text-gray-500 mt-1">Must be within the current year and not in the future</p>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
@@ -884,9 +974,10 @@ export default function Home() {
                 <input placeholder="Start Date" type="date" value={newCampaign.startDate} onChange={e => setNewCampaign({ ...newCampaign, startDate: e.target.value })} required className="w-full px-4 py-2 border rounded-lg" />
                 <input placeholder="End Date" type="date" value={newCampaign.endDate} onChange={e => setNewCampaign({ ...newCampaign, endDate: e.target.value })} required className="w-full px-4 py-2 border rounded-lg" />
                 <input placeholder="Description" value={newCampaign.description} onChange={e => setNewCampaign({ ...newCampaign, description: e.target.value })} required className="w-full px-4 py-2 border rounded-lg" />
-                <select value={newCampaign.status} onChange={e => setNewCampaign({ ...newCampaign, status: e.target.value as 'active' | 'completed' | 'planned' })} className="w-full px-4 py-2 border rounded-lg">
+                <select value={newCampaign.status} onChange={e => setNewCampaign({ ...newCampaign, status: e.target.value as 'active' | 'completed' | 'planned' | 'postponed' })} className="w-full px-4 py-2 border rounded-lg">
                   <option value="planned">Planned</option>
                   <option value="active">Active</option>
+                  <option value="postponed">Postponed</option>
                   <option value="completed">Completed</option>
                 </select>
                 <div className="flex gap-2">
