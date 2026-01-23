@@ -16,6 +16,7 @@ import {
   Megaphone,
   Loader2,
   ChevronDown,
+  User,
 } from "lucide-react";
 import Sidebar from "../components/Sidebar";
 

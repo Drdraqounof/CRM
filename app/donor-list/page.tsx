@@ -4,7 +4,7 @@
 
 import { ArrowLeft, Users, DollarSign, TrendingUp, UserPlus, UserX, Target, Plus, Calendar, Edit, Trash2, X, Sparkles, Settings, LogOut, Shield, User, Tag } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { mockDonors as initialMockDonors, mockCampaigns as importedMockCampaigns } from '../../lib/mock-data';
 import Sidebar from '../components/Sidebar';
@@ -266,7 +266,7 @@ type View = 'dashboard' | 'campaigns' | 'donors';
 
 // Removed duplicate mockCampaigns definition; using imported mockCampaigns
 
-export default function Home() {
+function DonorListContent() {
   const { data: session } = useSession();
   const searchParams = useSearchParams();
   const groupId = searchParams.get('group');
@@ -1012,5 +1012,17 @@ export default function Home() {
         </footer>
       </div>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-500">Loading...</div>
+      </div>
+    }>
+      <DonorListContent />
+    </Suspense>
   );
 }
