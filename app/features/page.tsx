@@ -151,7 +151,7 @@ export default function FeaturesPage() {
                 </ul>
                 <Button 
                   onClick={() => router.push(feature.demoLink)}
-                  className="w-full mt-auto bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-indigo-600 group-hover:text-white group-hover:border-transparent transition-all"
+                  className="w-full mt-auto bg-blue-600 text-white hover:bg-blue-700 transition-all"
                 >
                   Try Demo
                   <ArrowRight className="w-4 h-4 ml-2" />
@@ -196,7 +196,7 @@ export default function FeaturesPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
                 onClick={() => router.push("/login")}
-                className="bg-white text-blue-600 hover:bg-blue-50 text-lg px-8 py-3"
+                className="bg-blue-600 text-white hover:bg-blue-700 text-lg px-8 py-3"
               >
                 Start Free Trial
                 <ArrowRight className="w-5 h-5 ml-2" />
