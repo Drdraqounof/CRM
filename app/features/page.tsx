@@ -3,12 +3,9 @@
 import { useRouter } from "next/navigation"
 import { 
   Database, 
-  LayoutDashboard, 
-  Users, 
-  Target, 
-  MessageSquare, 
   Shield, 
   Zap,
+  Users,
   CheckCircle,
   ArrowRight
 } from "lucide-react"
@@ -17,41 +14,6 @@ import { Card } from "../ui/card"
 
 export default function FeaturesPage() {
   const router = useRouter()
-
-  const mainFeatures = [
-    {
-      title: "Interactive Dashboard",
-      description: "Get a real-time overview of your entire CRM at a glance. Track key metrics, recent activities, and performance indicators all in one place.",
-      icon: LayoutDashboard,
-      color: "from-blue-500 to-cyan-500",
-      highlights: ["Real-time analytics", "Customizable widgets", "Quick actions"],
-      demoLink: "/demo/dashboard"
-    },
-    {
-      title: "Donor Management",
-      description: "Organize and manage all your donor relationships efficiently. Store contact details, track donation history, and segment your donor base.",
-      icon: Users,
-      color: "from-purple-500 to-pink-500",
-      highlights: ["Contact profiles", "Donation tracking", "Smart segmentation"],
-      demoLink: "/demo/donors"
-    },
-    {
-      title: "Campaign Tracking",
-      description: "Create, manage, and monitor fundraising campaigns from start to finish. Set goals, track progress, and measure success.",
-      icon: Target,
-      color: "from-orange-500 to-red-500",
-      highlights: ["Goal setting", "Progress tracking", "Performance reports"],
-      demoLink: "/demo/campaigns"
-    },
-    {
-      title: "AI Chat Assistant",
-      description: "Get instant help with our built-in AI assistant. Ask questions about your data, get suggestions, and automate routine tasks.",
-      icon: MessageSquare,
-      color: "from-green-500 to-emerald-500",
-      highlights: ["24/7 availability", "Smart suggestions", "Task automation"],
-      demoLink: "/demo/ai-chat"
-    },
-  ]
 
   const additionalFeatures = [
     { icon: Shield, title: "Secure Data Storage", description: "Enterprise-grade security for all your sensitive donor information" },
@@ -127,38 +89,15 @@ export default function FeaturesPage() {
           </p>
         </div>
 
-        {/* Main Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
-          {mainFeatures.map((feature, index) => {
-            const Icon = feature.icon
-            return (
-              <Card 
-                key={index}
-                className="p-8 bg-white/90 backdrop-blur-md border-slate-200/50 hover:shadow-2xl transition-all duration-300 rounded-2xl group hover:-translate-y-2"
-              >
-                <div className={`inline-flex p-4 rounded-2xl bg-gradient-to-br ${feature.color} mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                  <Icon className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-3">{feature.title}</h3>
-                <p className="text-slate-600 mb-4 leading-relaxed">{feature.description}</p>
-                <ul className="space-y-2 mb-4">
-                  {feature.highlights.map((highlight, idx) => (
-                    <li key={idx} className="flex items-center gap-2 text-sm text-slate-500">
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                      {highlight}
-                    </li>
-                  ))}
-                </ul>
-                <Button 
-                  onClick={() => router.push(feature.demoLink)}
-                  className="w-full mt-auto bg-blue-600 text-white hover:bg-blue-700 transition-all"
-                >
-                  Try Demo
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </Card>
-            )
-          })}
+        {/* Big Demo Button */}
+        <div className="flex justify-center mb-20">
+          <Button 
+            onClick={() => router.push("/demo")}
+            className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 text-2xl px-12 py-6 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105"
+          >
+            Start Interactive Demo
+            <ArrowRight className="w-6 h-6 ml-3" />
+          </Button>
         </div>
 
         {/* Additional Features */}

@@ -20,8 +20,29 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // Email validation function
+  const isValidEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleSubmit = async () => {
     setError(null);
+    
+    // Validate login inputs
+    if (!email.trim()) {
+      setError('Please enter your email address');
+      return;
+    }
+    if (!isValidEmail(email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+    if (!password) {
+      setError('Please enter your password');
+      return;
+    }
+    
     setLoading(true);
     try {
       // Use next-auth signIn for credentials (no register flag for login)
@@ -39,10 +60,10 @@ export default function LoginPage() {
           router.push('/dashboard');
         }
       } else {
-        setError(result?.error || 'Login failed');
+        setError('Invalid email or password. Please try again.');
       }
     } catch (e) {
-      setError('Network error');
+      setError('Network error. Please check your connection.');
     } finally {
       setLoading(false);
     }
@@ -122,6 +143,12 @@ export default function LoginPage() {
             </div>
             {/* Form */}
             <div className="p-8">
+              {/* Error Notification */}
+              {(error || registerError) && (
+                <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-red-800 text-sm font-medium">{error || registerError}</p>
+                </div>
+              )}
               <div className="space-y-6">
                 {/* Show registration form */}
                 {showRegister ? (
@@ -139,16 +166,17 @@ export default function LoginPage() {
                       />
                     </div>
                     <div>
-                      <label htmlFor="register-email" className="block text-sm font-semibold text-gray-700 mb-2">Gmail</label>
+                      <label htmlFor="register-email" className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
                       <input
                         id="register-email"
                         type="email"
                         value={registerEmail}
                         onChange={(e) => setRegisterEmail(e.target.value)}
                         className="block w-full pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white text-gray-900"
-                        placeholder="Enter your Gmail address"
+                        placeholder="example@gmail.com"
                         autoComplete="email"
                       />
+                      <p className="text-xs text-gray-500 mt-1">Use a valid email address (e.g., alex@gmail.com, alex@yahoo.com)</p>
                     </div>
                     <div>
                       <label htmlFor="register-password" className="block text-sm font-semibold text-gray-700 mb-2">Password</label>
@@ -168,6 +196,29 @@ export default function LoginPage() {
                       className="w-full bg-gradient-to-r from-blue-600 to-blue-800 text-white font-semibold py-3 px-6 rounded-lg hover:from-blue-700 hover:to-blue-900 transition-all duration-200 shadow-lg flex items-center justify-center space-x-2 group disabled:opacity-60 mt-4"
                       onClick={async () => {
                         setRegisterError(null);
+                        
+                        // Validation checks
+                        if (!registerName.trim()) {
+                          setRegisterError('Please enter your name');
+                          return;
+                        }
+                        if (!registerEmail.trim()) {
+                          setRegisterError('Please enter your email address');
+                          return;
+                        }
+                        if (!isValidEmail(registerEmail)) {
+                          setRegisterError('Please enter a valid email address (e.g., alex@gmail.com)');
+                          return;
+                        }
+                        if (!registerPassword) {
+                          setRegisterError('Please enter a password');
+                          return;
+                        }
+                        if (registerPassword.length < 6) {
+                          setRegisterError('Password must be at least 6 characters');
+                          return;
+                        }
+                        
                         setRegisterLoading(true);
                         try {
                           // Use next-auth signIn with custom header to register
@@ -182,10 +233,10 @@ export default function LoginPage() {
                             // Redirect new user to post-login question page
                             router.push('/post-login-question');
                           } else {
-                            setRegisterError(result?.error || 'Registration failed');
+                            setRegisterError(result?.error || 'Registration failed. Please try again.');
                           }
                         } catch (e) {
-                          setRegisterError('Registration error');
+                          setRegisterError('Registration error. Please check your connection.');
                         } finally {
                           setRegisterLoading(false);
                         }

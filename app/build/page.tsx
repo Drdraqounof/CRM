@@ -67,29 +67,26 @@ export default function FeaturesPage() {
               {/* Background */}
               <rect width="1000" height="700" fill="#f8fafc" rx="20" />
               
-              {/* Title */}
-              
-              
               {/* Client Layer */}
               <rect x="50" y="120" width="200" height="140" rx="15" fill="#e0e7ff" stroke="#6366f1" strokeWidth="3" />
-              <text x="150" y="155" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#312e81">Client Layer</text>
-              <text x="150" y="180" textAnchor="middle" fontSize="12" fill="#4f46e5">React/Next.js</text>
-              <text x="150" y="200" textAnchor="middle" fontSize="12" fill="#4f46e5">Tailwind CSS</text>
-              <text x="150" y="220" textAnchor="middle" fontSize="12" fill="#4f46e5">TypeScript</text>
+              <text x="150" y="150" textAnchor="middle" fontSize="15" fontWeight="bold" fill="#312e81">Client Layer</text>
+              <text x="150" y="172" textAnchor="middle" fontSize="11" fill="#4f46e5">React/Next.js</text>
+              <text x="150" y="190" textAnchor="middle" fontSize="11" fill="#4f46e5">Tailwind CSS</text>
+              <text x="150" y="208" textAnchor="middle" fontSize="11" fill="#4f46e5">TypeScript</text>
               
               {/* API Gateway */}
               <rect x="400" y="120" width="200" height="140" rx="15" fill="#bfdbfe" stroke="#2563eb" strokeWidth="3" />
-              <text x="500" y="155" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#1e40af">API Gateway</text>
-              <text x="500" y="180" textAnchor="middle" fontSize="12" fill="#1e3a8a">REST API</text>
-              <text x="500" y="200" textAnchor="middle" fontSize="12" fill="#1e3a8a">Authentication</text>
-              <text x="500" y="220" textAnchor="middle" fontSize="12" fill="#1e3a8a">Rate Limiting</text>
+              <text x="500" y="150" textAnchor="middle" fontSize="15" fontWeight="bold" fill="#1e40af">API Gateway</text>
+              <text x="500" y="172" textAnchor="middle" fontSize="11" fill="#1e3a8a">REST API</text>
+              <text x="500" y="190" textAnchor="middle" fontSize="11" fill="#1e3a8a">Authentication</text>
+              <text x="500" y="208" textAnchor="middle" fontSize="11" fill="#1e3a8a">Rate Limiting</text>
               
               {/* Server Layer */}
               <rect x="750" y="120" width="200" height="140" rx="15" fill="#e9d5ff" stroke="#9333ea" strokeWidth="3" />
-              <text x="850" y="155" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#581c87">Server Layer</text>
-              <text x="850" y="180" textAnchor="middle" fontSize="12" fill="#7e22ce">Node.js/Express</text>
-              <text x="850" y="200" textAnchor="middle" fontSize="12" fill="#7e22ce">Business Logic</text>
-              <text x="850" y="220" textAnchor="middle" fontSize="12" fill="#7e22ce">NextAuth</text>
+              <text x="850" y="150" textAnchor="middle" fontSize="15" fontWeight="bold" fill="#581c87">Server Layer</text>
+              <text x="850" y="172" textAnchor="middle" fontSize="11" fill="#7e22ce">Node.js/Express</text>
+              <text x="850" y="190" textAnchor="middle" fontSize="11" fill="#7e22ce">Business Logic</text>
+              <text x="850" y="208" textAnchor="middle" fontSize="11" fill="#7e22ce">NextAuth</text>
               
               {/* Arrows from Client to API Gateway */}
               <defs>
@@ -104,24 +101,24 @@ export default function FeaturesPage() {
               
               {/* Cache Layer */}
               <rect x="50" y="380" width="200" height="140" rx="15" fill="#fecaca" stroke="#dc2626" strokeWidth="3" />
-              <text x="150" y="415" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#7f1d1d">Cache Layer</text>
-              <text x="150" y="440" textAnchor="middle" fontSize="12" fill="#b91c1c">Redis</text>
-              <text x="150" y="460" textAnchor="middle" fontSize="12" fill="#b91c1c">Session Storage</text>
-              <text x="150" y="480" textAnchor="middle" fontSize="12" fill="#b91c1c">Query Cache</text>
+              <text x="150" y="410" textAnchor="middle" fontSize="15" fontWeight="bold" fill="#7f1d1d">Cache Layer</text>
+              <text x="150" y="432" textAnchor="middle" fontSize="11" fill="#b91c1c">Redis</text>
+              <text x="150" y="450" textAnchor="middle" fontSize="11" fill="#b91c1c">Session Storage</text>
+              <text x="150" y="468" textAnchor="middle" fontSize="11" fill="#b91c1c">Query Cache</text>
               
               {/* Database */}
               <rect x="400" y="380" width="200" height="140" rx="15" fill="#bbf7d0" stroke="#059669" strokeWidth="3" />
-              <text x="500" y="415" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#065f46">Database</text>
-              <text x="500" y="440" textAnchor="middle" fontSize="12" fill="#047857">PostgreSQL</text>
-              <text x="500" y="460" textAnchor="middle" fontSize="12" fill="#047857">Data Storage</text>
-              <text x="500" y="480" textAnchor="middle" fontSize="12" fill="#047857">Prisma ORM</text>
+              <text x="500" y="410" textAnchor="middle" fontSize="15" fontWeight="bold" fill="#065f46">Database</text>
+              <text x="500" y="432" textAnchor="middle" fontSize="11" fill="#047857">PostgreSQL</text>
+              <text x="500" y="450" textAnchor="middle" fontSize="11" fill="#047857">Data Storage</text>
+              <text x="500" y="468" textAnchor="middle" fontSize="11" fill="#047857">Prisma ORM</text>
               
               {/* External Services */}
               <rect x="750" y="380" width="200" height="140" rx="15" fill="#fef3c7" stroke="#f59e0b" strokeWidth="3" />
-              <text x="850" y="415" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#92400e">External Services</text>
-              <text x="850" y="440" textAnchor="middle" fontSize="12" fill="#b45309">Email (SendGrid)</text>
-              <text x="850" y="460" textAnchor="middle" fontSize="12" fill="#b45309">Analytics</text>
-              <text x="850" y="480" textAnchor="middle" fontSize="12" fill="#b45309">Third-party APIs</text>
+              <text x="850" y="410" textAnchor="middle" fontSize="15" fontWeight="bold" fill="#92400e">External Services</text>
+              <text x="850" y="432" textAnchor="middle" fontSize="11" fill="#b45309">Email (SendGrid)</text>
+              <text x="850" y="450" textAnchor="middle" fontSize="11" fill="#b45309">Analytics</text>
+              <text x="850" y="468" textAnchor="middle" fontSize="11" fill="#b45309">Third-party APIs</text>
               
               {/* Arrows from Server to Cache */}
               <line x1="750" y1="260" x2="200" y2="380" stroke="#64748b" strokeWidth="2" markerEnd="url(#arrowhead)" strokeDasharray="5,5" />
@@ -145,88 +142,6 @@ export default function FeaturesPage() {
             </svg>
             <p className="text-slate-600 text-center max-w-2xl mt-6">
               This architecture illustrates the complete CRM system: the client-side React application communicates through a REST API gateway to the Node.js backend, which manages business logic, interfaces with PostgreSQL for data storage, leverages Redis for caching, and integrates with external services.
-            </p>
-          </div>
-        </div>
-
-        {/* Data Flow Diagram Section */}
-        <div className="mb-20">
-          <h2 className="text-4xl font-bold text-slate-900 mb-8 text-center">Data Flow Diagram</h2>
-          <div className="flex flex-col items-center bg-white/95 backdrop-blur-sm rounded-2xl p-8 border border-slate-200/50">
-            <svg viewBox="0 0 1000 600" className="w-full max-w-4xl h-auto">
-              {/* Background */}
-              <rect width="1000" height="600" fill="#f8fafc" rx="20" />
-              
-              {/* User Circle */}
-              <circle cx="100" cy="200" r="60" fill="#bfdbfe" stroke="#2563eb" strokeWidth="3" />
-              <text x="100" y="195" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#1e40af">User</text>
-              
-              {/* UI Components */}
-              <rect x="250" y="150" width="180" height="100" rx="15" fill="#bfdbfe" stroke="#2563eb" strokeWidth="2" />
-              <text x="340" y="180" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#1e40af">UI Components</text>
-              <text x="340" y="205" textAnchor="middle" fontSize="12" fill="#1e3a8a">Forms & Views</text>
-              
-              {/* API Layer */}
-              <rect x="600" y="150" width="180" height="100" rx="15" fill="#e9d5ff" stroke="#9333ea" strokeWidth="2" />
-              <text x="690" y="180" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#581c87">API Layer</text>
-              <text x="690" y="205" textAnchor="middle" fontSize="12" fill="#7e22ce">Request Handler</text>
-              
-              {/* Business Logic */}
-              <rect x="600" y="350" width="180" height="100" rx="15" fill="#fbcfe8" stroke="#ec4899" strokeWidth="2" />
-              <text x="690" y="380" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#831843">Business Logic</text>
-              <text x="690" y="405" textAnchor="middle" fontSize="12" fill="#be185d">Processing</text>
-              
-              {/* Database */}
-              <rect x="350" y="350" width="180" height="100" rx="15" fill="#bbf7d0" stroke="#059669" strokeWidth="2" />
-              <text x="440" y="380" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#065f46">Database</text>
-              <text x="440" y="405" textAnchor="middle" fontSize="12" fill="#047857">Data Storage</text>
-              
-              {/* Response */}
-              <rect x="70" y="350" width="180" height="100" rx="15" fill="#fef3c7" stroke="#f59e0b" strokeWidth="2" />
-              <text x="160" y="380" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#92400e">Response</text>
-              <text x="160" y="405" textAnchor="middle" fontSize="12" fill="#b45309">Data to User</text>
-              
-              {/* Arrow Definitions */}
-              <defs>
-                <marker id="arrowhead-blue" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-                  <polygon points="0 0, 10 3, 0 6" fill="#2563eb" />
-                </marker>
-                <marker id="arrowhead-purple" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-                  <polygon points="0 0, 10 3, 0 6" fill="#9333ea" />
-                </marker>
-                <marker id="arrowhead-pink" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-                  <polygon points="0 0, 10 3, 0 6" fill="#ec4899" />
-                </marker>
-                <marker id="arrowhead-green" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-                  <polygon points="0 0, 10 3, 0 6" fill="#059669" />
-                </marker>
-              </defs>
-              
-              {/* User to UI Components */}
-              <line x1="160" y1="200" x2="250" y2="200" stroke="#2563eb" strokeWidth="2" markerEnd="url(#arrowhead-blue)" />
-              <text x="200" y="185" fontSize="11" fill="#2563eb" fontWeight="bold">Input</text>
-              
-              {/* UI Components to API Layer */}
-              <line x1="430" y1="200" x2="600" y2="200" stroke="#2563eb" strokeWidth="2" markerEnd="url(#arrowhead-blue)" />
-              <text x="510" y="185" fontSize="11" fill="#2563eb" fontWeight="bold">Request</text>
-              
-              {/* API Layer to Business Logic */}
-              <line x1="690" y1="250" x2="690" y2="350" stroke="#9333ea" strokeWidth="2" markerEnd="url(#arrowhead-purple)" />
-              <text x="710" y="305" fontSize="11" fill="#9333ea" fontWeight="bold">Process</text>
-              
-              {/* Business Logic to Database */}
-              <line x1="600" y1="400" x2="530" y2="400" stroke="#059669" strokeWidth="2" markerEnd="url(#arrowhead-green)" />
-              <text x="555" y="420" fontSize="11" fill="#059669" fontWeight="bold">Store/Retrieve</text>
-              
-              {/* Database to Response */}
-              <line x1="350" y1="400" x2="250" y2="400" stroke="#f59e0b" strokeWidth="2" markerEnd="url(#arrowhead-green)" />
-              <text x="295" y="420" fontSize="11" fill="#f59e0b" fontWeight="bold">Return Data</text>
-              
-              {/* Response to User */}
-              <line x1="160" y1="350" x2="130" y2="260" stroke="#f59e0b" strokeWidth="2" markerEnd="url(#arrowhead-green)" />
-            </svg>
-            <p className="text-slate-600 text-center max-w-2xl mt-6">
-              The data flow diagram demonstrates the complete request-response cycle: users interact with UI components, which send requests through the API layer, triggering business logic processing, database operations, and finally returning data back to the user interface.
             </p>
           </div>
         </div>

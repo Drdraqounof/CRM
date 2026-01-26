@@ -26,12 +26,12 @@ export default function DemoLayout({ children }: { children: React.ReactNode }) 
                 <Database className="w-6 h-6 text-white" />
               </div>
               <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                Bondary Demo
+                Bondary overview
               </h1>
             </div>
             <div className="flex items-center gap-4">
               <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-sm font-medium">
-                Demo Mode
+                Demo overview
               </span>
               <button
                 onClick={() => router.push("/login")}
