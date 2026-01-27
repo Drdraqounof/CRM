@@ -134,8 +134,8 @@ export default function DemoPage() {
         {/* Live Demo Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="mb-8">
-            <h2 className="text-3xl font-bold text-slate-900 mb-2">Interactive Dashboard Demo</h2>
-            <p className="text-slate-600">Explore a fully functional demo of Bondary CRM. Click on elements to interact with them.</p>
+            <h2 className="text-3xl font-bold text-slate-900 mb-2">Interactive Dashboard</h2>
+            <p className="text-slate-600">Explore a fully functional of Bondary CRM. Click on elements to interact with them.</p>
           </div>
 
           {/* Key Metrics */}

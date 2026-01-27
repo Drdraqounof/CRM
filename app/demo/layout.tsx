@@ -31,7 +31,7 @@ export default function DemoLayout({ children }: { children: React.ReactNode }) 
             </div>
             <div className="flex items-center gap-4">
               <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-sm font-medium">
-                Demo overview
+                overview
               </span>
               <button
                 onClick={() => router.push("/login")}

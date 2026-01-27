@@ -144,7 +144,7 @@ export default function FeaturesPage() {
                 onClick={() => router.push("/demo")}
                 className="bg-white/10 border border-white/30 text-white hover:bg-white/20 text-lg px-8 py-3"
               >
-                View Demo
+                View Overview
               </Button>
             </div>
           </div>
