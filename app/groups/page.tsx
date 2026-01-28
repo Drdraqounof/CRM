@@ -23,6 +23,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import Sidebar from "../components/Sidebar";
+import { useTheme } from "@/lib/useTheme";
 
 interface Donor {
   id: string;
@@ -56,6 +57,7 @@ interface Toast {
 export default function GroupsPage() {
   const router = useRouter();
   const { data: session } = useSession();
+  const { themeConfig } = useTheme();
   const [showModal, setShowModal] = useState(false);
   const [editingGroup, setEditingGroup] = useState<Group | null>(null);
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -262,12 +264,12 @@ export default function GroupsPage() {
 
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowModal(false)}>
-        <div className="bg-white rounded-xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className={`${themeConfig.surface} rounded-xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto border ${themeConfig.border}`} onClick={(e) => e.stopPropagation()}>
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold">
+            <h2 className={`text-2xl font-bold ${themeConfig.text}`}>
               {editingGroup ? "Edit Group" : "New Group"}
             </h2>
-            <button onClick={() => setShowModal(false)} className="p-2 hover:bg-gray-100 rounded-lg">
+            <button onClick={() => setShowModal(false)} className={`p-2 hover:${themeConfig.accent} rounded-lg`}>
               <X className="h-5 w-5" />
             </button>
           </div>
@@ -280,23 +282,23 @@ export default function GroupsPage() {
             className="space-y-4"
           >
             <div>
-              <label className="block text-sm font-medium mb-1">Group Name</label>
+              <label className={`block text-sm font-medium mb-1 ${themeConfig.text}`}>Group Name</label>
               <input
                 type="text"
                 required
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={`w-full px-4 py-2 border ${themeConfig.border} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${themeConfig.surface} ${themeConfig.text}`}
                 placeholder="e.g., High-Value Donors"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">Description</label>
+              <label className={`block text-sm font-medium mb-1 ${themeConfig.text}`}>Description</label>
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={`w-full px-4 py-2 border ${themeConfig.border} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${themeConfig.surface} ${themeConfig.text}`}
                 rows={2}
                 placeholder="Describe this group"
               />
@@ -355,7 +357,7 @@ export default function GroupsPage() {
             <div className="flex gap-2 pt-4">
               <button
                 type="submit"
-                className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                className={`flex-1 ${themeConfig.primary} text-white px-4 py-2 rounded-lg hover:opacity-90 transition-colors flex items-center justify-center gap-2`}
               >
                 <Save className="w-4 h-4" />
                 {editingGroup ? "Save Changes" : "Create Group"}
@@ -363,7 +365,7 @@ export default function GroupsPage() {
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
-                className="flex-1 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors"
+                className={`flex-1 border ${themeConfig.border} text-${themeConfig.text} px-4 py-2 rounded-lg hover:${themeConfig.accent} transition-colors`}
               >
                 Cancel
               </button>
@@ -375,7 +377,7 @@ export default function GroupsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className={`min-h-screen ${themeConfig.bg}`}>
       <Sidebar />
       
       <div className="ml-64 transition-all duration-300">
@@ -410,15 +412,15 @@ export default function GroupsPage() {
           {/* Header */}
           <div className="flex justify-between items-start mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Donor Groups</h1>
-              <p className="text-gray-600 mt-1">Organize donors into groups for targeted communication</p>
+              <h1 className={`text-3xl font-bold ${themeConfig.text}`}>Donor Groups</h1>
+              <p className={`${themeConfig.textSecondary} mt-1`}>Organize donors into groups for targeted communication</p>
             </div>
             <button
               onClick={() => {
                 setEditingGroup(null);
                 setShowModal(true);
               }}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2 transition-colors"
+              className={`${themeConfig.primary} text-white px-4 py-2 rounded-lg hover:opacity-90 flex items-center gap-2 transition-colors`}
             >
               <Plus className="w-5 h-5" />
               New Group
@@ -427,40 +429,40 @@ export default function GroupsPage() {
 
         {/* Stats */}
         <div className="grid grid-cols-4 gap-4 mb-8">
-          <div className="bg-white rounded-xl border shadow-sm p-4">
+          <div className={`${themeConfig.surface} rounded-xl border ${themeConfig.border} shadow-sm p-4`}>
             <div className="flex items-center gap-3">
               <div className="p-2 bg-purple-100 rounded-lg">
                 <Tag className="w-5 h-5 text-purple-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-900">{groups.length}</p>
-                <p className="text-sm text-gray-500">Total Groups</p>
+                <p className={`text-2xl font-bold ${themeConfig.text}`}>{groups.length}</p>
+                <p className={`text-sm ${themeConfig.textSecondary}`}>Total Groups</p>
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-xl border shadow-sm p-4">
+          <div className={`${themeConfig.surface} rounded-xl border ${themeConfig.border} shadow-sm p-4`}>
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-100 rounded-lg">
                 <Users className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className={`text-2xl font-bold ${themeConfig.text}`}>
                   {loading ? <RefreshCw className="w-5 h-5 animate-spin" /> : donors.length}
                 </p>
-                <p className="text-sm text-gray-500">Total Donors</p>
+                <p className={`text-sm ${themeConfig.textSecondary}`}>Total Donors</p>
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-xl border shadow-sm p-4">
+          <div className={`${themeConfig.surface} rounded-xl border ${themeConfig.border} shadow-sm p-4`}>
             <div className="flex items-center gap-3">
               <div className="p-2 bg-green-100 rounded-lg">
                 <UserCheck className="w-5 h-5 text-green-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className={`text-2xl font-bold ${themeConfig.text}`}>
                   {loading ? <RefreshCw className="w-5 h-5 animate-spin" /> : donors.filter(d => d.status === "active").length}
                 </p>
-                <p className="text-sm text-gray-500">Active Donors</p>
+                <p className={`text-sm ${themeConfig.textSecondary}`}>Active Donors</p>
               </div>
             </div>
           </div>

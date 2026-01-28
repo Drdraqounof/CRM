@@ -234,10 +234,10 @@ export default function CampaignsPage() {
 
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-        <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className={`${themeConfig.surface} rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto border ${themeConfig.border}`} onClick={(e) => e.stopPropagation()}>
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold">{campaign ? 'Edit Campaign' : 'New Campaign'}</h2>
-            <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+            <h2 className={`text-2xl font-bold ${themeConfig.text}`}>{campaign ? 'Edit Campaign' : 'New Campaign'}</h2>
+            <button onClick={onClose} className={`p-2 hover:${themeConfig.accent} rounded-lg transition-colors`}>
               <X className="h-5 w-5" />
             </button>
           </div>
@@ -379,11 +379,11 @@ export default function CampaignsPage() {
       }
     };
     return (
-      <div className="bg-white p-6 rounded-lg border shadow-sm">
+      <div className={`${themeConfig.surface} p-6 rounded-lg border ${themeConfig.border} shadow-sm`}>
         <div className="flex justify-between items-start mb-4">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
-              <h3 className="font-semibold text-lg">{campaign.name}</h3>
+              <h3 className={`font-semibold text-lg ${themeConfig.text}`}>{campaign.name}</h3>
               <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                 campaign.status === 'active' ? 'bg-green-100 text-green-700' :
                 campaign.status === 'completed' ? 'bg-blue-100 text-blue-700' :
@@ -392,11 +392,11 @@ export default function CampaignsPage() {
                 {campaign.status.charAt(0).toUpperCase() + campaign.status.slice(1)}
               </span>
             </div>
-            <p className="text-sm text-gray-600">{campaign.description}</p>
+            <p className={`text-sm ${themeConfig.textSecondary}`}>{campaign.description}</p>
           </div>
           <div className="flex gap-2 ml-4">
-            <button onClick={() => handleEdit(campaign)} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-              <Edit className="h-4 w-4 text-gray-600" />
+            <button onClick={() => handleEdit(campaign)} className={`p-2 hover:${themeConfig.accent} rounded-lg transition-colors`}>
+              <Edit className={`h-4 w-4 ${themeConfig.textSecondary}`} />
             </button>
             <button onClick={() => handleDelete(campaign.id)} className="p-2 hover:bg-red-50 rounded-lg transition-colors">
               <Trash2 className="h-4 w-4 text-red-600" />
@@ -448,22 +448,22 @@ export default function CampaignsPage() {
             </div>
             {showDetails && (
               <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={() => setShowDetails(false)}>
-                <div className="bg-white rounded-lg p-6 max-w-sm w-full shadow-lg" onClick={e => e.stopPropagation()}>
-                  <h3 className="text-xl font-bold mb-4">Campaign Details</h3>
+                <div className={`${themeConfig.surface} rounded-lg p-6 max-w-sm w-full shadow-lg border ${themeConfig.border}`} onClick={e => e.stopPropagation()}>
+                  <h3 className={`text-xl font-bold mb-4 ${themeConfig.text}`}>Campaign Details</h3>
                   <div className="mb-2">
                     <span className="font-semibold">Description:</span>
-                    <div className="text-gray-700 mt-1">{campaign.description}</div>
+                    <div className={`${themeConfig.text} mt-1`}>{campaign.description}</div>
                   </div>
                   <div className="mb-2">
                     <span className="font-semibold">Start Date:</span>
-                    <span className="ml-2 text-gray-700">{campaign.startDate}</span>
+                    <span className={`ml-2 ${themeConfig.text}`}>{campaign.startDate}</span>
                   </div>
                   <div className="mb-4">
                     <span className="font-semibold">End Date:</span>
-                    <span className="ml-2 text-gray-700">{campaign.endDate}</span>
+                    <span className={`ml-2 ${themeConfig.text}`}>{campaign.endDate}</span>
                   </div>
                   <button
-                    className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
+                    className={`w-full ${themeConfig.primary} text-white py-2 rounded-lg font-semibold hover:opacity-90 transition`}
                     onClick={() => setShowDetails(false)}
                   >
                     Close
@@ -530,8 +530,8 @@ export default function CampaignsPage() {
       <div className="space-y-8">
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-3xl font-bold mb-1">Campaigns</h1>
-          <p className="text-gray-600">Manage your fundraising campaigns</p>
+          <h1 className={`text-3xl font-bold mb-1 ${themeConfig.text}`}>Campaigns</h1>
+          <p className={themeConfig.textSecondary}>Manage your fundraising campaigns</p>
         </div>
         <div className="flex gap-2 items-center">
           <button
@@ -539,7 +539,7 @@ export default function CampaignsPage() {
               setEditingCampaign(null);
               setShowCampaignModal(true);
             }}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2 transition-colors"
+            className={`${themeConfig.primary} text-white px-4 py-2 rounded-lg hover:opacity-90 flex items-center gap-2 transition-colors`}
           >
             <Plus className="h-4 w-4" />
             New Campaign
@@ -547,7 +547,7 @@ export default function CampaignsPage() {
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-lg border shadow-sm">
+      <div className={`${themeConfig.surface} p-6 rounded-lg border ${themeConfig.border} shadow-sm`}>
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">Campaign Overview</h2>
           <div className="relative">
