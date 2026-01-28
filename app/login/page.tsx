@@ -14,6 +14,7 @@ export default function LoginPage() {
   const [registerName, setRegisterName] = useState('');
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
+  const [registerConfirmPassword, setRegisterConfirmPassword] = useState('');
   const [registerError, setRegisterError] = useState<string | null>(null);
   const [registerLoading, setRegisterLoading] = useState(false);
 
@@ -190,6 +191,18 @@ export default function LoginPage() {
                         autoComplete="new-password"
                       />
                     </div>
+                    <div>
+                      <label htmlFor="register-confirm-password" className="block text-sm font-semibold text-gray-700 mb-2">Confirm Password</label>
+                      <input
+                        id="register-confirm-password"
+                        type="password"
+                        value={registerConfirmPassword}
+                        onChange={(e) => setRegisterConfirmPassword(e.target.value)}
+                        className="block w-full pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white text-gray-900"
+                        placeholder="Confirm your password"
+                        autoComplete="new-password"
+                      />
+                    </div>
                     <button
                       type="button"
                       disabled={registerLoading}
@@ -216,6 +229,10 @@ export default function LoginPage() {
                         }
                         if (registerPassword.length < 6) {
                           setRegisterError('Password must be at least 6 characters');
+                          return;
+                        }
+                        if (registerPassword !== registerConfirmPassword) {
+                          setRegisterError('Passwords do not match');
                           return;
                         }
                         

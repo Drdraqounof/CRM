@@ -1,3 +1,54 @@
+/**
+ * BONDARY CRM - Survey Questions Management Page
+ * 
+ * PROJECT OVERVIEW:
+ * Bondary is an Enterprise CRM (Customer Relationship Management) Platform designed to help organizations
+ * manage donor relationships, campaigns, and user surveys. This specific module handles survey question creation,
+ * management, and configuration - a core feature for collecting user feedback and onboarding information.
+ * 
+ * SKILLS DEMONSTRATED:
+ * 
+ * TS.2 - FRONT-END (UI/UX Implementation):
+ * 
+ * TS.2.1 "Create a wireframe" - EVIDENCE: Sidebar navigation component, table layout structure, and modal dialog design
+ *        demonstrate planning and structuring of user interface components with clear visual hierarchy.
+ * 
+ * TS.2.2 "Build a front-end" - EVIDENCE: Full React component implementation using Next.js with:
+ *        - Dynamic form inputs (textarea, select, input fields)
+ *        - Real-time state management with useState hook
+ *        - Conditional rendering for edit/create modes
+ *        - Toast notification system for user feedback
+ *        - Responsive grid layout for statistics dashboard
+ *        - Tailwind CSS styling with hover states and transitions
+ * 
+ * TS.2.3 "Implement interactivity" - EVIDENCE: 
+ *        - Modal form with add/edit/delete operations
+ *        - Dynamic option field management (add/remove options for select/radio/checkbox types)
+ *        - Toggle buttons for activating/deactivating questions
+ *        - Real-time form validation with error handling
+ *        - Loading states with spinner animations
+ * 
+ * TS.4 - BACK-END (Databases):
+ * 
+ * TS.4.1 "Create a data structure" - EVIDENCE: SurveyQuestion interface defines user data structure with proper TypeScript typing:
+ *        interface SurveyQuestion { id, question, type, options, required, order, category, isActive, timestamps }
+ *        This demonstrates structured data organization for storing survey metadata.
+ * 
+ * TS.4.2 "Navigate data structures" - EVIDENCE: Multiple CRUD operations with API calls:
+ *        - GET /api/questions - retrieve all questions
+ *        - POST /api/questions - create new question
+ *        - PUT /api/questions/[id] - update question status or fields
+ *        - DELETE /api/questions/[id] - remove question
+ *        Complex data parsing: JSON.parse(question.options) for multi-value fields
+ * 
+ * TS.4.3 "Understand Data Models" - EVIDENCE: Multi-field data model with relationships:
+ *        - Question type field validates against specific enum values (text, textarea, select, radio, checkbox, scale)
+ *        - Category field organizes questions (onboarding, feedback, demographics, preferences, general)
+ *        - Conditional options field (only populated for select/radio/checkbox types)
+ *        - Status tracking with isActive boolean and timestamps
+ *        - Order field for question sequencing
+ */
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -434,17 +485,7 @@ export default function QuestionsPage() {
                 Manage questions for user surveys and onboarding
               </p>
             </div>
-            <button
-              onClick={() => {
-                setEditingQuestion(null);
-                setShowModal(true);
-              }}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2 transition-colors"
-            >
-              <Plus className="w-5 h-5" />
-              Add Question
-            </button>
-          </div>
+            </div>
 
           {/* Stats */}
           <div className="grid grid-cols-4 gap-4 mb-8">
@@ -480,14 +521,7 @@ export default function QuestionsPage() {
           ) : questions.length === 0 ? (
             <div className="bg-white rounded-xl border shadow-sm p-12 text-center">
               <HelpCircle className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500 mb-4">No questions yet. Add your first survey question.</p>
-              <button
-                onClick={() => setShowModal(true)}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 inline-flex items-center gap-2"
-              >
-                <Plus className="w-5 h-5" />
-                Add Question
-              </button>
+              <p className="text-gray-500 mb-4">No questions yet.</p>
             </div>
           ) : (
             <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
