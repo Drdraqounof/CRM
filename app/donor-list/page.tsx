@@ -1,4 +1,3 @@
-
 'use client';
 
 
@@ -239,6 +238,7 @@ interface Donor {
   status: 'active' | 'lapsed' | 'major';
   description?: string;
   createdAt?: string;
+  donations?: Donation[];
 }
 
 interface Donation {
@@ -318,7 +318,7 @@ function DonorListContent() {
     }, []);
   const [showAddDonor, setShowAddDonor] = useState(false);
   const [showAddCampaign, setShowAddCampaign] = useState(false);
-  const [newDonor, setNewDonor] = useState({ name: '', email: '', phone: '', totalDonated: '' as string | number, lastDonation: '', status: 'active' });
+  const [newDonor, setNewDonor] = useState({ name: '', email: '', phone: '', totalDonated: '' as string | number, lastDonation: '', description: '', status: 'active' });
   const [newCampaign, setNewCampaign] = useState<Omit<Campaign, 'id'>>({ name: '', goal: 0, raised: 0, startDate: '', endDate: '', status: 'planned', description: '' });
 
   const totalDonors = 6;
@@ -527,7 +527,7 @@ function DonorListContent() {
               <h1 className={`text-3xl font-bold mb-1 ${themeConfig.text}`}>Campaigns</h1>
               <p className={themeConfig.textSecondary}>Manage your fundraising campaigns</p>
             </div>
-            <button className={`${themeConfig.primary} ${themeConfig.primaryText} px-4 py-2 rounded-lg flex items-center gap-2 transition-colors`} onClick={() => setShowAddCampaign(true)}>
+            <button className={`${themeConfig.primary} text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors`} onClick={() => setShowAddCampaign(true)}>
               <Plus className="h-4 w-4" />
               New Campaign
             </button>
@@ -644,16 +644,43 @@ function DonorListContent() {
         {/* Donor Description Overlay */}
         {showDescription.open && showDescription.donor && (
           <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div className={`${themeConfig.surface} rounded-lg shadow-lg p-8 max-w-md w-full relative border ${themeConfig.border}`}>
+            <div className={`${themeConfig.surface} rounded-lg shadow-lg p-8 max-w-lg w-full relative border ${themeConfig.border}`}>
               <button className={`absolute top-2 right-2 ${themeConfig.textSecondary} hover:${themeConfig.text}`} onClick={() => setShowDescription({ open: false })}>
                 <X className="h-5 w-5" />
               </button>
-              <h2 className={`text-xl font-bold mb-2 ${themeConfig.text}`}>{showDescription.donor.name}'s Description</h2>
-              <p className={`${themeConfig.textSecondary} whitespace-pre-line`}>
-                {typeof showDescription.donor.description === 'string' && showDescription.donor.description.trim()
-                  ? showDescription.donor.description
-                  : 'No description provided.'}
-              </p>
+              <h2 className={`text-2xl font-bold mb-2 ${themeConfig.text}`}>{showDescription.donor.name}</h2>
+              <p className={`mb-2 ${themeConfig.textSecondary}`}>{showDescription.donor.email} {showDescription.donor.phone ? `| ${showDescription.donor.phone}` : ''}</p>
+              <div className="mb-4">
+                <span className="font-semibold">Description: </span>
+                <span className={`block ${themeConfig.text} whitespace-pre-line mt-1`}>
+                  {typeof showDescription.donor.description === 'string' && showDescription.donor.description.trim()
+                    ? showDescription.donor.description
+                    : 'No description provided.'}
+                </span>
+              </div>
+              <div className="mb-4">
+                <span className="font-semibold">Total Donated: </span>
+                <span className={themeConfig.text}>${showDescription.donor.totalDonated?.toLocaleString?.() ?? '0'}</span>
+              </div>
+              <div className="mb-4">
+                <span className="font-semibold">Last Donation: </span>
+                <span className={themeConfig.text}>{showDescription.donor.lastDonation ? new Date(showDescription.donor.lastDonation).toLocaleDateString() : 'N/A'}</span>
+              </div>
+              <div>
+                <span className="font-semibold">Recent Donations: </span>
+                <ul className="list-disc ml-6 mt-1">
+                  {/* Replace with real donation data if available */}
+                  {showDescription.donor.donations && showDescription.donor.donations.length > 0 ? (
+                    showDescription.donor.donations.slice(0, 5).map((don, idx) => (
+                      <li key={don.id} className={themeConfig.textSecondary}>
+                        ${don.amount} on {new Date(don.date).toLocaleDateString()}
+                      </li>
+                    ))
+                  ) : (
+                    <li className={themeConfig.textSecondary}>No recent donations found.</li>
+                  )}
+                </ul>
+              </div>
             </div>
           </div>
         )}
@@ -682,7 +709,7 @@ function DonorListContent() {
               </>
             )}
           </div>
-          <button className={`${themeConfig.primary} ${themeConfig.primaryText} px-4 py-2 rounded-lg flex items-center gap-2 transition-colors`} onClick={() => setShowAddDonor(true)}>
+          <button className={`${themeConfig.primary} text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors`} onClick={() => setShowAddDonor(true)}>
             <Plus className="h-4 w-4" />
             Add Donor
           </button>
@@ -880,7 +907,7 @@ function DonorListContent() {
                   }
                   await fetchDonors();
                   setShowAddDonor(false);
-                  setNewDonor({ name: '', email: '', phone: '', totalDonated: '', lastDonation: '', status: 'active' });
+                  setNewDonor({ name: '', email: '', phone: '', totalDonated: '', lastDonation: '', description: '', status: 'active' });
                 } catch (err) {
                   // Try to show backend error message if available
                   if (err instanceof Response) {
@@ -923,6 +950,10 @@ function DonorListContent() {
                       <p className={`text-xs ${themeConfig.textSecondary} mt-1`}>Must be within the current year and not in the future</p>
                     </div>
                     <div>
+                      <label className={`block text-sm font-medium ${themeConfig.text} mb-1`}>Description</label>
+                      <textarea placeholder="Add notes about this donor..." value={newDonor.description} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setNewDonor({ ...newDonor, description: e.target.value })} className={`w-full px-4 py-2 border ${themeConfig.border} rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none ${themeConfig.surface} ${themeConfig.text}`} rows={3} />
+                    </div>
+                    <div>
                       <label className={`block text-sm font-medium ${themeConfig.text} mb-1`}>Status</label>
                       <select value={newDonor.status} onChange={e => setNewDonor({ ...newDonor, status: e.target.value })} className={`w-full px-4 py-2 border ${themeConfig.border} rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none ${themeConfig.surface} ${themeConfig.text}`}>
                         <option value="active">Active</option>
@@ -931,7 +962,7 @@ function DonorListContent() {
                       </select>
                     </div>
                 <div className="flex gap-2 mt-6">
-                  <button type="submit" className={`flex-1 ${themeConfig.primary} ${themeConfig.primaryText} py-2 px-4 rounded-lg font-semibold hover:opacity-90 transition`}>Add</button>
+                  <button type="submit" className={`flex-1 ${themeConfig.primary} text-white py-2 px-4 rounded-lg font-semibold hover:opacity-90 transition`}>Add</button>
                   <button type="button" onClick={() => setShowAddDonor(false)} className={`flex-1 border ${themeConfig.border} py-2 px-4 rounded-lg ${themeConfig.surface} ${themeConfig.text} font-semibold hover:${themeConfig.accent} transition`}>Cancel</button>
                 </div>
               </form>
@@ -983,7 +1014,7 @@ function DonorListContent() {
                   <option value="completed">Completed</option>
                 </select>
                 <div className="flex gap-2">
-                  <button type="submit" className={`flex-1 ${themeConfig.primary} ${themeConfig.primaryText} py-2 px-4 rounded-lg font-semibold hover:opacity-90 transition`}>Add</button>
+                  <button type="submit" className={`flex-1 ${themeConfig.primary} text-white py-2 px-4 rounded-lg font-semibold hover:opacity-90 transition`}>Add</button>
                   <button type="button" onClick={() => setShowAddCampaign(false)} className={`flex-1 border ${themeConfig.border} py-2 px-4 rounded-lg ${themeConfig.surface} ${themeConfig.text} font-semibold hover:${themeConfig.accent} transition`}>Cancel</button>
                 </div>
               </form>
