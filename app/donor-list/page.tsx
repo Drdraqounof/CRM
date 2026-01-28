@@ -8,6 +8,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { mockDonors as initialMockDonors, mockCampaigns as importedMockCampaigns } from '../../lib/mock-data';
 import Sidebar from '../components/Sidebar';
+import { useTheme } from '@/lib/useTheme';
 
 // Ensure correct typing for campaigns
 const initialMockCampaigns: Campaign[] = importedMockCampaigns.map(c => ({
@@ -21,8 +22,9 @@ interface DonationFormProps {
   donorId?: string;
   onBack: () => void;
   onSave: () => void;
+  themeConfig: any;
 }
-export function DonationForm({ donorId, onBack, onSave }: DonationFormProps) {
+export function DonationForm({ donorId, onBack, onSave, themeConfig }: DonationFormProps) {
   const [formData, setFormData] = useState({
     donorId: donorId || '',
     amount: '',
@@ -74,18 +76,18 @@ export function DonationForm({ donorId, onBack, onSave }: DonationFormProps) {
         <ArrowLeft className="h-4 w-4 mr-2" />
         Back
       </button>
-      <div className="max-w-2xl bg-white rounded-lg shadow p-6 border">
-        <h2 className="text-xl font-bold mb-2">Log a Donation</h2>
-        <p className="mb-4 text-gray-600">Record a new donation. This will trigger a thank-you workflow.</p>
+      <div className={`max-w-2xl ${themeConfig.surface} rounded-lg shadow p-6 border ${themeConfig.border}`}>
+        <h2 className={`text-xl font-bold mb-2 ${themeConfig.text}`}>Log a Donation</h2>
+        <p className={`mb-4 ${themeConfig.textSecondary}`}>Record a new donation. This will trigger a thank-you workflow.</p>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Donor Selection */}
           <div className="space-y-2">
-            <label htmlFor="donor" className="block font-medium">Donor *</label>
+            <label htmlFor="donor" className={`block font-medium ${themeConfig.text}`}>Donor *</label>
             <select
               id="donor"
               value={formData.donorId}
               onChange={e => setFormData({ ...formData, donorId: e.target.value })}
-              className="w-full border rounded px-3 py-2"
+              className={`w-full border ${themeConfig.border} rounded px-3 py-2 ${themeConfig.surface} ${themeConfig.text}`}
               required
             >
               <option value="" disabled>Select a donor</option>
@@ -98,9 +100,9 @@ export function DonationForm({ donorId, onBack, onSave }: DonationFormProps) {
           </div>
           {/* Amount */}
           <div className="space-y-2">
-            <label htmlFor="amount" className="block font-medium">Amount *</label>
+            <label htmlFor="amount" className={`block font-medium ${themeConfig.text}`}>Amount *</label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">$</span>
+              <span className={`absolute left-3 top-1/2 -translate-y-1/2 ${themeConfig.textSecondary}`}>$</span>
               <input
                 id="amount"
                 type="number"
@@ -109,31 +111,31 @@ export function DonationForm({ donorId, onBack, onSave }: DonationFormProps) {
                 value={formData.amount}
                 onChange={e => setFormData({ ...formData, amount: e.target.value })}
                 placeholder="0.00"
-                className="pl-7 w-full border rounded px-3 py-2"
+                className={`pl-7 w-full border ${themeConfig.border} rounded px-3 py-2 ${themeConfig.surface} ${themeConfig.text}`}
                 required
               />
             </div>
           </div>
           {/* Date */}
           <div className="space-y-2">
-            <label htmlFor="date" className="block font-medium">Date *</label>
+            <label htmlFor="date" className={`block font-medium ${themeConfig.text}`}>Date *</label>
             <input
               id="date"
               type="date"
               value={formData.date}
               onChange={e => setFormData({ ...formData, date: e.target.value })}
-              className="w-full border rounded px-3 py-2"
+              className={`w-full border ${themeConfig.border} rounded px-3 py-2 ${themeConfig.surface} ${themeConfig.text}`}
               required
             />
           </div>
           {/* Payment Method */}
           <div className="space-y-2">
-            <label htmlFor="method" className="block font-medium">Payment Method *</label>
+            <label htmlFor="method" className={`block font-medium ${themeConfig.text}`}>Payment Method *</label>
             <select
               id="method"
               value={formData.method}
               onChange={e => setFormData({ ...formData, method: e.target.value })}
-              className="w-full border rounded px-3 py-2"
+              className={`w-full border ${themeConfig.border} rounded px-3 py-2 ${themeConfig.surface} ${themeConfig.text}`}
               required
             >
               <option value="credit-card">Credit Card</option>
@@ -144,12 +146,12 @@ export function DonationForm({ donorId, onBack, onSave }: DonationFormProps) {
           </div>
           {/* Campaign */}
           <div className="space-y-2">
-            <label htmlFor="campaign" className="block font-medium">Campaign (Optional)</label>
+            <label htmlFor="campaign" className={`block font-medium ${themeConfig.text}`}>Campaign (Optional)</label>
             <select
               id="campaign"
               value={formData.campaignId}
               onChange={e => setFormData({ ...formData, campaignId: e.target.value })}
-              className="w-full border rounded px-3 py-2"
+              className={`w-full border ${themeConfig.border} rounded px-3 py-2 ${themeConfig.surface} ${themeConfig.text}`}
             >
               <option value="">None</option>
               {initialMockCampaigns.map(campaign => (
@@ -160,10 +162,10 @@ export function DonationForm({ donorId, onBack, onSave }: DonationFormProps) {
             </select>
           </div>
           {/* Recurring */}
-          <div className="flex items-center justify-between rounded-lg border p-4">
+          <div className={`flex items-center justify-between rounded-lg border ${themeConfig.border} p-4 ${themeConfig.surface}`}>
             <div className="space-y-0.5">
-              <label htmlFor="recurring" className="block font-medium">Recurring Donation</label>
-              <p className="text-sm text-gray-500">
+              <label htmlFor="recurring" className={`block font-medium ${themeConfig.text}`}>Recurring Donation</label>
+              <p className={`text-sm ${themeConfig.textSecondary}`}>
                 This is a recurring monthly donation
               </p>
             </div>
@@ -177,20 +179,20 @@ export function DonationForm({ donorId, onBack, onSave }: DonationFormProps) {
           </div>
           {/* Notes */}
           <div className="space-y-2">
-            <label htmlFor="notes" className="block font-medium">Notes</label>
+            <label htmlFor="notes" className={`block font-medium ${themeConfig.text}`}>Notes</label>
             <textarea
               id="notes"
               value={formData.notes}
               onChange={e => setFormData({ ...formData, notes: e.target.value })}
               placeholder="Add any relevant notes..."
               rows={3}
-              className="w-full border rounded px-3 py-2"
+              className={`w-full border ${themeConfig.border} rounded px-3 py-2 ${themeConfig.surface} ${themeConfig.text}`}
             />
           </div>
           {/* JSON Preview */}
           <div className="space-y-2">
-            <label className="block font-medium">JSON Body (for POST request):</label>
-            <pre className="bg-gray-100 p-4 rounded-lg text-xs overflow-x-auto">
+            <label className={`block font-medium ${themeConfig.text}`}>JSON Body (for POST request):</label>
+            <pre className={`${themeConfig.accent} p-4 rounded-lg text-xs overflow-x-auto ${themeConfig.text}`}>
               {JSON.stringify(
                 {
                   donorId: formData.donorId || 'string',
@@ -208,10 +210,10 @@ export function DonationForm({ donorId, onBack, onSave }: DonationFormProps) {
           </div>
           {/* Submit Button */}
           <div className="flex gap-2">
-            <button type="submit" className="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
+            <button type="submit" className={`flex-1 ${themeConfig.primary} ${themeConfig.primaryText} px-4 py-2 rounded hover:opacity-90 transition-opacity`}>
               Log Donation
             </button>
-            <button type="button" className="flex-1 border rounded px-4 py-2 hover:bg-gray-100" onClick={onBack}>
+            <button type="button" className={`flex-1 border ${themeConfig.border} rounded px-4 py-2 hover:${themeConfig.accent}`} onClick={onBack}>
               Cancel
             </button>
           </div>
@@ -331,81 +333,81 @@ function DonorListContent() {
       return (
         <div className="space-y-8">
           <div>
-            <h1 className="text-3xl font-bold mb-1">Dashboard</h1>
-            <p className="text-gray-600">Overview of your fundraising activities</p>
+            <h1 className={`text-3xl font-bold mb-1 ${themeConfig.text}`}>Dashboard</h1>
+            <p className={themeConfig.textSecondary}>Overview of your fundraising activities</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-white p-6 rounded-lg border shadow-sm">
+            <div className={`${themeConfig.surface} p-6 rounded-lg border ${themeConfig.border} shadow-sm`}>
               <div className="flex items-start justify-between mb-3">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <DollarSign className="h-5 w-5 text-blue-600" />
+                <div className={`p-2 ${themeConfig.primary} rounded-lg`}>
+                  <DollarSign className={`h-5 w-5 ${themeConfig.primaryText}`} />
                 </div>
               </div>
-              <p className="text-sm text-gray-600 mb-1">Raised This Month</p>
-              <p className="text-2xl font-bold mb-1">${raisedThisMonth.toLocaleString()}</p>
-              <p className="text-xs text-gray-500">{donationsThisMonth} donations</p>
+              <p className={`text-sm ${themeConfig.textSecondary} mb-1`}>Raised This Month</p>
+              <p className={`text-2xl font-bold mb-1 ${themeConfig.text}`}>${raisedThisMonth.toLocaleString()}</p>
+              <p className={`text-xs ${themeConfig.textSecondary}`}>{donationsThisMonth} donations</p>
             </div>
             
-            <div className="bg-white p-6 rounded-lg border shadow-sm">
+            <div className={`${themeConfig.surface} p-6 rounded-lg border ${themeConfig.border} shadow-sm`}>
               <div className="flex items-start justify-between mb-3">
-                <div className="p-2 bg-purple-100 rounded-lg">
-                  <Users className="h-5 w-5 text-purple-600" />
+                <div className={`p-2 ${themeConfig.primary} rounded-lg`}>
+                  <Users className={`h-5 w-5 ${themeConfig.primaryText}`} />
                 </div>
               </div>
-              <p className="text-sm text-gray-600 mb-1">Total Donors</p>
-              <p className="text-2xl font-bold mb-1">{totalDonors}</p>
-              <p className="text-xs text-gray-500">{activeDonors} active</p>
+              <p className={`text-sm ${themeConfig.textSecondary} mb-1`}>Total Donors</p>
+              <p className={`text-2xl font-bold mb-1 ${themeConfig.text}`}>{totalDonors}</p>
+              <p className={`text-xs ${themeConfig.textSecondary}`}>{activeDonors} active</p>
             </div>
             
-            <div className="bg-white p-6 rounded-lg border shadow-sm">
+            <div className={`${themeConfig.surface} p-6 rounded-lg border ${themeConfig.border} shadow-sm`}>
               <div className="flex items-start justify-between mb-3">
-                <div className="p-2 bg-green-100 rounded-lg">
-                  <UserPlus className="h-5 w-5 text-green-600" />
+                <div className={`p-2 ${themeConfig.primary} rounded-lg`}>
+                  <UserPlus className={`h-5 w-5 ${themeConfig.primaryText}`} />
                 </div>
               </div>
-              <p className="text-sm text-gray-600 mb-1">New Donors</p>
-              <p className="text-2xl font-bold mb-1">{newDonors}</p>
-              <p className="text-xs text-gray-500">This month</p>
+              <p className={`text-sm ${themeConfig.textSecondary} mb-1`}>New Donors</p>
+              <p className={`text-2xl font-bold mb-1 ${themeConfig.text}`}>{newDonors}</p>
+              <p className={`text-xs ${themeConfig.textSecondary}`}>This month</p>
             </div>
             
-            <div className="bg-white p-6 rounded-lg border shadow-sm">
+            <div className={`${themeConfig.surface} p-6 rounded-lg border ${themeConfig.border} shadow-sm`}>
               <div className="flex items-start justify-between mb-3">
-                <div className="p-2 bg-orange-100 rounded-lg">
-                  <UserX className="h-5 w-5 text-orange-600" />
+                <div className={`p-2 ${themeConfig.primary} rounded-lg`}>
+                  <UserX className={`h-5 w-5 ${themeConfig.primaryText}`} />
                 </div>
               </div>
-              <p className="text-sm text-gray-600 mb-1">Lapsed Donors</p>
-              <p className="text-2xl font-bold mb-1">{lapsedDonors}</p>
-              <p className="text-xs text-gray-500">Need follow-up</p>
+              <p className={`text-sm ${themeConfig.textSecondary} mb-1`}>Lapsed Donors</p>
+              <p className={`text-2xl font-bold mb-1 ${themeConfig.text}`}>{lapsedDonors}</p>
+              <p className={`text-xs ${themeConfig.textSecondary}`}>Need follow-up</p>
             </div>
           </div>
 
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <Target className="h-5 w-5 text-gray-700" />
-              <h2 className="text-xl font-semibold">Active Campaigns</h2>
+              <Target className={`h-5 w-5 ${themeConfig.text}`} />
+              <h2 className={`text-xl font-semibold ${themeConfig.text}`}>Active Campaigns</h2>
             </div>
-            <p className="text-sm text-gray-600 mb-4">Track progress toward your fundraising goals</p>
+            <p className={`text-sm ${themeConfig.textSecondary} mb-4`}>Track progress toward your fundraising goals</p>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {campaigns.filter((c: Campaign) => c.status === 'active').map((campaign: Campaign) => {
                 const percentage = (campaign.raised / campaign.goal) * 100;
                 
                 return (
-                  <div key={campaign.id} className="bg-white p-6 rounded-lg border shadow-sm">
-                    <h3 className="font-semibold mb-4">{campaign.name}</h3>
+                  <div key={campaign.id} className={`${themeConfig.surface} p-6 rounded-lg border ${themeConfig.border} shadow-sm`}>
+                    <h3 className={`font-semibold mb-4 ${themeConfig.text}`}>{campaign.name}</h3>
                     
                     <div className="mb-2">
                       <div className="flex justify-between text-sm mb-1">
-                        <span className="text-gray-600">
+                        <span className={themeConfig.textSecondary}>
                           ${campaign.raised.toLocaleString()} of ${campaign.goal.toLocaleString()} goal
                         </span>
-                        <span className="font-semibold">{Math.round(percentage)}%</span>
+                        <span className={`font-semibold ${themeConfig.text}`}>{Math.round(percentage)}%</span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2.5">
+                      <div className={`w-full ${themeConfig.accent} rounded-full h-2.5`}>
                         <div
-                          className="bg-blue-600 h-2.5 rounded-full transition-all"
+                          className={`${themeConfig.primary} h-2.5 rounded-full transition-all`}
                           style={{ width: `${Math.min(percentage, 100)}%` }}
                         />
                       </div>
@@ -417,25 +419,25 @@ function DonorListContent() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white p-6 rounded-lg border shadow-sm">
-              <h2 className="text-xl font-semibold mb-1">Recent Donations</h2>
-              <p className="text-sm text-gray-600 mb-4">Latest contributions received</p>
+            <div className={`${themeConfig.surface} p-6 rounded-lg border ${themeConfig.border} shadow-sm`}>
+              <h2 className={`text-xl font-semibold mb-1 ${themeConfig.text}`}>Recent Donations</h2>
+              <p className={`text-sm ${themeConfig.textSecondary} mb-4`}>Latest contributions received</p>
               <div className="space-y-3">
                 {/* No mockDonations available. Replace with real donation data or remove this section. */}
               </div>
             </div>
 
-            <div className="bg-white p-6 rounded-lg border shadow-sm">
-              <h2 className="text-xl font-semibold mb-1">Top Donors</h2>
-              <p className="text-sm text-gray-600 mb-4">By total giving</p>
+            <div className={`${themeConfig.surface} p-6 rounded-lg border ${themeConfig.border} shadow-sm`}>
+              <h2 className={`text-xl font-semibold mb-1 ${themeConfig.text}`}>Top Donors</h2>
+              <p className={`text-sm ${themeConfig.textSecondary} mb-4`}>By total giving</p>
               <div className="space-y-3">
                 {initialMockDonors.slice(0, 5).map(donor => (
-                  <div key={donor.id} className="flex justify-between items-start py-3 border-b last:border-0">
+                  <div key={donor.id} className={`flex justify-between items-start py-3 border-b ${themeConfig.border} last:border-0`}>
                     <div className="flex-1">
-                      <p className="font-medium">{donor.name}</p>
-                      <p className="text-sm text-gray-500">{donor.email}</p>
+                      <p className={`font-medium ${themeConfig.text}`}>{donor.name}</p>
+                      <p className={`text-sm ${themeConfig.textSecondary}`}>{donor.email}</p>
                     </div>
-                    <p className="font-semibold text-lg">${donor.totalDonated.toLocaleString()}</p>
+                    <p className={`font-semibold text-lg ${themeConfig.text}`}>${donor.totalDonated.toLocaleString()}</p>
                   </div>
                 ))}
               </div>
@@ -454,11 +456,11 @@ function DonorListContent() {
         const percentage = (campaign.raised / campaign.goal) * 100;
 
         return (
-          <div className="bg-white p-6 rounded-lg border shadow-sm">
+          <div className={`${themeConfig.surface} p-6 rounded-lg border ${themeConfig.border} shadow-sm`}>
             <div className="flex justify-between items-start mb-4">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
-                  <h3 className="font-semibold text-lg">{campaign.name}</h3>
+                  <h3 className={`font-semibold text-lg ${themeConfig.text}`}>{campaign.name}</h3>
                   <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                     campaign.status === 'active' ? 'bg-green-100 text-green-700' :
                     campaign.status === 'completed' ? 'bg-blue-100 text-blue-700' :
@@ -468,32 +470,32 @@ function DonorListContent() {
                     {campaign.status.charAt(0).toUpperCase() + campaign.status.slice(1)}
                   </span>
                 </div>
-                <p className="text-sm text-gray-600">{campaign.description}</p>
+                <p className={`text-sm ${themeConfig.textSecondary}`}>{campaign.description}</p>
               </div>
               <div className="flex gap-2 ml-4">
-                <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                  <Edit className="h-4 w-4 text-gray-600" />
+                <button className={`p-2 hover:${themeConfig.accent} rounded-lg transition-colors`}>
+                  <Edit className={`h-4 w-4 ${themeConfig.textSecondary}`} />
                 </button>
-                <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                  <Trash2 className="h-4 w-4 text-gray-600" />
+                <button className={`p-2 hover:${themeConfig.accent} rounded-lg transition-colors`}>
+                  <Trash2 className={`h-4 w-4 ${themeConfig.textSecondary}`} />
                 </button>
               </div>
             </div>
 
             <div className="space-y-3">
-              <div className="flex items-center gap-2 text-sm text-gray-600">
+              <div className={`flex items-center gap-2 text-sm ${themeConfig.textSecondary}`}>
                 <Calendar className="h-4 w-4" />
                 <span>{campaign.startDate} - {campaign.endDate}</span>
               </div>
 
               <div>
                 <div className="flex justify-between text-sm mb-2">
-                  <span className="text-gray-600">
+                  <span className={themeConfig.textSecondary}>
                     ${campaign.raised.toLocaleString()} raised of ${campaign.goal.toLocaleString()} goal
                   </span>
-                  <span className="font-semibold">{Math.round(percentage)}%</span>
+                  <span className={`font-semibold ${themeConfig.text}`}>{Math.round(percentage)}%</span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-3">
+                <div className={`w-full ${themeConfig.accent} rounded-full h-3`}>
                   <div
                     className={`h-3 rounded-full transition-all ${
                       campaign.status === 'completed' ? 'bg-blue-600' : 'bg-green-600'
@@ -504,11 +506,11 @@ function DonorListContent() {
               </div>
 
               <div className="pt-2 flex justify-between items-center text-sm">
-                <span className="text-gray-600">
+                <span className={themeConfig.textSecondary}>
                   ${(campaign.goal - campaign.raised).toLocaleString()} remaining
                 </span>
                 {campaign.status === 'active' && (
-                  <button className="text-blue-600 hover:text-blue-700 font-medium">
+                  <button className={`${themeConfig.primaryText} hover:opacity-80 font-medium`}>
                     View Details →
                   </button>
                 )}
@@ -522,10 +524,10 @@ function DonorListContent() {
         <div className="space-y-8">
           <div className="flex justify-between items-start">
             <div>
-              <h1 className="text-3xl font-bold mb-1">Campaigns</h1>
-              <p className="text-gray-600">Manage your fundraising campaigns</p>
+              <h1 className={`text-3xl font-bold mb-1 ${themeConfig.text}`}>Campaigns</h1>
+              <p className={themeConfig.textSecondary}>Manage your fundraising campaigns</p>
             </div>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2 transition-colors" onClick={() => setShowAddCampaign(true)}>
+            <button className={`${themeConfig.primary} ${themeConfig.primaryText} px-4 py-2 rounded-lg flex items-center gap-2 transition-colors`} onClick={() => setShowAddCampaign(true)}>
               <Plus className="h-4 w-4" />
               New Campaign
             </button>
@@ -533,7 +535,7 @@ function DonorListContent() {
 
           {activeCampaigns.length > 0 && (
             <div>
-              <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              <h2 className={`text-xl font-semibold mb-4 flex items-center gap-2 ${themeConfig.text}`}>
                 <div className="h-2 w-2 bg-green-500 rounded-full"></div>
                 Active Campaigns
               </h2>
@@ -547,7 +549,7 @@ function DonorListContent() {
 
           {plannedCampaigns.length > 0 && (
             <div>
-              <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              <h2 className={`text-xl font-semibold mb-4 flex items-center gap-2 ${themeConfig.text}`}>
                 <div className="h-2 w-2 bg-gray-400 rounded-full"></div>
                 Planned Campaigns
               </h2>
@@ -561,7 +563,7 @@ function DonorListContent() {
 
           {completedCampaigns.length > 0 && (
             <div>
-              <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              <h2 className={`text-xl font-semibold mb-4 flex items-center gap-2 ${themeConfig.text}`}>
                 <div className="h-2 w-2 bg-blue-500 rounded-full"></div>
                 Completed Campaigns
               </h2>
@@ -642,12 +644,12 @@ function DonorListContent() {
         {/* Donor Description Overlay */}
         {showDescription.open && showDescription.donor && (
           <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full relative">
-              <button className="absolute top-2 right-2 text-gray-400 hover:text-gray-600" onClick={() => setShowDescription({ open: false })}>
+            <div className={`${themeConfig.surface} rounded-lg shadow-lg p-8 max-w-md w-full relative border ${themeConfig.border}`}>
+              <button className={`absolute top-2 right-2 ${themeConfig.textSecondary} hover:${themeConfig.text}`} onClick={() => setShowDescription({ open: false })}>
                 <X className="h-5 w-5" />
               </button>
-              <h2 className="text-xl font-bold mb-2">{showDescription.donor.name}'s Description</h2>
-              <p className="text-gray-700 whitespace-pre-line">
+              <h2 className={`text-xl font-bold mb-2 ${themeConfig.text}`}>{showDescription.donor.name}'s Description</h2>
+              <p className={`${themeConfig.textSecondary} whitespace-pre-line`}>
                 {typeof showDescription.donor.description === 'string' && showDescription.donor.description.trim()
                   ? showDescription.donor.description
                   : 'No description provided.'}
@@ -660,50 +662,50 @@ function DonorListContent() {
             {groupName ? (
               <>
                 <div className="flex items-center gap-2 mb-2">
-                  <a href="/donor-list" className="text-blue-600 hover:underline text-sm flex items-center gap-1">
+                  <a href="/donor-list" className={`${themeConfig.primaryText} hover:underline text-sm flex items-center gap-1`}>
                     <ArrowLeft className="h-4 w-4" />
                     All Donors
                   </a>
-                  <span className="text-gray-400">/</span>
-                  <span className="text-sm text-gray-600">Group</span>
+                  <span className={themeConfig.textSecondary}>/</span>
+                  <span className={`text-sm ${themeConfig.textSecondary}`}>Group</span>
                 </div>
-                <h1 className="text-3xl font-bold mb-1 flex items-center gap-3">
-                  <Tag className="h-7 w-7 text-blue-600" />
+                <h1 className={`text-3xl font-bold mb-1 flex items-center gap-3 ${themeConfig.text}`}>
+                  <Tag className={`h-7 w-7 ${themeConfig.primaryText}`} />
                   {groupName}
                 </h1>
-                <p className="text-gray-600">Viewing {filteredDonors.length} donors in this group</p>
+                <p className={themeConfig.textSecondary}>Viewing {filteredDonors.length} donors in this group</p>
               </>
             ) : (
               <>
-                <h1 className="text-3xl font-bold mb-1">Donors</h1>
-                <p className="text-gray-600">Manage your donor relationships</p>
+                <h1 className={`text-3xl font-bold mb-1 ${themeConfig.text}`}>Donors</h1>
+                <p className={themeConfig.textSecondary}>Manage your donor relationships</p>
               </>
             )}
           </div>
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2 transition-colors" onClick={() => setShowAddDonor(true)}>
+          <button className={`${themeConfig.primary} ${themeConfig.primaryText} px-4 py-2 rounded-lg flex items-center gap-2 transition-colors`} onClick={() => setShowAddDonor(true)}>
             <Plus className="h-4 w-4" />
             Add Donor
           </button>
         </div>
 
-        <div className="bg-white p-4 rounded-lg border shadow-sm">
+        <div className={`${themeConfig.surface} p-4 rounded-lg border ${themeConfig.border} shadow-sm`}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-2">Search</label>
+              <label className={`block text-sm font-medium mb-2 ${themeConfig.text}`}>Search</label>
               <input
                 type="text"
                 placeholder="Search by name or email..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className={`w-full px-4 py-2 border ${themeConfig.border} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${themeConfig.surface} ${themeConfig.text}`}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Filter by Status</label>
+              <label className={`block text-sm font-medium mb-2 ${themeConfig.text}`}>Filter by Status</label>
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value as any)}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className={`w-full px-4 py-2 border ${themeConfig.border} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${themeConfig.surface} ${themeConfig.text}`}
               >
                 <option value="all">All Donors</option>
                 <option value="active">Active</option>
@@ -715,78 +717,78 @@ function DonorListContent() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white p-4 rounded-lg border shadow-sm">
-            <p className="text-sm text-gray-600 mb-1">Total Donors</p>
-            <p className="text-2xl font-bold">{donors.length}</p>
+          <div className={`${themeConfig.surface} p-4 rounded-lg border ${themeConfig.border} shadow-sm`}>
+            <p className={`text-sm ${themeConfig.textSecondary} mb-1`}>Total Donors</p>
+            <p className={`text-2xl font-bold ${themeConfig.text}`}>{donors.length}</p>
           </div>
-          <div className="bg-white p-4 rounded-lg border shadow-sm">
-            <p className="text-sm text-gray-600 mb-1">Active</p>
+          <div className={`${themeConfig.surface} p-4 rounded-lg border ${themeConfig.border} shadow-sm`}>
+            <p className={`text-sm ${themeConfig.textSecondary} mb-1`}>Active</p>
             <p className="text-2xl font-bold text-green-600">
               {donors.filter(d => d.status === 'active').length}
             </p>
           </div>
-          <div className="bg-white p-4 rounded-lg border shadow-sm">
-            <p className="text-sm text-gray-600 mb-1">Major Donors</p>
+          <div className={`${themeConfig.surface} p-4 rounded-lg border ${themeConfig.border} shadow-sm`}>
+            <p className={`text-sm ${themeConfig.textSecondary} mb-1`}>Major Donors</p>
             <p className="text-2xl font-bold text-purple-600">
               {donors.filter(d => d.status === 'major').length}
             </p>
           </div>
-          <div className="bg-white p-4 rounded-lg border shadow-sm">
-            <p className="text-sm text-gray-600 mb-1">Lapsed</p>
+          <div className={`${themeConfig.surface} p-4 rounded-lg border ${themeConfig.border} shadow-sm`}>
+            <p className={`text-sm ${themeConfig.textSecondary} mb-1`}>Lapsed</p>
             <p className="text-2xl font-bold text-orange-600">
               {donors.filter(d => d.status === 'lapsed').length}
             </p>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg border shadow-sm overflow-hidden">
+        <div className={`${themeConfig.surface} rounded-lg border ${themeConfig.border} shadow-sm overflow-hidden`}>
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b">
+              <thead className={`${themeConfig.accent} border-b ${themeConfig.border}`}>
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className={`px-6 py-3 text-left text-xs font-medium ${themeConfig.textSecondary} uppercase tracking-wider`}>
                     Name
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className={`px-6 py-3 text-left text-xs font-medium ${themeConfig.textSecondary} uppercase tracking-wider`}>
                     Email
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className={`px-6 py-3 text-left text-xs font-medium ${themeConfig.textSecondary} uppercase tracking-wider`}>
                     Phone
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className={`px-6 py-3 text-left text-xs font-medium ${themeConfig.textSecondary} uppercase tracking-wider`}>
                     Total Donated
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className={`px-6 py-3 text-left text-xs font-medium ${themeConfig.textSecondary} uppercase tracking-wider`}>
                     Last Donation
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className={`px-6 py-3 text-left text-xs font-medium ${themeConfig.textSecondary} uppercase tracking-wider`}>
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className={`px-6 py-3 text-left text-xs font-medium ${themeConfig.textSecondary} uppercase tracking-wider`}>
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className={`${themeConfig.surface} divide-y ${themeConfig.border}`}>
                 {filteredDonors.length > 0 ? (
                   filteredDonors.map(donor => (
-                    <tr key={donor.id} className="hover:bg-gray-50">
+                    <tr key={donor.id} className={`hover:${themeConfig.accent}`}>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="font-medium text-gray-900">{donor.name}</div>
+                        <div className={`font-medium ${themeConfig.text}`}>{donor.name}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-600">{donor.email}</div>
+                        <div className={`text-sm ${themeConfig.textSecondary}`}>{donor.email}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-600">{donor.phone}</div>
+                        <div className={`text-sm ${themeConfig.textSecondary}`}>{donor.phone}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-semibold text-gray-900">
+                        <div className={`text-sm font-semibold ${themeConfig.text}`}>
                           ${donor.totalDonated.toLocaleString()}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-600">{donor.lastDonation}</div>
+                        <div className={`text-sm ${themeConfig.textSecondary}`}>{donor.lastDonation}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
@@ -842,7 +844,7 @@ function DonorListContent() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
+                    <td colSpan={7} className={`px-6 py-12 text-center ${themeConfig.textSecondary}`}>
                       No donors found matching your criteria
                     </td>
                   </tr>
@@ -852,14 +854,14 @@ function DonorListContent() {
           </div>
         </div>
 
-        <div className="text-sm text-gray-600 text-center">
+        <div className={`text-sm ${themeConfig.textSecondary} text-center`}>
           Showing {filteredDonors.length} of {donors.length} donors
         </div>
 
         {showAddDonor && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md border border-blue-100">
-              <h2 className="text-2xl font-bold text-blue-700 mb-6 text-center">Add New Donor</h2>
+            <div className={`${themeConfig.surface} rounded-xl shadow-lg p-8 w-full max-w-md border ${themeConfig.border}`}>
+              <h2 className={`text-2xl font-bold ${themeConfig.text} mb-6 text-center`}>Add New Donor</h2>
               <form onSubmit={async e => {
                 e.preventDefault();
                 try {
@@ -892,23 +894,23 @@ function DonorListContent() {
                 }
               }} className="space-y-5">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                      <input placeholder="Name" value={newDonor.name} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewDonor({ ...newDonor, name: e.target.value })} required className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" />
+                      <label className={`block text-sm font-medium ${themeConfig.text} mb-1`}>Name</label>
+                      <input placeholder="Name" value={newDonor.name} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewDonor({ ...newDonor, name: e.target.value })} required className={`w-full px-4 py-2 border ${themeConfig.border} rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none ${themeConfig.surface} ${themeConfig.text}`} />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                      <input placeholder="Email" value={newDonor.email} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewDonor({ ...newDonor, email: e.target.value })} required className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" />
+                      <label className={`block text-sm font-medium ${themeConfig.text} mb-1`}>Email</label>
+                      <input placeholder="Email" value={newDonor.email} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewDonor({ ...newDonor, email: e.target.value })} required className={`w-full px-4 py-2 border ${themeConfig.border} rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none ${themeConfig.surface} ${themeConfig.text}`} />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                      <input placeholder="Phone" value={newDonor.phone} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewDonor({ ...newDonor, phone: e.target.value })} required className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" />
+                      <label className={`block text-sm font-medium ${themeConfig.text} mb-1`}>Phone</label>
+                      <input placeholder="Phone" value={newDonor.phone} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewDonor({ ...newDonor, phone: e.target.value })} required className={`w-full px-4 py-2 border ${themeConfig.border} rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none ${themeConfig.surface} ${themeConfig.text}`} />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Total Donated</label>
-                      <input placeholder="0" type="number" value={newDonor.totalDonated} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewDonor({ ...newDonor, totalDonated: e.target.value === '' ? '' : Number(e.target.value) })} required className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" />
+                      <label className={`block text-sm font-medium ${themeConfig.text} mb-1`}>Total Donated</label>
+                      <input placeholder="0" type="number" value={newDonor.totalDonated} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewDonor({ ...newDonor, totalDonated: e.target.value === '' ? '' : Number(e.target.value) })} required className={`w-full px-4 py-2 border ${themeConfig.border} rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none ${themeConfig.surface} ${themeConfig.text}`} />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Last Donation</label>
+                      <label className={`block text-sm font-medium ${themeConfig.text} mb-1`}>Last Donation</label>
                       <input 
                         type="date" 
                         value={newDonor.lastDonation} 
@@ -916,21 +918,21 @@ function DonorListContent() {
                         min={`${new Date().getFullYear()}-01-01`}
                         max={new Date().toISOString().split('T')[0]}
                         required 
-                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" 
+                        className={`w-full px-4 py-2 border ${themeConfig.border} rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none ${themeConfig.surface} ${themeConfig.text}`}
                       />
-                      <p className="text-xs text-gray-500 mt-1">Must be within the current year and not in the future</p>
+                      <p className={`text-xs ${themeConfig.textSecondary} mt-1`}>Must be within the current year and not in the future</p>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                      <select value={newDonor.status} onChange={e => setNewDonor({ ...newDonor, status: e.target.value })} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                      <label className={`block text-sm font-medium ${themeConfig.text} mb-1`}>Status</label>
+                      <select value={newDonor.status} onChange={e => setNewDonor({ ...newDonor, status: e.target.value })} className={`w-full px-4 py-2 border ${themeConfig.border} rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none ${themeConfig.surface} ${themeConfig.text}`}>
                         <option value="active">Active</option>
                         <option value="major">Major</option>
                         <option value="lapsed">Lapsed</option>
                       </select>
                     </div>
                 <div className="flex gap-2 mt-6">
-                  <button type="submit" className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-700 transition">Add</button>
-                  <button type="button" onClick={() => setShowAddDonor(false)} className="flex-1 border border-gray-300 py-2 px-4 rounded-lg bg-white text-gray-700 font-semibold hover:bg-gray-50 transition">Cancel</button>
+                  <button type="submit" className={`flex-1 ${themeConfig.primary} ${themeConfig.primaryText} py-2 px-4 rounded-lg font-semibold hover:opacity-90 transition`}>Add</button>
+                  <button type="button" onClick={() => setShowAddDonor(false)} className={`flex-1 border ${themeConfig.border} py-2 px-4 rounded-lg ${themeConfig.surface} ${themeConfig.text} font-semibold hover:${themeConfig.accent} transition`}>Cancel</button>
                 </div>
               </form>
             </div>
@@ -938,8 +940,8 @@ function DonorListContent() {
         )}
         {showAddCampaign && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-              <h2 className="text-xl font-bold mb-4">Add Campaign</h2>
+            <div className={`${themeConfig.surface} rounded-lg shadow-lg p-8 w-full max-w-md border ${themeConfig.border}`}>
+              <h2 className={`text-xl font-bold mb-4 ${themeConfig.text}`}>Add Campaign</h2>
               <form onSubmit={async e => {
                 e.preventDefault();
                 try {
@@ -969,20 +971,20 @@ function DonorListContent() {
                 }
               }} className="space-y-4">
                 <input placeholder="Name" value={newCampaign.name} onChange={e => setNewCampaign({ ...newCampaign, name: e.target.value })} required className="w-full px-4 py-2 border rounded-lg" />
-                <input placeholder="Goal" type="number" value={newCampaign.goal} onChange={e => setNewCampaign({ ...newCampaign, goal: Number(e.target.value) })} required className="w-full px-4 py-2 border rounded-lg" />
-                <input placeholder="Raised" type="number" value={newCampaign.raised} onChange={e => setNewCampaign({ ...newCampaign, raised: Number(e.target.value) })} required className="w-full px-4 py-2 border rounded-lg" />
-                <input placeholder="Start Date" type="date" value={newCampaign.startDate} onChange={e => setNewCampaign({ ...newCampaign, startDate: e.target.value })} required className="w-full px-4 py-2 border rounded-lg" />
-                <input placeholder="End Date" type="date" value={newCampaign.endDate} onChange={e => setNewCampaign({ ...newCampaign, endDate: e.target.value })} required className="w-full px-4 py-2 border rounded-lg" />
-                <input placeholder="Description" value={newCampaign.description} onChange={e => setNewCampaign({ ...newCampaign, description: e.target.value })} required className="w-full px-4 py-2 border rounded-lg" />
-                <select value={newCampaign.status} onChange={e => setNewCampaign({ ...newCampaign, status: e.target.value as 'active' | 'completed' | 'planned' | 'postponed' })} className="w-full px-4 py-2 border rounded-lg">
+                <input placeholder="Goal" type="number" value={newCampaign.goal} onChange={e => setNewCampaign({ ...newCampaign, goal: Number(e.target.value) })} required className={`w-full px-4 py-2 border ${themeConfig.border} rounded-lg ${themeConfig.surface} ${themeConfig.text}`} />
+                <input placeholder="Raised" type="number" value={newCampaign.raised} onChange={e => setNewCampaign({ ...newCampaign, raised: Number(e.target.value) })} required className={`w-full px-4 py-2 border ${themeConfig.border} rounded-lg ${themeConfig.surface} ${themeConfig.text}`} />
+                <input placeholder="Start Date" type="date" value={newCampaign.startDate} onChange={e => setNewCampaign({ ...newCampaign, startDate: e.target.value })} required className={`w-full px-4 py-2 border ${themeConfig.border} rounded-lg ${themeConfig.surface} ${themeConfig.text}`} />
+                <input placeholder="End Date" type="date" value={newCampaign.endDate} onChange={e => setNewCampaign({ ...newCampaign, endDate: e.target.value })} required className={`w-full px-4 py-2 border ${themeConfig.border} rounded-lg ${themeConfig.surface} ${themeConfig.text}`} />
+                <input placeholder="Description" value={newCampaign.description} onChange={e => setNewCampaign({ ...newCampaign, description: e.target.value })} required className={`w-full px-4 py-2 border ${themeConfig.border} rounded-lg ${themeConfig.surface} ${themeConfig.text}`} />
+                <select value={newCampaign.status} onChange={e => setNewCampaign({ ...newCampaign, status: e.target.value as 'active' | 'completed' | 'planned' | 'postponed' })} className={`w-full px-4 py-2 border ${themeConfig.border} rounded-lg ${themeConfig.surface} ${themeConfig.text}`}>
                   <option value="planned">Planned</option>
                   <option value="active">Active</option>
                   <option value="postponed">Postponed</option>
                   <option value="completed">Completed</option>
                 </select>
                 <div className="flex gap-2">
-                  <button type="submit" className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-700 transition">Add</button>
-                  <button type="button" onClick={() => setShowAddCampaign(false)} className="flex-1 border border-gray-300 py-2 px-4 rounded-lg bg-white text-gray-700 font-semibold hover:bg-gray-50 transition">Cancel</button>
+                  <button type="submit" className={`flex-1 ${themeConfig.primary} ${themeConfig.primaryText} py-2 px-4 rounded-lg font-semibold hover:opacity-90 transition`}>Add</button>
+                  <button type="button" onClick={() => setShowAddCampaign(false)} className={`flex-1 border ${themeConfig.border} py-2 px-4 rounded-lg ${themeConfig.surface} ${themeConfig.text} font-semibold hover:${themeConfig.accent} transition`}>Cancel</button>
                 </div>
               </form>
             </div>
@@ -992,22 +994,24 @@ function DonorListContent() {
     );
   };
 
+  const { themeConfig } = useTheme();
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className={`min-h-screen ${themeConfig.bg}`}>
       <Sidebar />
       
       <div className="ml-64 transition-all duration-300">
         <main className="p-8">
           <div className="mb-8">
-            <h1 className="text-2xl font-bold text-gray-900">Donors</h1>
-            <p className="text-gray-600">Manage your donor database</p>
+            <h1 className={`text-2xl font-bold ${themeConfig.text}`}>Donors</h1>
+            <p className={`${themeConfig.textSecondary}`}>Manage your donor database</p>
           </div>
           {renderContent()}
         </main>
 
-        <footer className="border-t bg-white py-6">
-          <div className="px-8 text-center text-sm text-gray-600">
-            <p className="mb-1">Bondary CRM © 2025</p>
+        <footer className={`border-t ${themeConfig.border} ${themeConfig.surface} py-6`}>
+          <div className="px-8 text-center text-sm">
+            <p className={`mb-1 ${themeConfig.textSecondary}`}>Bondary CRM © 2025</p>
           </div>
         </footer>
       </div>
@@ -1016,10 +1020,12 @@ function DonorListContent() {
 }
 
 export default function Home() {
+  const { themeConfig } = useTheme();
+  
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-gray-500">Loading...</div>
+      <div className={`min-h-screen ${themeConfig.bg} flex items-center justify-center`}>
+        <div className={themeConfig.textSecondary}>Loading...</div>
       </div>
     }>
       <DonorListContent />

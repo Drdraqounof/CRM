@@ -21,6 +21,7 @@ import Link from 'next/link';
 import { signOut, useSession } from 'next-auth/react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import Sidebar from '../components/Sidebar';
+import { useTheme } from '@/lib/useTheme';
 
 // Types
 interface Campaign {
@@ -478,8 +479,10 @@ export default function CampaignsPage() {
   const completedCampaigns = campaigns.filter(c => c.status === 'completed');
   const plannedCampaigns = campaigns.filter(c => c.status === 'planned');
 
+  const { themeConfig } = useTheme();
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className={`min-h-screen ${themeConfig.bg}`}>
       <Sidebar />
       
       <div className="ml-64 transition-all duration-300">
@@ -512,8 +515,8 @@ export default function CampaignsPage() {
           </div>
 
           <div className="mb-8">
-            <h1 className="text-2xl font-bold text-gray-900">Campaigns</h1>
-            <p className="text-gray-600">Manage your fundraising campaigns</p>
+            <h1 className={`text-2xl font-bold ${themeConfig.text}`}>Campaigns</h1>
+            <p className={themeConfig.textSecondary}>Manage your fundraising campaigns</p>
           </div>
 
       {showCampaignModal && (

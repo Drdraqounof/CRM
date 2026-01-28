@@ -18,6 +18,7 @@ import {
   Shield,
 } from "lucide-react";
 import Sidebar from "../components/Sidebar";
+import { useTheme } from "@/lib/useTheme";
 
 interface Donor {
   id: string;
@@ -116,15 +117,17 @@ export default function ProfilePage() {
     { label: "Total Raised", value: loading ? "..." : formatCurrency(totalRaised) },
   ];
 
+  const { themeConfig } = useTheme();
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className={`min-h-screen ${themeConfig.bg}`}>
       <Sidebar />
       
       <div className="ml-64 transition-all duration-300">
         {/* Main Content */}
         <main className="p-8 max-w-5xl">
           {/* Profile Header */}
-          <div className="bg-white rounded-xl border shadow-sm overflow-hidden mb-6">
+          <div className={`${themeConfig.surface} rounded-xl border border-${themeConfig.border} shadow-sm overflow-hidden mb-6`}>
             {/* Cover */}
             <div className="h-32 bg-gradient-to-r from-blue-600 to-indigo-600" />
             
@@ -132,23 +135,23 @@ export default function ProfilePage() {
             <div className="px-6 pb-6">
               <div className="flex items-end gap-6 -mt-12">
                 <div className="relative">
-                  <div className="w-24 h-24 rounded-full bg-white border-4 border-white shadow-lg flex items-center justify-center bg-gradient-to-br from-blue-500 to-indigo-500 text-white text-3xl font-bold">
+                  <div className={`w-24 h-24 rounded-full ${themeConfig.surface} border-4 border-${themeConfig.surface} shadow-lg flex items-center justify-center bg-gradient-to-br from-blue-500 to-indigo-500 ${themeConfig.primaryText} text-3xl font-bold`}>
                     {profile.name.charAt(0).toUpperCase()}
                   </div>
-                  <button className="absolute bottom-0 right-0 p-1.5 bg-white rounded-full shadow-md border hover:bg-gray-50">
-                    <Camera className="w-4 h-4 text-gray-600" />
+                  <button className={`absolute bottom-0 right-0 p-1.5 ${themeConfig.surface} rounded-full shadow-md border border-${themeConfig.border} hover:${themeConfig.accent}`}>
+                    <Camera className={`w-4 h-4 ${themeConfig.textSecondary}`} />
                   </button>
                 </div>
                 <div className="flex-1 pb-2">
-                  <h1 className="text-2xl font-bold text-gray-900">{profile.name}</h1>
-                  <p className="text-gray-500">{profile.role || "Team Member"} {profile.organization && `at ${profile.organization}`}</p>
+                  <h1 className={`text-2xl font-bold ${themeConfig.text}`}>{profile.name}</h1>
+                  <p className={themeConfig.textSecondary}>{profile.role || "Team Member"} {profile.organization && `at ${profile.organization}`}</p>
                 </div>
                 <button
                   onClick={() => setIsEditing(!isEditing)}
                   className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-colors ${
                     isEditing
-                    ? "bg-gray-100 text-gray-700"
-                    : "bg-blue-600 text-white hover:bg-blue-700"
+                    ? `${themeConfig.accent} ${themeConfig.text}`
+                    : `${themeConfig.primary} ${themeConfig.primaryText} hover:opacity-90`
                 }`}
               >
                 {isEditing ? (

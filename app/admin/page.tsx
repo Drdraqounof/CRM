@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Users, Shield, RefreshCw, Search, BarChart3, PieChart as PieChartIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Sidebar from "../components/Sidebar";
+import { useTheme } from "@/lib/useTheme";
 import {
   PieChart,
   Pie,
@@ -139,8 +140,10 @@ export default function AdminPage() {
     return value.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
   };
 
+  const { themeConfig } = useTheme();
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className={`min-h-screen ${themeConfig.bg}`}>
       <Sidebar />
       
       <div className="ml-64 transition-all duration-300">
@@ -149,15 +152,15 @@ export default function AdminPage() {
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h1 className="text-3xl font-bold flex items-center gap-2">
+                <h1 className={`text-3xl font-bold flex items-center gap-2 ${themeConfig.text}`}>
                   <Shield className="w-8 h-8 text-blue-600" />
                   Admin Dashboard
                 </h1>
-                <p className="text-gray-600 mt-1">View user survey responses and analytics</p>
+                <p className={`${themeConfig.textSecondary} mt-1`}>View user survey responses and analytics</p>
               </div>
               <button
                 onClick={fetchResponses}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                className={`flex items-center gap-2 px-4 py-2 ${themeConfig.primary} ${themeConfig.primaryText} rounded-lg hover:opacity-90 transition`}
               >
                 <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
                 Refresh
@@ -166,7 +169,7 @@ export default function AdminPage() {
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              <div className="bg-white p-6 rounded-lg border shadow-sm">
+              <div className={`${themeConfig.surface} p-6 rounded-lg border border-${themeConfig.border} shadow-sm`}>
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-blue-100 rounded-lg">
                     <Users className="h-5 w-5 text-blue-600" />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import {
@@ -12,14 +12,23 @@ import {
   Moon,
   Sun,
   Save,
+  Palette,
 } from "lucide-react";
 import Sidebar from "../components/Sidebar";
+import { themes, ThemeColor, saveTheme, loadTheme } from "../../lib/theme";
+import { useTheme } from "../../lib/useTheme";
 
 export default function SettingsPage() {
   const router = useRouter();
   const { data: session } = useSession();
+  const { themeConfig } = useTheme();
   const [activeTab, setActiveTab] = useState("general");
   const [saved, setSaved] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState<ThemeColor>("light");
+
+  useEffect(() => {
+    setCurrentTheme(loadTheme());
+  }, []);
 
   // Settings state
   const [settings, setSettings] = useState({
@@ -45,22 +54,29 @@ export default function SettingsPage() {
     setTimeout(() => setSaved(false), 3000);
   };
 
+  const handleThemeChange = (theme: ThemeColor) => {
+    setCurrentTheme(theme);
+    saveTheme(theme);
+    window.location.reload();
+  };
+
   const tabs = [
     { id: "general", label: "General", icon: Settings },
     { id: "notifications", label: "Notifications", icon: Bell },
     { id: "privacy", label: "Privacy & Security", icon: Shield },
+    { id: "theme", label: "Theme", icon: Palette },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className={`min-h-screen ${themeConfig.bg}`}>
       <Sidebar />
       
       <div className="ml-64 transition-all duration-300">
         {/* Main Content */}
         <main className="p-8 max-w-5xl">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-            <p className="text-gray-600 mt-1">Manage your application preferences</p>
+            <h1 className={`text-3xl font-bold ${themeConfig.text}`}>Settings</h1>
+            <p className={`${themeConfig.textSecondary} mt-1`}>Manage your application preferences</p>
           </div>
 
           <div className="flex gap-8">
@@ -75,8 +91,8 @@ export default function SettingsPage() {
                       onClick={() => setActiveTab(tab.id)}
                       className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors ${
                         activeTab === tab.id
-                          ? "bg-blue-50 text-blue-700 font-medium"
-                          : "text-gray-700 hover:bg-gray-100"
+                          ? `${themeConfig.accent} ${themeConfig.primaryText} font-medium`
+                          : `${themeConfig.text} hover:${themeConfig.accent}`
                       }`}
                     >
                       <Icon className="w-5 h-5" />
@@ -88,11 +104,11 @@ export default function SettingsPage() {
             </div>
 
             {/* Content */}
-            <div className="flex-1 bg-white rounded-xl border shadow-sm p-6">
+            <div className={`flex-1 ${themeConfig.surface} rounded-xl border ${themeConfig.border} shadow-sm p-6`}>
               {/* General Settings */}
               {activeTab === "general" && (
                 <div className="space-y-6">
-                  <h2 className="text-xl font-semibold text-gray-900">General Settings</h2>
+                  <h2 className={`text-xl font-semibold ${themeConfig.text}`}>General Settings</h2>
                   
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -159,7 +175,7 @@ export default function SettingsPage() {
             {/* Notification Settings */}
             {activeTab === "notifications" && (
               <div className="space-y-6">
-                <h2 className="text-xl font-semibold text-gray-900">Notification Preferences</h2>
+                <h2 className={`text-xl font-semibold ${themeConfig.text}`}>Notification Preferences</h2>
                 
                 <div className="space-y-4">
                   {[
@@ -194,7 +210,7 @@ export default function SettingsPage() {
             {/* Privacy Settings */}
             {activeTab === "privacy" && (
               <div className="space-y-6">
-                <h2 className="text-xl font-semibold text-gray-900">Privacy & Security</h2>
+                <h2 className={`text-xl font-semibold ${themeConfig.text}`}>Privacy & Security</h2>
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -255,8 +271,50 @@ export default function SettingsPage() {
               </div>
             )}
 
+            {/* Theme Settings */}
+            {activeTab === "theme" && (
+              <div className="space-y-6">
+                <h2 className={`text-xl font-semibold ${themeConfig.text}`}>Theme & Appearance</h2>
+                <p className={`text-sm ${themeConfig.textSecondary}`}>Choose a color theme to change the look and feel of the entire application.</p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {(Object.entries(themes) as [ThemeColor, any][]).map(([key, theme]) => (
+                    <button
+                      key={key}
+                      onClick={() => handleThemeChange(key)}
+                      className={`p-6 rounded-lg border-2 transition-all ${
+                        currentTheme === key
+                          ? "border-blue-600 ring-2 ring-blue-200"
+                          : "border-gray-200 hover:border-gray-300"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className={`w-8 h-8 rounded-lg ${theme.primary}`} />
+                        <span className={`font-medium ${themeConfig.text}`}>{theme.name}</span>
+                        {currentTheme === key && (
+                          <span className="ml-auto text-blue-600 font-semibold">✓ Active</span>
+                        )}
+                      </div>
+                      <div className="flex gap-2 mb-3">
+                        <div className={`w-12 h-8 rounded ${theme.bg}`} />
+                        <div className={`w-12 h-8 rounded ${theme.surface} border`} />
+                        <div className={`w-12 h-8 rounded ${theme.accent}`} />
+                      </div>
+                      <p className={`text-xs ${themeConfig.textSecondary}`}>Background • Surface • Accent</p>
+                    </button>
+                  ))}
+                </div>
+
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm text-blue-800">
+                    <strong>Note:</strong> Your theme choice will be applied across all pages including the dashboard, donor list, campaigns, and more.
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* Save Button */}
-            <div className="mt-8 pt-6 border-t flex justify-end gap-3">
+            <div className={`mt-8 pt-6 border-t ${themeConfig.border} flex justify-end gap-3`}>
               {saved && (
                 <span className="text-green-600 flex items-center gap-2">
                   <Save className="w-4 h-4" />

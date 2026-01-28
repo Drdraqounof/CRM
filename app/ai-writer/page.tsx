@@ -19,6 +19,7 @@ import {
   User,
 } from "lucide-react";
 import Sidebar from "../components/Sidebar";
+import { useTheme } from '@/lib/useTheme';
 
 type TemplateType = "thank-you" | "appeal" | "follow-up" | "event";
 
@@ -190,22 +191,24 @@ export default function AIWriterPage() {
     }
   };
 
+  const { themeConfig } = useTheme();
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <div className={`min-h-screen ${themeConfig.bg}`}>
       <Sidebar />
       
       <div className="ml-64 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           {/* Header */}
           <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 bg-purple-100 text-purple-700 px-4 py-2 rounded-full text-sm font-semibold mb-4">
+            <div className={`inline-flex items-center gap-2 bg-purple-100 text-purple-700 px-4 py-2 rounded-full text-sm font-semibold mb-4`}>
               <Sparkles className="w-4 h-4" />
               AI-Powered
             </div>
-            <h1 className="text-4xl font-bold text-slate-900 mb-4">
+            <h1 className={`text-4xl font-bold ${themeConfig.text} mb-4`}>
             AI Writing Assistant
           </h1>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+          <p className={`text-xl ${themeConfig.textSecondary} max-w-2xl mx-auto`}>
             Generate personalized donor communications with AI. Select a template,
             choose a donor, and let AI craft the perfect message.
           </p>
@@ -215,8 +218,8 @@ export default function AIWriterPage() {
           {/* Left Column - Configuration */}
           <div className="space-y-6">
             {/* Template Selection */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-slate-200">
-              <h2 className="text-lg font-semibold text-slate-900 mb-4">
+            <div className={`${themeConfig.surface} rounded-2xl shadow-lg p-6 border border-${themeConfig.border}`}>
+              <h2 className={`text-lg font-semibold ${themeConfig.text} mb-4`}>
                 1. Choose Template
               </h2>
               <div className="grid grid-cols-2 gap-3">
@@ -229,7 +232,7 @@ export default function AIWriterPage() {
                       className={`p-4 rounded-xl border-2 transition-all duration-200 text-left ${
                         selectedTemplate === template.type
                           ? "border-blue-500 bg-blue-50"
-                          : "border-slate-200 hover:border-slate-300"
+                          : `border-${themeConfig.border} hover:border-${themeConfig.border}`
                       }`}
                     >
                       <div

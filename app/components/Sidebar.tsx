@@ -19,6 +19,7 @@ import {
   HelpCircle,
 } from "lucide-react";
 import { useState } from "react";
+import { useTheme } from "../../lib/useTheme";
 
 interface SidebarProps {
   collapsed?: boolean;
@@ -29,6 +30,7 @@ export default function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { data: session } = useSession();
+  const { themeConfig } = useTheme();
   const [isCollapsed, setIsCollapsed] = useState(collapsed);
 
   // Hardcoded admin emails
@@ -62,12 +64,12 @@ export default function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
 
   return (
     <aside
-      className={`fixed left-0 top-0 h-screen bg-white border-r shadow-sm z-40 flex flex-col transition-all duration-300 ${
+      className={`fixed left-0 top-0 h-screen ${themeConfig.sidebar} z-40 flex flex-col transition-all duration-300 ${
         isCollapsed ? "w-16" : "w-64"
       }`}
     >
       {/* Logo */}
-      <div className="p-4 border-b flex items-center justify-between">
+      <div className={`p-4 border-b ${themeConfig.border} flex items-center justify-between`}>
         <div
           className="flex items-center gap-2 cursor-pointer"
           onClick={() => router.push("/")}
@@ -76,23 +78,23 @@ export default function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
             <Database className="h-5 w-5 text-white" />
           </div>
           {!isCollapsed && (
-            <h2 className="font-semibold text-lg">Bondary</h2>
+            <h2 className={`font-semibold text-lg ${themeConfig.text}`}>Bondary</h2>
           )}
         </div>
         <button
           onClick={handleToggle}
-          className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+          className={`p-1 hover:${themeConfig.accent} rounded-lg transition-colors`}
         >
           {isCollapsed ? (
-            <ChevronRight className="w-4 h-4 text-gray-500" />
+            <ChevronRight className={`w-4 h-4 ${themeConfig.textSecondary}`} />
           ) : (
-            <ChevronLeft className="w-4 h-4 text-gray-500" />
+            <ChevronLeft className={`w-4 h-4 ${themeConfig.textSecondary}`} />
           )}
         </button>
       </div>
 
       {/* Main Navigation */}
-      <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+      <nav className={`flex-1 p-3 space-y-1 overflow-y-auto`}>
         {navItems.map((item) => (
           <Link
             key={item.href}
@@ -100,7 +102,7 @@ export default function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
               isActive(item.href)
                 ? "bg-blue-600 text-white"
-                : "text-gray-700 hover:bg-gray-100"
+                : `${themeConfig.text} hover:${themeConfig.accent}`
             } ${isCollapsed ? "justify-center" : ""}`}
             title={isCollapsed ? item.label : undefined}
           >
@@ -116,7 +118,7 @@ export default function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
               isActive("/admin")
                 ? "bg-blue-600 text-white"
-                : "text-gray-700 hover:bg-gray-100"
+                : `${themeConfig.text} hover:${themeConfig.accent}`
             } ${isCollapsed ? "justify-center" : ""}`}
             title={isCollapsed ? "Admin" : undefined}
           >
@@ -125,25 +127,11 @@ export default function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
           </Link>
         )}
 
-        {/* Questions Link - Only for admin emails */}
-        {isAdmin && (
-          <Link
-            href="/questions"
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
-              isActive("/questions")
-                ? "bg-blue-600 text-white"
-                : "text-gray-700 hover:bg-gray-100"
-            } ${isCollapsed ? "justify-center" : ""}`}
-            title={isCollapsed ? "Questions" : undefined}
-          >
-            <HelpCircle className="w-5 h-5 flex-shrink-0" />
-            {!isCollapsed && <span className="font-medium">Questions</span>}
-          </Link>
-        )}
+        {/* ...Questions link removed... */}
       </nav>
 
       {/* Divider */}
-      <div className="border-t mx-3" />
+      <div className={`border-t ${themeConfig.border} mx-3`} />
 
       {/* Bottom Navigation */}
       <div className="p-3 space-y-1">
@@ -154,7 +142,7 @@ export default function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
               isActive(item.href)
                 ? "bg-blue-600 text-white"
-                : "text-gray-700 hover:bg-gray-100"
+                : `${themeConfig.text} hover:${themeConfig.accent}`
             } ${isCollapsed ? "justify-center" : ""}`}
             title={isCollapsed ? item.label : undefined}
           >
@@ -178,17 +166,17 @@ export default function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
 
       {/* User Info */}
       {session?.user && (
-        <div className={`p-3 border-t bg-gray-50 ${isCollapsed ? "px-2" : ""}`}>
+        <div className={`p-3 border-t ${themeConfig.border} ${themeConfig.accent} ${isCollapsed ? "px-2" : ""}`}>
           <div className={`flex items-center gap-3 ${isCollapsed ? "justify-center" : ""}`}>
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
               {session.user.name?.charAt(0).toUpperCase() || session.user.email?.charAt(0).toUpperCase()}
             </div>
             {!isCollapsed && (
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
+                <p className={`text-sm font-medium ${themeConfig.text} truncate`}>
                   {session.user.name || "User"}
                 </p>
-                <p className="text-xs text-gray-500 truncate">
+                <p className={`text-xs ${themeConfig.textSecondary} truncate`}>
                   {session.user.email}
                 </p>
               </div>
