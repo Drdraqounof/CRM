@@ -14,6 +14,7 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
         name: { label: 'Name', type: 'text' },
         register: { label: 'Register', type: 'text' },
+        isAdmin: { label: 'Is Admin', type: 'text' },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
@@ -33,11 +34,13 @@ export const authOptions: NextAuthOptions = {
 
           // Hash password and create new user
           const hashedPassword = await bcrypt.hash(credentials.password, 10);
+          const isAdmin = credentials.isAdmin === 'true';
           const newUser = await prisma.user.create({
             data: {
               email: credentials.email,
               password: hashedPassword,
               name: credentials.name || credentials.email.split('@')[0],
+              isAdmin: isAdmin,
             },
           });
 
@@ -45,6 +48,7 @@ export const authOptions: NextAuthOptions = {
             id: newUser.id,
             email: newUser.email,
             name: newUser.name,
+            isAdmin: newUser.isAdmin,
           };
         }
 
@@ -67,6 +71,7 @@ export const authOptions: NextAuthOptions = {
           id: user.id,
           email: user.email,
           name: user.name,
+          isAdmin: user.isAdmin,
         };
       },
     }),
@@ -81,12 +86,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        // Fetch isAdmin from database
-        const dbUser = await prisma.user.findUnique({
-          where: { id: user.id },
-          select: { isAdmin: true },
-        });
-        token.isAdmin = dbUser?.isAdmin ?? false;
+        token.isAdmin = (user as { isAdmin?: boolean }).isAdmin ?? false;
       }
       return token;
     },

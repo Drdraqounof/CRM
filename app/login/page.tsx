@@ -17,6 +17,7 @@ export default function LoginPage() {
   const [registerConfirmPassword, setRegisterConfirmPassword] = useState('');
   const [registerError, setRegisterError] = useState<string | null>(null);
   const [registerLoading, setRegisterLoading] = useState(false);
+  const [registerIsAdmin, setRegisterIsAdmin] = useState(false);
 
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -203,6 +204,19 @@ export default function LoginPage() {
                         autoComplete="new-password"
                       />
                     </div>
+                    <div className="flex items-center gap-2">
+                      <input
+                        id="register-admin"
+                        type="checkbox"
+                        checked={registerIsAdmin}
+                        onChange={(e) => setRegisterIsAdmin(e.target.checked)}
+                        className="h-4 w-4 text-blue-600 border-gray-300 rounded cursor-pointer"
+                      />
+                      <label htmlFor="register-admin" className="text-sm font-semibold text-gray-700 cursor-pointer flex items-center gap-2">
+                        <Shield className="w-4 h-4" />
+                        Register as Admin
+                      </label>
+                    </div>
                     <button
                       type="button"
                       disabled={registerLoading}
@@ -244,7 +258,8 @@ export default function LoginPage() {
                             email: registerEmail,
                             password: registerPassword,
                             name: registerName,
-                            register: 'true'
+                            register: 'true',
+                            isAdmin: registerIsAdmin ? 'true' : 'false'
                           });
                           if (result && !result.error) {
                             // Redirect new user to post-login question page
