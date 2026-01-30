@@ -24,6 +24,8 @@ import {
 } from "lucide-react";
 import Sidebar from "../components/Sidebar";
 import { useTheme } from "@/lib/useTheme";
+import { filterDonorsByGroup, getBuiltInGroups } from "@/lib/groupFilters";
+import { saveCustomGroups, loadCustomGroups } from "@/lib/groupPersistence";
 
 interface Donor {
   id: string;
@@ -63,6 +65,14 @@ export default function GroupsPage() {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [donors, setDonors] = useState<Donor[]>([]);
   const [loading, setLoading] = useState(true);
+  const [groups, setGroups] = useState<Group[]>([]);
+
+  // Initialize groups (built-in + custom)
+  useEffect(() => {
+    const builtIn = getBuiltInGroups();
+    const customGroups = loadCustomGroups();
+    setGroups([...builtIn, ...customGroups]);
+  }, []);
 
   // Fetch donors from API
   useEffect(() => {
@@ -84,101 +94,13 @@ export default function GroupsPage() {
 
   // Calculate group counts based on actual donor data
   const calculateGroupCounts = (groupList: Group[]): Group[] => {
-    const now = new Date();
-    const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 6, now.getDate());
-    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-    const startOfYear = new Date(now.getFullYear(), 0, 1);
-
     return groupList.map((group) => {
-      let count = 0;
-      
-      switch (group.name) {
-        case "Major Donors":
-          count = donors.filter((d) => (d.totalDonated || 0) >= 10000).length;
-          break;
-        case "Active Monthly Givers":
-          count = donors.filter((d) => {
-            const lastDonation = d.lastDonation ? new Date(d.lastDonation) : null;
-            return lastDonation && lastDonation >= thirtyDaysAgo && d.status === "active";
-          }).length;
-          break;
-        case "Lapsed Donors":
-          count = donors.filter((d) => {
-            const lastDonation = d.lastDonation ? new Date(d.lastDonation) : null;
-            return lastDonation && lastDonation < sixMonthsAgo && d.status === "lapsed";
-          }).length;
-          break;
-        case "First-Time Donors":
-          count = donors.filter((d) => {
-            const createdAt = d.createdAt ? new Date(d.createdAt) : null;
-            return createdAt && createdAt >= startOfYear;
-          }).length;
-          break;
-        case "Event Attendees":
-          // Since we don't have event attendance data, show 0 or count based on description
-          count = donors.filter((d) => 
-            d.description?.toLowerCase().includes("event") || 
-            d.description?.toLowerCase().includes("gala") ||
-            d.description?.toLowerCase().includes("attendee")
-          ).length;
-          break;
-        default:
-          count = 0;
-      }
-      
+      const count = filterDonorsByGroup(donors, group).length;
       return { ...group, donorCount: count };
     });
   };
 
-  const [groups, setGroups] = useState<Group[]>([
-    {
-      id: 1,
-      name: "Major Donors",
-      description: "Donors who have contributed $10,000 or more",
-      criteria: ["Total donations >= $10,000"],
-      donorCount: 0,
-      color: "bg-purple-500",
-      createdAt: "2024-01-15",
-    },
-    {
-      id: 2,
-      name: "Active Monthly Givers",
-      description: "Donors with active status who donated in last 30 days",
-      criteria: ["Active status", "Donated in last 30 days"],
-      donorCount: 0,
-      color: "bg-green-500",
-      createdAt: "2024-02-20",
-    },
-    {
-      id: 3,
-      name: "Lapsed Donors",
-      description: "Donors who haven't donated in 6+ months",
-      criteria: ["Last donation > 6 months ago", "Lapsed status"],
-      donorCount: 0,
-      color: "bg-orange-500",
-      createdAt: "2024-03-10",
-    },
-    {
-      id: 4,
-      name: "First-Time Donors",
-      description: "Donors added this year",
-      criteria: ["Created in current year"],
-      donorCount: 0,
-      color: "bg-blue-500",
-      createdAt: "2024-01-01",
-    },
-    {
-      id: 5,
-      name: "Event Attendees",
-      description: "Donors who have attended fundraising events",
-      criteria: ["Event/Gala mentioned in notes"],
-      donorCount: 0,
-      color: "bg-pink-500",
-      createdAt: "2024-04-05",
-    },
-  ]);
-
-  // Update group counts when donors data changes
+  // Update group counts whenever donors change
   useEffect(() => {
     if (donors.length > 0) {
       setGroups((prev) => calculateGroupCounts(prev));
@@ -198,27 +120,83 @@ export default function GroupsPage() {
   };
 
   const handleEdit = (group: Group) => {
+    // Admin-only check
+    if (!session?.user?.isAdmin) {
+      showToast("Only administrators can edit groups", "error");
+      return;
+    }
     setEditingGroup(group);
     setShowModal(true);
   };
 
   const handleDelete = (id: number) => {
+    // Admin-only check
+    if (!session?.user?.isAdmin) {
+      showToast("Only administrators can delete groups", "error");
+      return;
+    }
     if (confirm("Are you sure you want to delete this group?")) {
-      setGroups(groups.filter((g) => g.id !== id));
-      showToast("Group deleted successfully");
+      // Don't allow deletion of core groups (1-5)
+      if (id <= 5) {
+        showToast("Cannot delete built-in groups", "error");
+        return;
+      }
+      try {
+        const updatedGroups = groups.filter((g) => g.id !== id);
+        setGroups(updatedGroups);
+        
+        // Persist changes to localStorage
+        saveCustomGroups(updatedGroups);
+        
+        showToast("Group deleted successfully");
+      } catch (error) {
+        console.error("Failed to delete group:", error);
+        showToast("Failed to delete group", "error");
+      }
     }
   };
 
   const handleSave = (group: Group) => {
-    if (editingGroup) {
-      setGroups(groups.map((g) => (g.id === group.id ? group : g)));
-      showToast("Group updated successfully");
-    } else {
-      setGroups([...groups, { ...group, id: Date.now() }]);
-      showToast("Group created successfully");
+    // Admin-only check
+    if (!session?.user?.isAdmin) {
+      showToast("Only administrators can create or modify groups", "error");
+      return;
     }
-    setShowModal(false);
-    setEditingGroup(null);
+    try {
+      let updatedGroups: Group[];
+      
+      if (editingGroup) {
+        // Update existing group
+        if (editingGroup.id <= 5) {
+          showToast("Cannot edit built-in groups", "error");
+          return;
+        }
+        updatedGroups = groups.map((g) => (g.id === group.id ? group : g));
+        showToast("Group updated successfully");
+      } else {
+        // Create new group with next available ID
+        const maxId = Math.max(...groups.map(g => g.id), 5);
+        const newGroup: Group = {
+          ...group,
+          id: maxId + 1,
+          createdAt: new Date().toISOString().split('T')[0],
+          donorCount: 0
+        };
+        updatedGroups = [...groups, newGroup];
+        showToast("Group created successfully");
+      }
+      
+      setGroups(updatedGroups);
+      
+      // Persist changes to localStorage
+      saveCustomGroups(updatedGroups);
+      
+      setShowModal(false);
+      setEditingGroup(null);
+    } catch (error) {
+      console.error("Failed to save group:", error);
+      showToast("Failed to save group", "error");
+    }
   };
 
   const colorOptions = [
@@ -414,17 +392,22 @@ export default function GroupsPage() {
             <div>
               <h1 className={`text-3xl font-bold ${themeConfig.text}`}>Donor Groups</h1>
               <p className={`${themeConfig.textSecondary} mt-1`}>Organize donors into groups for targeted communication</p>
+              {!session?.user?.isAdmin && (
+                <p className="text-sm text-orange-600 mt-2">Note: Only administrators can create or edit groups</p>
+              )}
             </div>
-            <button
-              onClick={() => {
-                setEditingGroup(null);
-                setShowModal(true);
-              }}
-              className={`${themeConfig.primary} text-white px-4 py-2 rounded-lg hover:opacity-90 flex items-center gap-2 transition-colors`}
-            >
-              <Plus className="w-5 h-5" />
-              New Group
-            </button>
+            {session?.user?.isAdmin && (
+              <button
+                onClick={() => {
+                  setEditingGroup(null);
+                  setShowModal(true);
+                }}
+                className={`${themeConfig.primary} text-white px-4 py-2 rounded-lg hover:opacity-90 flex items-center gap-2 transition-colors`}
+              >
+                <Plus className="w-5 h-5" />
+                New Group
+              </button>
+            )}
           </div>
 
         {/* Stats */}
@@ -500,20 +483,22 @@ export default function GroupsPage() {
                       <p className={`text-sm ${themeConfig.textSecondary}`}>{group.donorCount} donors</p>
                     </div>
                   </div>
-                  <div className="flex gap-1">
-                    <button
-                      onClick={() => handleEdit(group)}
-                      className={`p-2 hover:${themeConfig.accent} rounded-lg transition-colors`}
-                    >
-                      <Edit className={`w-4 h-4 ${themeConfig.textSecondary}`} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(group.id)}
-                      className="p-2 hover:bg-red-50 rounded-lg transition-colors"
-                    >
-                      <Trash2 className="w-4 h-4 text-red-500" />
-                    </button>
-                  </div>
+                  {session?.user?.isAdmin && (
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => handleEdit(group)}
+                        className={`p-2 hover:${themeConfig.accent} rounded-lg transition-colors`}
+                      >
+                        <Edit className={`w-4 h-4 ${themeConfig.textSecondary}`} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(group.id)}
+                        className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4 text-red-500" />
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 <p className={`${themeConfig.text} text-sm mb-4`}>{group.description}</p>

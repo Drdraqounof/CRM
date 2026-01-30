@@ -87,10 +87,23 @@ export async function POST(req) {
 export async function GET() {
   try {
     const campaigns = await prisma.campaign.findMany({ orderBy: { startDate: 'desc' } });
+    
+    // If database is empty, return mock data for development
+    if (campaigns.length === 0) {
+      const { mockCampaigns } = await import('@/lib/mock-data');
+      return NextResponse.json(mockCampaigns, { status: 200 });
+    }
+    
     return NextResponse.json(campaigns, { status: 200 });
   } catch (error) {
     console.error('GET /api/campaigns error:', error);
-    return NextResponse.json({ error: 'Failed to fetch campaigns' }, { status: 500 });
+    // Fallback to mock data on error
+    try {
+      const { mockCampaigns } = await import('@/lib/mock-data');
+      return NextResponse.json(mockCampaigns, { status: 200 });
+    } catch {
+      return NextResponse.json({ error: 'Failed to fetch campaigns' }, { status: 500 });
+    }
   }
 }
 

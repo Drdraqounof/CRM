@@ -8,6 +8,8 @@ import { useSearchParams } from 'next/navigation';
 import { mockDonors as initialMockDonors, mockCampaigns as importedMockCampaigns } from '../../lib/mock-data';
 import Sidebar from '../components/Sidebar';
 import { useTheme } from '@/lib/useTheme';
+import { filterDonorsByGroup, getBuiltInGroups } from '@/lib/groupFilters';
+
 
 // Ensure correct typing for campaigns
 const initialMockCampaigns: Campaign[] = importedMockCampaigns.map(c => ({

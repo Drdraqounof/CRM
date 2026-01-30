@@ -77,10 +77,23 @@ export async function PUT(req) {
 export async function GET() {
   try {
     const donors = await prisma.donor.findMany({ orderBy: { lastDonation: 'desc' } });
+    
+    // If database is empty, return mock data for development
+    if (donors.length === 0) {
+      const { mockDonors } = await import('@/lib/mock-data');
+      return NextResponse.json(mockDonors, { status: 200 });
+    }
+    
     return NextResponse.json(donors, { status: 200 });
   } catch (error) {
     console.error('GET /api/donors error:', error);
-    return NextResponse.json({ error: 'Failed to fetch donors' }, { status: 500 });
+    // Fallback to mock data on error
+    try {
+      const { mockDonors } = await import('@/lib/mock-data');
+      return NextResponse.json(mockDonors, { status: 200 });
+    } catch {
+      return NextResponse.json({ error: 'Failed to fetch donors' }, { status: 500 });
+    }
   }
 }
 

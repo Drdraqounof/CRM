@@ -6,6 +6,8 @@ import { useSession } from "next-auth/react";
 import { ArrowLeft, Filter, Users, DollarSign, TrendingUp } from "lucide-react";
 import Sidebar from "../../components/Sidebar";
 import { useTheme } from "@/lib/useTheme";
+import { filterDonorsByGroup, getBuiltInGroups } from "@/lib/groupFilters";
+import { loadCustomGroups } from "@/lib/groupPersistence";
 
 interface Donor {
   id: string;
@@ -29,53 +31,7 @@ interface Group {
   createdAt: string;
 }
 
-const groupsData: Group[] = [
-  {
-    id: 1,
-    name: "Major Donors",
-    description: "Donors with total contributions of $10,000 or more",
-    criteria: ["Total Donated ≥ $10,000"],
-    donorCount: 0,
-    color: "bg-purple-500",
-    createdAt: "2024-01-15",
-  },
-  {
-    id: 2,
-    name: "Active Monthly Givers",
-    description: "Donors who have given in the last 30 days",
-    criteria: ["Last Donation within 30 days", "Status: Active"],
-    donorCount: 0,
-    color: "bg-green-500",
-    createdAt: "2024-01-15",
-  },
-  {
-    id: 3,
-    name: "Lapsed Donors",
-    description: "Donors who haven't contributed in 6+ months",
-    criteria: ["No donation for 6+ months"],
-    donorCount: 0,
-    color: "bg-red-500",
-    createdAt: "2024-01-15",
-  },
-  {
-    id: 4,
-    name: "First-Time Donors",
-    description: "Donors who have given this year",
-    criteria: ["Last Donation in current year"],
-    donorCount: 0,
-    color: "bg-indigo-500",
-    createdAt: "2024-01-15",
-  },
-  {
-    id: 5,
-    name: "Event Attendees",
-    description: "Donors from events and galas",
-    criteria: ["Attended event or gala"],
-    donorCount: 0,
-    color: "bg-blue-500",
-    createdAt: "2024-01-15",
-  },
-];
+const GROUPS_STORAGE_KEY = "crm_custom_groups";
 
 export default function GroupDetailsPage() {
   const params = useParams();
@@ -107,37 +63,34 @@ export default function GroupDetailsPage() {
   }, []);
 
   useEffect(() => {
-    const foundGroup = groupsData.find((g) => g.id === groupId);
-    setGroup(foundGroup || null);
+    if (donors.length > 0) {
+      // Get built-in groups
+      let allGroups = getBuiltInGroups();
+      
+      // Add custom groups from localStorage
+      const customGroups = loadCustomGroups();
+      allGroups = [...allGroups, ...customGroups];
+      
+      // Find the requested group
+      const foundGroup = allGroups.find((g) => g.id === groupId);
+      setGroup(foundGroup || null);
 
-    if (foundGroup && donors.length > 0) {
-      const now = new Date();
-      const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 6, now.getDate());
-      const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-      const startOfYear = new Date(now.getFullYear(), 0, 1);
-
-      const filtered = donors.filter((donor) => {
-        switch (foundGroup.name) {
-          case "Major Donors":
-            return (donor.totalDonated || 0) >= 10000;
-          case "Active Monthly Givers":
-            const lastDonation = donor.lastDonation ? new Date(donor.lastDonation) : null;
-            return lastDonation && lastDonation >= thirtyDaysAgo && donor.status === "active";
-          case "Recent Donors":
-            const recentDonation = donor.lastDonation ? new Date(donor.lastDonation) : null;
-            return recentDonation && recentDonation >= sixMonthsAgo;
-          case "YTD Donors":
-            const ytdDonation = donor.lastDonation ? new Date(donor.lastDonation) : null;
-            return ytdDonation && ytdDonation >= startOfYear;
-          case "Lapsed Donors":
-            return donor.status === "lapsed";
-          default:
-            return false;
-        }
-      });
-      setGroupDonors(filtered);
+      // Filter donors based on group
+      if (foundGroup) {
+        const filtered = filterDonorsByGroup(donors, foundGroup);
+        setGroupDonors(filtered);
+      }
+    } else if (donors.length === 0 && !loading) {
+      // Donors loaded but list is empty - still need to show group info
+      let allGroups = getBuiltInGroups();
+      const customGroups = loadCustomGroups();
+      allGroups = [...allGroups, ...customGroups];
+      
+      const foundGroup = allGroups.find((g) => g.id === groupId);
+      setGroup(foundGroup || null);
+      setGroupDonors([]);
     }
-  }, [groupId, donors]);
+  }, [groupId, donors, loading]);
 
   if (!group) {
     return (
