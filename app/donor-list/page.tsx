@@ -723,6 +723,7 @@ function DonorListContent() {
               <div className="flex gap-2">
                 <button
                   onClick={() => {
+                    if (!showDescription.donor) return;
                     // Convert lastDonation to YYYY-MM-DD format for the date input
                     const formatDateForInput = (dateStr: string) => {
                       if (!dateStr) return '';
