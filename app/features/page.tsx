@@ -95,7 +95,7 @@ export default function FeaturesPage() {
             onClick={() => router.push("/demo")}
             className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 text-2xl px-12 py-6 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105"
           >
-            Start Interactive Demo
+            Start Interactive Overview
             <ArrowRight className="w-6 h-6 ml-3" />
           </Button>
         </div>

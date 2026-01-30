@@ -63,8 +63,6 @@ export default function GroupsPage() {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [donors, setDonors] = useState<Donor[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
-  const [showGroupDetails, setShowGroupDetails] = useState(false);
 
   // Fetch donors from API
   useEffect(() => {
@@ -378,104 +376,6 @@ export default function GroupsPage() {
     );
   };
 
-  const GroupDetailsModal = () => {
-    if (!showGroupDetails || !selectedGroup) return null;
-
-    const groupDonors = donors.filter((donor) => {
-      const now = new Date();
-      const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 6, now.getDate());
-      const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-      const startOfYear = new Date(now.getFullYear(), 0, 1);
-
-      switch (selectedGroup.name) {
-        case "Major Donors":
-          return (donor.totalDonated || 0) >= 10000;
-        case "Active Monthly Givers":
-          const lastDonation = donor.lastDonation ? new Date(donor.lastDonation) : null;
-          return lastDonation && lastDonation >= thirtyDaysAgo && donor.status === "active";
-        case "Recent Donors":
-          const recentDonation = donor.lastDonation ? new Date(donor.lastDonation) : null;
-          return recentDonation && recentDonation >= sixMonthsAgo;
-        case "YTD Donors":
-          const ytdDonation = donor.lastDonation ? new Date(donor.lastDonation) : null;
-          return ytdDonation && ytdDonation >= startOfYear;
-        case "Lapsed Donors":
-          return donor.status === "lapsed";
-        default:
-          return false;
-      }
-    });
-
-    return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-        <div className={`${themeConfig.surface} rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto border ${themeConfig.border}`}>
-          <div className="flex justify-between items-center mb-6">
-            <h2 className={`text-2xl font-bold ${themeConfig.text}`}>{selectedGroup.name}</h2>
-            <button
-              onClick={() => setShowGroupDetails(false)}
-              className={`p-2 hover:${themeConfig.accent} rounded-lg`}
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
-
-          <div className="space-y-4 mb-6">
-            <div>
-              <h3 className={`text-sm font-semibold ${themeConfig.textSecondary} mb-1`}>Description</h3>
-              <p className={themeConfig.text}>{selectedGroup.description}</p>
-            </div>
-
-            <div>
-              <h3 className={`text-sm font-semibold ${themeConfig.textSecondary} mb-2`}>Criteria</h3>
-              <ul className="space-y-1">
-                {selectedGroup.criteria.map((criterion, idx) => (
-                  <li key={idx} className={`text-sm ${themeConfig.text} flex items-center gap-2`}>
-                    <Filter className="w-3 h-3" />
-                    {criterion}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <h3 className={`text-sm font-semibold ${themeConfig.textSecondary} mb-1`}>Donors in This Group</h3>
-              <p className={`text-lg font-bold ${themeConfig.text}`}>{groupDonors.length} donors</p>
-            </div>
-          </div>
-
-          <div className="mb-6 max-h-[300px] overflow-y-auto">
-            <h3 className={`text-sm font-semibold ${themeConfig.textSecondary} mb-3`}>Group Members</h3>
-            <div className="space-y-2">
-              {groupDonors.length > 0 ? (
-                groupDonors.map((donor) => (
-                  <div key={donor.id} className={`p-3 rounded-lg ${themeConfig.accent}`}>
-                    <p className={`font-medium ${themeConfig.text}`}>{donor.name}</p>
-                    <p className={`text-sm ${themeConfig.textSecondary}`}>{donor.email}</p>
-                  </div>
-                ))
-              ) : (
-                <p className={themeConfig.textSecondary}>No donors in this group</p>
-              )}
-            </div>
-          </div>
-
-          <div className="flex gap-2">
-            <button
-              onClick={() => setShowGroupDetails(false)}
-              className={`flex-1 ${themeConfig.primary} text-white px-4 py-2 rounded-lg hover:opacity-90 transition`}
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  };
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div className={`min-h-screen ${themeConfig.bg}`}>
       <Sidebar />
@@ -508,8 +408,6 @@ export default function GroupsPage() {
         {/* Main Content */}
         <main className="p-8">
           {showModal && <GroupModal />}
-
-          {showGroupDetails && <GroupDetailsModal />}
 
           {/* Header */}
           <div className="flex justify-between items-start mb-8">
@@ -568,16 +466,16 @@ export default function GroupsPage() {
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-xl border shadow-sm p-4">
+          <div className={`${themeConfig.surface} rounded-xl border ${themeConfig.border} shadow-sm p-4`}>
             <div className="flex items-center gap-3">
               <div className="p-2 bg-orange-100 rounded-lg">
                 <UserX className="w-5 h-5 text-orange-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className={`text-2xl font-bold ${themeConfig.text}`}>
                   {loading ? <RefreshCw className="w-5 h-5 animate-spin" /> : donors.filter(d => d.status === "lapsed").length}
                 </p>
-                <p className="text-sm text-gray-500">Lapsed Donors</p>
+                <p className={`text-sm ${themeConfig.textSecondary}`}>Lapsed Donors</p>
               </div>
             </div>
           </div>
@@ -588,7 +486,7 @@ export default function GroupsPage() {
           {groups.map((group) => (
             <div
               key={group.id}
-              className="bg-white rounded-xl border shadow-sm overflow-hidden hover:shadow-lg transition-shadow"
+              className={`${themeConfig.surface} rounded-xl border ${themeConfig.border} shadow-sm overflow-hidden hover:shadow-lg transition-shadow`}
             >
               <div className={`h-2 ${group.color}`} />
               <div className="p-6">
@@ -598,16 +496,16 @@ export default function GroupsPage() {
                       <Tag className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900">{group.name}</h3>
-                      <p className="text-sm text-gray-500">{group.donorCount} donors</p>
+                      <h3 className={`font-semibold ${themeConfig.text}`}>{group.name}</h3>
+                      <p className={`text-sm ${themeConfig.textSecondary}`}>{group.donorCount} donors</p>
                     </div>
                   </div>
                   <div className="flex gap-1">
                     <button
                       onClick={() => handleEdit(group)}
-                      className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                      className={`p-2 hover:${themeConfig.accent} rounded-lg transition-colors`}
                     >
-                      <Edit className="w-4 h-4 text-gray-500" />
+                      <Edit className={`w-4 h-4 ${themeConfig.textSecondary}`} />
                     </button>
                     <button
                       onClick={() => handleDelete(group.id)}
@@ -618,26 +516,23 @@ export default function GroupsPage() {
                   </div>
                 </div>
 
-                <p className="text-gray-600 text-sm mb-4">{group.description}</p>
+                <p className={`${themeConfig.text} text-sm mb-4`}>{group.description}</p>
 
                 <div className="space-y-2">
-                  <p className="text-xs font-medium text-gray-500 uppercase">Criteria</p>
+                  <p className={`text-xs font-medium ${themeConfig.textSecondary} uppercase`}>Criteria</p>
                   {group.criteria.map((criterion, index) => (
-                    <div key={index} className="flex items-center gap-2 text-sm text-gray-700">
-                      <Filter className="w-3 h-3 text-gray-400" />
+                    <div key={index} className={`flex items-center gap-2 text-sm ${themeConfig.text}`}>
+                      <Filter className={`w-3 h-3 ${themeConfig.textSecondary}`} />
                       {criterion}
                     </div>
                   ))}
                 </div>
 
-                <div className="mt-4 pt-4 border-t flex justify-between items-center">
+                <div className={`mt-4 pt-4 border-t ${themeConfig.border} flex justify-between items-center`}>
                   <span className={`text-xs ${themeConfig.textSecondary}`}>Created {group.createdAt}</span>
                   <button
-                    onClick={() => {
-                      setSelectedGroup(group);
-                      setShowGroupDetails(true);
-                    }}
-                    className={`${themeConfig.primaryText} text-sm hover:underline bg-transparent border-none p-0`}
+                    onClick={() => router.push(`/groups/${group.id}`)}
+                    className={`${themeConfig.primary} text-white text-sm hover:opacity-90 px-3 py-1 rounded transition`}
                   >
                     View Details →
                   </button>

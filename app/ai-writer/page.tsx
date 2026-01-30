@@ -54,8 +54,14 @@ export default function AIWriterPage() {
   const [sendStatus, setSendStatus] = useState<"idle" | "success" | "error">("idle");
   const [donors, setDonors] = useState<Donor[]>([]);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [donorSearch, setDonorSearch] = useState("");
   const [showDonorDropdown, setShowDonorDropdown] = useState(false);
   const [showCampaignDropdown, setShowCampaignDropdown] = useState(false);
+
+  const filteredDonors = donors.filter(donor =>
+    donor.name.toLowerCase().includes(donorSearch.toLowerCase()) ||
+    donor.email.toLowerCase().includes(donorSearch.toLowerCase())
+  );
 
   // Fetch donors and campaigns
   useEffect(() => {
@@ -277,33 +283,66 @@ export default function AIWriterPage() {
                       </div>
                     </div>
                   ) : (
-                    <div className="flex items-center gap-3 text-slate-500">
-                      <User className="w-5 h-5" />
-                      <span>Select a donor...</span>
-                    </div>
+                    <input
+                      type="text"
+                      placeholder="Search by name or email..."
+                      value={donorSearch}
+                      onChange={(e) => {
+                        setDonorSearch(e.target.value);
+                        setShowDonorDropdown(true);
+                      }}
+                      onFocus={() => setShowDonorDropdown(true)}
+                      className="flex-1 bg-transparent outline-none text-slate-700 placeholder-slate-400"
+                      onClick={(e) => e.stopPropagation()}
+                    />
                   )}
                   <ChevronDown className="w-5 h-5 text-slate-400" />
                 </button>
                 {showDonorDropdown && (
                   <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-slate-200 max-h-64 overflow-y-auto z-10">
-                    {donors.map((donor) => (
-                      <button
-                        key={donor.id}
-                        onClick={() => {
-                          setSelectedDonor(donor);
-                          setShowDonorDropdown(false);
-                        }}
-                        className="w-full p-3 hover:bg-slate-50 flex items-center gap-3 text-left border-b border-slate-100 last:border-0"
-                      >
-                        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                          {donor.name.charAt(0)}
-                        </div>
-                        <div>
-                          <p className="font-medium text-slate-900">{donor.name}</p>
-                          <p className="text-xs text-slate-500">{donor.email}</p>
-                        </div>
-                      </button>
-                    ))}
+                    {donorSearch && filteredDonors.length > 0 ? (
+                      filteredDonors.map((donor) => (
+                        <button
+                          key={donor.id}
+                          onClick={() => {
+                            setSelectedDonor(donor);
+                            setDonorSearch("");
+                            setShowDonorDropdown(false);
+                          }}
+                          className="w-full p-3 hover:bg-slate-50 flex items-center gap-3 text-left border-b border-slate-100 last:border-0"
+                        >
+                          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                            {donor.name.charAt(0)}
+                          </div>
+                          <div>
+                            <p className="font-medium text-slate-900">{donor.name}</p>
+                            <p className="text-xs text-slate-500">{donor.email}</p>
+                          </div>
+                        </button>
+                      ))
+                    ) : donorSearch ? (
+                      <div className="p-3 text-center text-slate-500">No donors found</div>
+                    ) : (
+                      donors.map((donor) => (
+                        <button
+                          key={donor.id}
+                          onClick={() => {
+                            setSelectedDonor(donor);
+                            setDonorSearch("");
+                            setShowDonorDropdown(false);
+                          }}
+                          className="w-full p-3 hover:bg-slate-50 flex items-center gap-3 text-left border-b border-slate-100 last:border-0"
+                        >
+                          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                            {donor.name.charAt(0)}
+                          </div>
+                          <div>
+                            <p className="font-medium text-slate-900">{donor.name}</p>
+                            <p className="text-xs text-slate-500">{donor.email}</p>
+                          </div>
+                        </button>
+                      ))
+                    )}
                   </div>
                 )}
               </div>

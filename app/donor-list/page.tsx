@@ -33,6 +33,13 @@ export function DonationForm({ donorId, onBack, onSave, themeConfig }: DonationF
     recurring: false,
     notes: '',
   });
+  const [donorSearch, setDonorSearch] = useState('');
+  const [showDonorDropdown, setShowDonorDropdown] = useState(false);
+
+  const filteredDonors = initialMockDonors.filter(donor =>
+    donor.name.toLowerCase().includes(donorSearch.toLowerCase()) ||
+    donor.email.toLowerCase().includes(donorSearch.toLowerCase())
+  );
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -79,23 +86,53 @@ export function DonationForm({ donorId, onBack, onSave, themeConfig }: DonationF
         <h2 className={`text-xl font-bold mb-2 ${themeConfig.text}`}>Log a Donation</h2>
         <p className={`mb-4 ${themeConfig.textSecondary}`}>Record a new donation. This will trigger a thank-you workflow.</p>
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Donor Selection */}
+          {/* Donor Selection with Search */}
           <div className="space-y-2">
-            <label htmlFor="donor" className={`block font-medium ${themeConfig.text}`}>Donor *</label>
-            <select
-              id="donor"
-              value={formData.donorId}
-              onChange={e => setFormData({ ...formData, donorId: e.target.value })}
-              className={`w-full border ${themeConfig.border} rounded px-3 py-2 ${themeConfig.surface} ${themeConfig.text}`}
-              required
-            >
-              <option value="" disabled>Select a donor</option>
-              {initialMockDonors.map(donor => (
-                <option key={donor.id} value={donor.id}>
-                  {donor.name} - {donor.email}
-                </option>
-              ))}
-            </select>
+            <label htmlFor="donor-search" className={`block font-medium ${themeConfig.text}`}>Donor *</label>
+            <div className="relative">
+              <input
+                id="donor-search"
+                type="text"
+                placeholder="Search by name or email..."
+                value={donorSearch}
+                onChange={(e) => {
+                  setDonorSearch(e.target.value);
+                  setShowDonorDropdown(true);
+                }}
+                onFocus={() => setShowDonorDropdown(true)}
+                className={`w-full border ${themeConfig.border} rounded px-3 py-2 ${themeConfig.surface} ${themeConfig.text}`}
+              />
+              {showDonorDropdown && donorSearch && (
+                <div className={`absolute top-full left-0 right-0 mt-1 border ${themeConfig.border} rounded shadow-lg ${themeConfig.surface} z-10 max-h-48 overflow-y-auto`}>
+                  {filteredDonors.length > 0 ? (
+                    filteredDonors.map(donor => (
+                      <button
+                        key={donor.id}
+                        type="button"
+                        onClick={() => {
+                          setFormData({ ...formData, donorId: donor.id });
+                          setDonorSearch(`${donor.name} - ${donor.email}`);
+                          setShowDonorDropdown(false);
+                        }}
+                        className={`w-full text-left px-3 py-2 hover:${themeConfig.accent} border-b ${themeConfig.border} last:border-b-0 ${themeConfig.text}`}
+                      >
+                        <div className="font-medium">{donor.name}</div>
+                        <div className={`text-sm ${themeConfig.textSecondary}`}>{donor.email}</div>
+                      </button>
+                    ))
+                  ) : (
+                    <div className={`px-3 py-2 ${themeConfig.textSecondary} text-center`}>
+                      No donors found
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            {formData.donorId && (
+              <p className={`text-sm ${themeConfig.textSecondary}`}>
+                Selected: {initialMockDonors.find(d => d.id === formData.donorId)?.name}
+              </p>
+            )}
           </div>
           {/* Amount */}
           <div className="space-y-2">
@@ -318,7 +355,9 @@ function DonorListContent() {
     }, []);
   const [showAddDonor, setShowAddDonor] = useState(false);
   const [showAddCampaign, setShowAddCampaign] = useState(false);
+  const [showEditDonor, setShowEditDonor] = useState<{ open: boolean; donor?: Donor }>({ open: false });
   const [newDonor, setNewDonor] = useState({ name: '', email: '', phone: '', totalDonated: '' as string | number, lastDonation: '', description: '', status: 'active' });
+  const [editDonor, setEditDonor] = useState({ name: '', email: '', phone: '', totalDonated: '' as string | number, lastDonation: '', description: '', status: 'active' as 'active' | 'lapsed' | 'major' });
   const [newCampaign, setNewCampaign] = useState<Omit<Campaign, 'id'>>({ name: '', goal: 0, raised: 0, startDate: '', endDate: '', status: 'planned', description: '' });
 
   const totalDonors = 6;
@@ -666,7 +705,7 @@ function DonorListContent() {
                 <span className="font-semibold">Last Donation: </span>
                 <span className={themeConfig.text}>{showDescription.donor.lastDonation ? new Date(showDescription.donor.lastDonation).toLocaleDateString() : 'N/A'}</span>
               </div>
-              <div>
+              <div className="mb-6">
                 <span className="font-semibold">Recent Donations: </span>
                 <ul className="list-disc ml-6 mt-1">
                   {/* Replace with real donation data if available */}
@@ -680,6 +719,42 @@ function DonorListContent() {
                     <li className={themeConfig.textSecondary}>No recent donations found.</li>
                   )}
                 </ul>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    // Convert lastDonation to YYYY-MM-DD format for the date input
+                    const formatDateForInput = (dateStr: string) => {
+                      if (!dateStr) return '';
+                      const date = new Date(dateStr);
+                      // Adjust for local timezone to avoid off-by-one day issues
+                      const year = date.getFullYear();
+                      const month = String(date.getMonth() + 1).padStart(2, '0');
+                      const day = String(date.getDate()).padStart(2, '0');
+                      return `${year}-${month}-${day}`;
+                    };
+                    setEditDonor({
+                      name: showDescription.donor.name,
+                      email: showDescription.donor.email,
+                      phone: showDescription.donor.phone,
+                      totalDonated: showDescription.donor.totalDonated,
+                      lastDonation: formatDateForInput(showDescription.donor.lastDonation),
+                      description: showDescription.donor.description || '',
+                      status: showDescription.donor.status,
+                    });
+                    setShowEditDonor({ open: true, donor: showDescription.donor });
+                    setShowDescription({ open: false });
+                  }}
+                  className={`flex-1 ${themeConfig.primary} text-white px-4 py-2 rounded hover:opacity-90 transition-opacity`}
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => setShowDescription({ open: false })}
+                  className={`flex-1 border ${themeConfig.border} rounded px-4 py-2 hover:${themeConfig.accent}`}
+                >
+                  Close
+                </button>
               </div>
             </div>
           </div>
@@ -838,6 +913,34 @@ function DonorListContent() {
                           View
                         </button>
                         <button
+                          className="text-green-600 hover:text-green-900 font-medium"
+                          onClick={() => {
+                            const found = donors.find(d => d.id === donor.id) || donor;
+                            // Convert lastDonation to YYYY-MM-DD format for the date input
+                            const formatDateForInput = (dateStr: string) => {
+                              if (!dateStr) return '';
+                              const date = new Date(dateStr);
+                              // Adjust for local timezone to avoid off-by-one day issues
+                              const year = date.getFullYear();
+                              const month = String(date.getMonth() + 1).padStart(2, '0');
+                              const day = String(date.getDate()).padStart(2, '0');
+                              return `${year}-${month}-${day}`;
+                            };
+                            setEditDonor({
+                              name: found.name,
+                              email: found.email,
+                              phone: found.phone,
+                              totalDonated: found.totalDonated,
+                              lastDonation: formatDateForInput(found.lastDonation),
+                              description: found.description || '',
+                              status: found.status,
+                            });
+                            setShowEditDonor({ open: true, donor: found });
+                          }}
+                        >
+                          Edit
+                        </button>
+                        <button
                           className="text-red-600 hover:text-red-900 font-medium"
                           onClick={async () => {
                             if (confirm(`Delete donor ${donor.name}? This cannot be undone.`)) {
@@ -964,6 +1067,92 @@ function DonorListContent() {
                 <div className="flex gap-2 mt-6">
                   <button type="submit" className={`flex-1 ${themeConfig.primary} text-white py-2 px-4 rounded-lg font-semibold hover:opacity-90 transition`}>Add</button>
                   <button type="button" onClick={() => setShowAddDonor(false)} className={`flex-1 border ${themeConfig.border} py-2 px-4 rounded-lg ${themeConfig.surface} ${themeConfig.text} font-semibold hover:${themeConfig.accent} transition`}>Cancel</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+        {showEditDonor.open && showEditDonor.donor && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className={`${themeConfig.surface} rounded-xl shadow-lg p-8 w-full max-w-md border ${themeConfig.border}`}>
+              <h2 className={`text-2xl font-bold ${themeConfig.text} mb-6 text-center`}>Edit Donor</h2>
+              <form onSubmit={async e => {
+                e.preventDefault();
+                try {
+                  const res = await fetch('/api/donors', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      id: showEditDonor.donor!.id,
+                      ...editDonor,
+                      totalDonated: editDonor.totalDonated === '' ? 0 : Number(editDonor.totalDonated)
+                    }),
+                  });
+                  const result = await res.json();
+                  if (!res.ok) {
+                    toast.error(result.error || 'Failed to update donor');
+                    return;
+                  }
+                  await fetchDonors();
+                  setShowEditDonor({ open: false });
+                  setEditDonor({ name: '', email: '', phone: '', totalDonated: '', lastDonation: '', description: '', status: 'active' });
+                  toast.success('Donor updated successfully');
+                } catch (err) {
+                  // Try to show backend error message if available
+                  if (err instanceof Response) {
+                    const data = await err.json().catch(() => null);
+                    toast.error(data?.error || 'Failed to update donor');
+                  } else if (err instanceof Error) {
+                    toast.error(err.message);
+                  } else {
+                    toast.error('Failed to update donor');
+                  }
+                }
+              }} className="space-y-5">
+                    <div>
+                      <label className={`block text-sm font-medium ${themeConfig.text} mb-1`}>Name</label>
+                      <input placeholder="Name" value={editDonor.name} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditDonor({ ...editDonor, name: e.target.value })} required className={`w-full px-4 py-2 border ${themeConfig.border} rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none ${themeConfig.surface} ${themeConfig.text}`} />
+                    </div>
+                    <div>
+                      <label className={`block text-sm font-medium ${themeConfig.text} mb-1`}>Email</label>
+                      <input placeholder="Email" value={editDonor.email} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditDonor({ ...editDonor, email: e.target.value })} required className={`w-full px-4 py-2 border ${themeConfig.border} rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none ${themeConfig.surface} ${themeConfig.text}`} />
+                    </div>
+                    <div>
+                      <label className={`block text-sm font-medium ${themeConfig.text} mb-1`}>Phone</label>
+                      <input placeholder="Phone" value={editDonor.phone} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditDonor({ ...editDonor, phone: e.target.value })} required className={`w-full px-4 py-2 border ${themeConfig.border} rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none ${themeConfig.surface} ${themeConfig.text}`} />
+                    </div>
+                    <div>
+                      <label className={`block text-sm font-medium ${themeConfig.text} mb-1`}>Total Donated</label>
+                      <input placeholder="0" type="number" value={editDonor.totalDonated} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditDonor({ ...editDonor, totalDonated: e.target.value === '' ? '' : Number(e.target.value) })} required className={`w-full px-4 py-2 border ${themeConfig.border} rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none ${themeConfig.surface} ${themeConfig.text}`} />
+                    </div>
+                    <div>
+                      <label className={`block text-sm font-medium ${themeConfig.text} mb-1`}>Last Donation</label>
+                      <input 
+                        type="date" 
+                        value={editDonor.lastDonation} 
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditDonor({ ...editDonor, lastDonation: e.target.value })} 
+                        min={`${new Date().getFullYear()}-01-01`}
+                        max={new Date().toISOString().split('T')[0]}
+                        required 
+                        className={`w-full px-4 py-2 border ${themeConfig.border} rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none ${themeConfig.surface} ${themeConfig.text}`}
+                      />
+                      <p className={`text-xs ${themeConfig.textSecondary} mt-1`}>Must be within the current year and not in the future</p>
+                    </div>
+                    <div>
+                      <label className={`block text-sm font-medium ${themeConfig.text} mb-1`}>Description</label>
+                      <textarea placeholder="Add notes about this donor..." value={editDonor.description} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setEditDonor({ ...editDonor, description: e.target.value })} className={`w-full px-4 py-2 border ${themeConfig.border} rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none ${themeConfig.surface} ${themeConfig.text}`} rows={3} />
+                    </div>
+                    <div>
+                      <label className={`block text-sm font-medium ${themeConfig.text} mb-1`}>Status</label>
+                      <select value={editDonor.status} onChange={e => setEditDonor({ ...editDonor, status: e.target.value as 'active' | 'lapsed' | 'major' })} className={`w-full px-4 py-2 border ${themeConfig.border} rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none ${themeConfig.surface} ${themeConfig.text}`}>
+                        <option value="active">Active</option>
+                        <option value="major">Major</option>
+                        <option value="lapsed">Lapsed</option>
+                      </select>
+                    </div>
+                <div className="flex gap-2 mt-6">
+                  <button type="submit" className={`flex-1 ${themeConfig.primary} text-white py-2 px-4 rounded-lg font-semibold hover:opacity-90 transition`}>Save Changes</button>
+                  <button type="button" onClick={() => setShowEditDonor({ open: false })} className={`flex-1 border ${themeConfig.border} py-2 px-4 rounded-lg ${themeConfig.surface} ${themeConfig.text} font-semibold hover:${themeConfig.accent} transition`}>Cancel</button>
                 </div>
               </form>
             </div>

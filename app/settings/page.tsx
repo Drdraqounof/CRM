@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import {
   Settings,
@@ -20,6 +20,7 @@ import { useTheme } from "../../lib/useTheme";
 
 export default function SettingsPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { data: session } = useSession();
   const { themeConfig } = useTheme();
   const [activeTab, setActiveTab] = useState("general");
@@ -28,7 +29,12 @@ export default function SettingsPage() {
 
   useEffect(() => {
     setCurrentTheme(loadTheme());
-  }, []);
+    // Check if there's a tab parameter in the URL
+    const tabParam = searchParams.get("tab");
+    if (tabParam) {
+      setActiveTab(tabParam);
+    }
+  }, [searchParams]);
 
   // Settings state
   const [settings, setSettings] = useState({
@@ -57,7 +63,10 @@ export default function SettingsPage() {
   const handleThemeChange = (theme: ThemeColor) => {
     setCurrentTheme(theme);
     saveTheme(theme);
-    window.location.reload();
+    // Reload the page to apply theme changes, while preserving the tab selection
+    setTimeout(() => {
+      window.location.href = `/settings?tab=${activeTab}`;
+    }, 100);
   };
 
   const tabs = [
@@ -88,7 +97,10 @@ export default function SettingsPage() {
                   return (
                     <button
                       key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
+                      onClick={() => {
+                        setActiveTab(tab.id);
+                        router.push(`/settings?tab=${tab.id}`);
+                      }}
                       className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors ${
                         activeTab === tab.id
                           ? `${themeConfig.accent} ${themeConfig.primaryText} font-medium`
