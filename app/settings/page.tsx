@@ -13,6 +13,11 @@ import {
   Sun,
   Save,
   Palette,
+  Key,
+  Plus,
+  Trash2,
+  Copy,
+  Check,
 } from "lucide-react";
 import Sidebar from "../components/Sidebar";
 import { themes, ThemeColor, saveTheme, loadTheme } from "../../lib/theme";
@@ -26,6 +31,9 @@ function SettingsContent() {
   const [activeTab, setActiveTab] = useState("general");
   const [saved, setSaved] = useState(false);
   const [currentTheme, setCurrentTheme] = useState<ThemeColor>("light");
+  const [passkey, setPasskey] = useState<string>("");
+  const [passkeys, setPasskeys] = useState<any[]>([]);
+  const [generatingPasskey, setGeneratingPasskey] = useState(false);
 
   useEffect(() => {
     setCurrentTheme(loadTheme());
@@ -34,7 +42,57 @@ function SettingsContent() {
     if (tabParam) {
       setActiveTab(tabParam);
     }
+    // Load passkeys from localStorage
+    loadPasskeysFromStorage();
   }, [searchParams]);
+
+  const loadPasskeysFromStorage = () => {
+    try {
+      const stored = localStorage.getItem("passkeys");
+      if (stored) {
+        setPasskeys(JSON.parse(stored));
+      }
+    } catch (error) {
+      console.error("Failed to load passkeys:", error);
+    }
+  };
+
+  const generatePasskey = () => {
+    setGeneratingPasskey(true);
+    try {
+      // Generate a random passkey code
+      const code = Math.random().toString(36).substring(2, 15) + 
+                   Math.random().toString(36).substring(2, 15);
+      
+      const newPasskey = {
+        id: Date.now().toString(),
+        code: code.toUpperCase(),
+        createdAt: new Date().toISOString(),
+        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days
+        uses: 0,
+        maxUses: 999,
+      };
+      
+      const updated = [...passkeys, newPasskey];
+      setPasskeys(updated);
+      localStorage.setItem("passkeys", JSON.stringify(updated));
+      setPasskey("");
+    } catch (error) {
+      console.error("Failed to generate passkey:", error);
+    } finally {
+      setGeneratingPasskey(false);
+    }
+  };
+
+  const deletePasskey = (id: string) => {
+    const updated = passkeys.filter(pk => pk.id !== id);
+    setPasskeys(updated);
+    localStorage.setItem("passkeys", JSON.stringify(updated));
+  };
+
+  const copyToClipboard = (code: string) => {
+    navigator.clipboard.writeText(code);
+  };
 
   // Settings state
   const [settings, setSettings] = useState({
@@ -74,6 +132,7 @@ function SettingsContent() {
     { id: "notifications", label: "Notifications", icon: Bell },
     { id: "privacy", label: "Privacy & Security", icon: Shield },
     { id: "theme", label: "Theme", icon: Palette },
+    ...(session?.user?.isAdmin ? [{ id: "passkey", label: "Passkeys", icon: Key }] : []),
   ];
 
   return (
@@ -320,6 +379,88 @@ function SettingsContent() {
                 <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
                   <p className="text-sm text-blue-800">
                     <strong>Note:</strong> Your theme choice will be applied across all pages including the dashboard, donor list, campaigns, and more.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Passkey Settings - Admin Only */}
+            {session?.user?.isAdmin && activeTab === "passkey" && (
+              <div className="space-y-6">
+                <h2 className={`text-xl font-semibold ${themeConfig.text}`}>Passkeys</h2>
+                <p className={`text-sm ${themeConfig.textSecondary}`}>Generate passkeys to allow team members to access the CRM without requiring individual sign-ups</p>
+                
+                <div className={`${themeConfig.surface} border ${themeConfig.border} rounded-lg p-6`}>
+                  <div className="flex items-end gap-3">
+                    <div className="flex-1">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Generate New Passkey
+                      </label>
+                      <p className="text-xs text-gray-500 mb-3">Share this passkey with team members. They'll use it during registration to join the CRM.</p>
+                      <button
+                        onClick={generatePasskey}
+                        disabled={generatingPasskey}
+                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-60"
+                      >
+                        <Plus className="w-4 h-4" />
+                        {generatingPasskey ? "Generating..." : "Generate Passkey"}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {passkeys.length > 0 ? (
+                  <div className="space-y-3">
+                    <h3 className={`font-semibold ${themeConfig.text}`}>Active Passkeys</h3>
+                    {passkeys.map((pk) => {
+                      const expiresDate = new Date(pk.expiresAt);
+                      const isExpired = expiresDate < new Date();
+                      const daysUntilExpire = Math.floor((expiresDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+                      
+                      return (
+                        <div key={pk.id} className={`border ${themeConfig.border} rounded-lg p-4 flex items-center justify-between`}>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <code className={`font-mono text-sm font-bold ${themeConfig.text} bg-gray-100 px-3 py-1 rounded`}>
+                                {pk.code}
+                              </code>
+                              <button
+                                onClick={() => copyToClipboard(pk.code)}
+                                className="p-1 hover:bg-gray-100 rounded transition-colors"
+                                title="Copy to clipboard"
+                              >
+                                <Copy className="w-4 h-4 text-gray-500" />
+                              </button>
+                              {isExpired && (
+                                <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded">Expired</span>
+                              )}
+                            </div>
+                            <p className={`text-xs ${themeConfig.textSecondary}`}>
+                              Created {new Date(pk.createdAt).toLocaleDateString()} • 
+                              Expires in {daysUntilExpire} days • 
+                              Uses: {pk.uses}/{pk.maxUses}
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => deletePasskey(pk.id)}
+                            className="p-2 text-red-500 hover:bg-red-50 rounded transition-colors"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className={`border-2 border-dashed ${themeConfig.border} rounded-lg p-8 text-center`}>
+                    <Key className={`w-8 h-8 mx-auto mb-2 ${themeConfig.textSecondary}`} />
+                    <p className={`text-sm ${themeConfig.textSecondary}`}>No passkeys yet. Generate one to allow team members to access the CRM.</p>
+                  </div>
+                )}
+
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm text-blue-800">
+                    <strong>How it works:</strong> Generate a passkey and share it with team members. They'll enter this code during registration to join the CRM without needing an email invitation.
                   </p>
                 </div>
               </div>
