@@ -316,56 +316,66 @@ function DonorListContent() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'lapsed' | 'major'>('all');
   const [donors, setDonors] = useState<Donor[]>([]);
-    // Fetch donors from API
-    const fetchDonors = async () => {
-      try {
-        const res = await fetch('/api/donors');
-        if (!res.ok) throw new Error('Failed to fetch donors');
-        const data = await res.json();
-        setDonors(data);
-      } catch (err: unknown) {
-        if (err instanceof Error) {
-          toast.error(err.message);
-        } else {
-          toast.error('Could not load donors from database');
-        }
-      }
-    };
-
-    useEffect(() => {
-      fetchDonors();
-    }, []);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-    // Fetch campaigns from API
-    const fetchCampaigns = async () => {
-      try {
-        const res = await fetch('/api/campaigns');
-        if (!res.ok) throw new Error('Failed to fetch campaigns');
-        const data = await res.json();
-        setCampaigns(data);
-      } catch (err: unknown) {
-        if (err instanceof Error) {
-          toast.error(err.message);
-        } else {
-          toast.error('Could not load campaigns from database');
-        }
-      }
-    };
-
-    useEffect(() => {
-      fetchCampaigns();
-    }, []);
   const [showAddDonor, setShowAddDonor] = useState(false);
   const [showAddCampaign, setShowAddCampaign] = useState(false);
-  const [showEditDonor, setShowEditDonor] = useState<{ open: boolean; donor?: Donor }>({ open: false });
   const [newDonor, setNewDonor] = useState({ name: '', email: '', phone: '', totalDonated: '' as string | number, lastDonation: '', description: '', status: 'active' });
   const [editDonor, setEditDonor] = useState({ name: '', email: '', phone: '', totalDonated: '' as string | number, lastDonation: '', description: '', status: 'active' as 'active' | 'lapsed' | 'major' });
   const [newCampaign, setNewCampaign] = useState<Omit<Campaign, 'id'>>({ name: '', goal: 0, raised: 0, startDate: '', endDate: '', status: 'planned', description: '' });
+  const [showEditDonor, setShowEditDonor] = useState<{ open: boolean; donor?: Donor }>({ open: false });
 
-  const totalDonors = 6;
-  const activeDonors = 4;
-  const newDonors = 1;
-  const lapsedDonors = 1;
+  // Fetch donors from API
+  const fetchDonors = async () => {
+    try {
+      const res = await fetch('/api/donors');
+      if (!res.ok) throw new Error('Failed to fetch donors');
+      const data = await res.json();
+      setDonors(data);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message);
+      } else {
+        toast.error('Could not load donors from database');
+      }
+    }
+  };
+
+  // Fetch campaigns from API
+  const fetchCampaigns = async () => {
+    try {
+      const res = await fetch('/api/campaigns');
+      if (!res.ok) throw new Error('Failed to fetch campaigns');
+      const data = await res.json();
+      setCampaigns(data);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message);
+      } else {
+        toast.error('Could not load campaigns from database');
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchDonors();
+    fetchCampaigns();
+  }, []);
+
+  // Calculate donor statistics dynamically from the donors state
+  let totalDonors = 0, activeDonors = 0, newDonors = 0, lapsedDonors = 0, majorDonors = 0;
+  
+  donors.forEach((donor: any) => {
+    if (!donor.status) return;
+    totalDonors++;
+    if (donor.status === 'active') {
+      activeDonors++;
+    } else if (donor.status === 'lapsed') {
+      lapsedDonors++;
+    } else if (donor.status === 'major') {
+      majorDonors++;
+    }
+  });
+
   const raisedThisMonth = 0;
   const donationsThisMonth = 0;
 

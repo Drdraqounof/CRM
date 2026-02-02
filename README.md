@@ -155,6 +155,21 @@ Having issues? Check [ERRORS_AND_SOLUTIONS.md](./ERRORS_AND_SOLUTIONS.md) for co
 
 ## About This Project
 
-This was built as a school project to demonstrate full-stack web development with AI integration. It uses real technologies that professional developers use every day.
+
+## AI Ethics & Responsible Use
+
+DonorConnect uses AI to help nonprofits communicate more effectively with donors. We are committed to responsible and ethical use of AI technologies. Here are our guiding principles:
+
+- **Transparency:** Users are informed when AI is used to generate content or insights.
+- **Privacy:** Donor data is never used to train AI models. All personal information is handled securely and only used for its intended purpose.
+- **Fairness:** AI-generated messages are designed to be inclusive and avoid bias or discrimination.
+- **Human Oversight:** AI suggestions are always reviewed and approved by a human before being sent to donors.
+- **Accountability:** We monitor AI outputs for quality and accuracy, and provide clear ways to report issues or concerns.
+
+If you have questions or concerns about AI use in DonorConnect, please contact the project maintainers.
+
+---
+
+This project was built as a school project to demonstrate full-stack web development with AI integration. It uses real technologies that professional developers use every day.
 
 **Built with ❤️ using Next.js and GitHub Copilot**
