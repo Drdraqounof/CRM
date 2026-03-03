@@ -109,20 +109,125 @@ prisma/
 └── seed.js         # Seed data
 ```
 
-## Tech Stack (For Developers)
+## System Architecture
 
-| Category | Technology | What It Does |
-|----------|------------|--------------|
-| Framework | Next.js 16 (App Router) | The foundation that makes the website work |
-| Language | TypeScript | JavaScript with extra safety checks |
-| Database | Neon PostgreSQL + Prisma ORM | Stores all donor and campaign data in the cloud |
-| Auth | NextAuth.js | Handles secure login (Google + email/password) |
-| Styling | Tailwind CSS | Makes everything look nice |
-| Charts | Recharts | Creates the visual graphs and charts |
-| Icons | Lucide React | Provides all the icons you see |
-| AI | OpenAI GPT-4o-mini | Powers the AI writing assistant and chat |
-| Email | Nodemailer + Gmail | Sends emails directly to donors |
-| Hosting | Vercel | Where the live website runs |
+### Front-End
+
+The user-facing layer that delivers the web application to browsers and mobile devices.
+
+**Technologies & Framework:**
+- **Next.js 16** (App Router) - Modern React framework with server-side rendering and static generation
+- **TypeScript** - Adds type safety to JavaScript for fewer bugs and better developer experience
+- **React** - Component-based UI library for building interactive interfaces
+- **Tailwind CSS** - Utility-first CSS framework for responsive and consistent styling
+- **Recharts** - Charting library for interactive graphs and data visualization
+- **Lucide React** - Icon library for consistent, scalable UI icons
+
+**Key Features:**
+- Responsive design that works on desktop, tablet, and mobile
+- Server-side rendering for better performance and SEO
+- Reusable UI components (buttons, cards, inputs, selects, textareas)
+- Real-time interactive dashboards with charts and statistics
+- Theme support (light/dark mode) with persistent storage
+
+**Features Served:**
+- Dashboard with campaign and donor analytics
+- Donor list management with search and filtering
+- Campaign creation and tracking
+- AI Writing Assistant for email composition
+- Live chat interface powered by AI
+- User profile and settings pages
+
+---
+
+### Back-End (Web Server Services)
+
+The server-side application logic that handles requests, authentication, business logic, and third-party integrations.
+
+**Core Technologies:**
+- **Next.js API Routes** - Built-in serverless functions that serve as REST API endpoints
+- **TypeScript** - Type-safe server code for reliability
+- **Node.js Runtime** - JavaScript runtime executing the server logic
+
+**Authentication & Security:**
+- **NextAuth.js** - Handles user authentication and session management
+- **OAuth Integration** - Google OAuth for seamless social login
+- **Email/Password Auth** - Traditional login method with secure credential handling
+- **JWT Tokens** - Secure token-based authentication for API requests
+- **CORS & Security Headers** - Protects against common web vulnerabilities
+
+**API Endpoints & Services:**
+- `/api/auth/[...nextauth]` - Authentication provider and session management
+- `/api/donors` - CRUD operations for donor data management
+- `/api/campaigns` - Campaign creation, updates, and analytics
+- `/api/chat` - Real-time AI chat interface connected to OpenAI
+- `/api/ai-writer` - AI-powered email and content generation
+- `/api/questions` - Question management for surveys and forms
+- `/api/send-email` - Email sending service via Gmail SMTP
+- `/api/survey` - Survey creation and submission handling
+- `/api/contact` - Contact form processing
+
+**Third-Party Integrations:**
+- **OpenAI API** - Powers AI writing assistant and chat features using GPT-4o-mini
+- **Gmail SMTP** - Email delivery service for sending donor communications
+- **Google OAuth** - Social authentication provider
+
+**Middleware & Utilities:**
+- Authentication guards on protected endpoints
+- Request validation and error handling
+- Rate limiting for API endpoints
+- Error logging and monitoring
+
+---
+
+### Back-End (Databases)
+
+The persistent data layer that stores all application data with structured schema and relationships.
+
+**Database Solution:**
+- **Neon PostgreSQL** - Serverless PostgreSQL database with auto-scaling and branching capabilities
+- **Cloud Hosting** - Managed database in the cloud for reliability, backups, and security
+
+**Database Management:**
+- **Prisma ORM** - Modern database toolkit that provides:
+  - Type-safe database queries with auto-completion
+  - Automatic migrations for schema changes
+  - Query builder API (no raw SQL needed)
+  - Database seeding for test data
+  - Real-time data subscriptions
+
+**Core Data Models:**
+- **Users** - Application user accounts with authentication credentials
+- **Donors** - Donor profiles with contact information, giving history, and metadata
+- **Campaigns** - Fundraising campaigns with tracking and performance metrics
+- **Donations** - Individual donation records linked to donors and campaigns
+- **Groups** - Organizational groupings of donors for segmentation
+- **Interactions** - Communication history with donors (emails, calls, messages)
+
+**Database Features:**
+- Relational data with foreign key constraints
+- Automatic timestamps for created_at and updated_at tracking
+- Data migrations for schema evolution over time
+- Seed scripts for populating initial test data
+- Backup and recovery options through Neon console
+
+---
+
+## Tech Stack Summary
+
+| Category | Technology | Purpose |
+|----------|------------|---------|
+| **Frontend Framework** | Next.js 16 | React-based full-stack framework |
+| **Language** | TypeScript | Type-safe JavaScript |
+| **UI Library** | React | Component-based UI framework |
+| **Styling** | Tailwind CSS | Utility-first CSS framework |
+| **Database** | Neon PostgreSQL | Serverless relational database |
+| **ORM** | Prisma | Database access and migrations |
+| **Authentication** | NextAuth.js | User login and session management |
+| **AI Integration** | OpenAI API | Writing assistant and chat |
+| **Email Service** | Gmail SMTP | Email sending |
+| **Charting** | Recharts | Data visualization |
+| **Hosting** | Vercel | Deployment and serverless functions |
 
 ## Pages (What You Can Do)
 
